@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.replace('signup.html?mode=login&redirect=' + encodeURIComponent(window.location.href));
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upgrade to Premium - HackVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+  </noscript>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/upgrade.css">
+  <link rel="stylesheet" href="css/payment-form.css">
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo" aria-label="HackVerse Home">
+      <img src="assets/avatar/yes.webp" alt="HackVerse Logo" class="nav-logo-img">
+      <span class="nav-logo-text">Hack<span class="text-accent">Verse</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="hackathon.html">Hackathons</a></li>
+      <li><a href="teamfinder.html">Find Teams</a></li>
+      <li><a href="gallery.html">Hall of Fame</a></li>
+      <li><a href="hacklist.html">Hacklist</a></li>
+    </ul>
+    <a href="signup.html" id="auth-signup-btn" class="btn-primary nav-cta">Get Started</a>
+    <a href="#" id="auth-dashboard-btn" class="btn-primary nav-cta" style="display:none;">Dashboard</a>
+    <a href="profile.html" id="auth-profile-btn" class="btn-primary nav-cta" style="display:none;margin-left:.5rem;">Profile</a>
+    <a href="#" id="auth-logout-btn" class="btn-primary nav-cta" style="display:none;margin-left:.5rem;">Logout</a>
+    <button class="hamburger" id="hamburger">&#9776;</button>
+  </nav>
+
+  <!-- UPGRADE LAYOUT -->
+  <div class="up-page">
+    <div class="up-container">
+      
+      <!-- LEFT SECTION: Marketing & Benefits -->
+      <div class="up-benefits-section">
+        <span class="up-eyebrow">HACKVERSE PRO</span>
+        <h1 class="up-title" id="upTitle">Elevate Your Team Search</h1>
+        <p class="up-subtitle" id="upSubtitle">Unlock unlimited powers and connect with the best minds in tech.</p>
+        
+        <div class="up-features-list">
+          <div class="up-feature-item">
+            <div class="up-feature-icon">✓</div>
+            <div class="up-feature-text">
+              <h3>Unlimited Active Applications</h3>
+              <p>Apply to as many active teams as you want. Don't restrict your possibilities.</p>
+            </div>
+          </div>
+          
+          <div class="up-feature-item">
+            <div class="up-feature-icon">✓</div>
+            <div class="up-feature-text">
+              <h3>Unlimited Team Creations</h3>
+              <p>Create and lead multiple project squads every month without calendar limits.</p>
+            </div>
+          </div>
+          
+          <div class="up-feature-item">
+            <div class="up-feature-icon">✓</div>
+            <div class="up-feature-text">
+              <h3>Premium Profile Badge</h3>
+              <p>Display a golden badge on your profile to signal your serious commitment to builders.</p>
+            </div>
+          </div>
+
+          <div class="up-feature-item">
+            <div class="up-feature-icon">✓</div>
+            <div class="up-feature-text">
+              <h3>Priority Candidate Status</h3>
+              <p>Get featured near the top of the applicant lists in team creator dashboards.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="up-pricing-card">
+          <span class="up-pricing-label">Premium Plan</span>
+          <div class="up-pricing-amount">₹99 <span class="up-period">/ month</span></div>
+          <p class="up-pricing-subtext">Minimal subscription. Cancel anytime from your profile settings.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SECTION: Reusable Checkout Component Container -->
+      <div class="up-checkout-section">
+        <h2 class="up-checkout-title">Credit Card Payment</h2>
+        <p class="up-checkout-sub">Enter details securely below to instant-unlock Premium benefits.</p>
+        
+        <!-- Insertion point for PaymentForm component -->
+        <div id="paymentFormContainer"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" aria-label="HackVerse Home">
+          <img src="assets/avatar/yes.webp" alt="HackVerse Logo" class="nav-logo-img">
+          <span class="nav-logo-text">Hack<span class="text-accent">Verse</span></span>
+        </a>
+        <p class="footer-tagline">We love <strong>software</strong> and people who <strong>ship it</strong>.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/hackathons-data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/payment-form.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get('reason') || '';
+      
+      const titleEl = document.getElementById('upTitle');
+      const subtitleEl = document.getElementById('upSubtitle');
+
+      // 1. Customize heading messages based on redirect triggers
+      if (reason === 'apply_limit') {
+        titleEl.textContent = 'Application Limit Reached!';
+        subtitleEl.textContent = 'You have reached the maximum limit of 3 active team applications. Upgrade to Premium to apply to unlimited teams.';
+      } else if (reason === 'create_limit') {
+        titleEl.textContent = 'Creation Limit Reached!';
+        subtitleEl.textContent = 'Free accounts are restricted to 3 team creations per month. Go Premium for unlimited creations.';
+      } else if (reason === 'profile_upgrade') {
+        titleEl.textContent = 'Upgrade to Premium';
+        subtitleEl.textContent = 'Get access to unlimited applications, team creations, priority applicant status, and a badge.';
+      }
+
+      // 2. Render Reusable Payment Form component
+      const getRedirectUrl = () => {
+        const redirect = params.get('redirect');
+        return redirect ? decodeURIComponent(redirect) : 'profile.html';
+      };
+
+      window.PaymentForm.render('paymentFormContainer', {
+        amount: '₹99',
+        buttonText: 'Pay & Upgrade — ₹99/mo',
+        onSuccess: (paymentDetails) => {
+          const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
+          if (email) {
+            // Update profile databases to Premium
+            const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+            if (profiles[email]) {
+              profiles[email].membership = 'premium';
+              localStorage.setItem('hk_profiles', JSON.stringify(profiles));
+            }
+            
+            // Sync with profile.js active state
+            const currentProfile = JSON.parse(localStorage.getItem('hk_profile') || '{}');
+            currentProfile.membership = 'premium';
+            localStorage.setItem('hk_profile', JSON.stringify(currentProfile));
+
+            // Optional: send standard mock system notification
+            try {
+              if (window.Auth && window.Auth.notify) {
+                window.Auth.notify(
+                  email,
+                  'membership_upgrade',
+                  'Welcome to HackVerse Premium!',
+                  'Your membership was successfully upgraded to Premium. Enjoy unlimited creations and applications.'
+                );
+              }
+            } catch(e) {
+              console.error("Auth Notification Error:", e);
+            }
+          }
+
+          // Redirect to target destination after 1s
+          setTimeout(() => {
+            window.location.href = getRedirectUrl();
+          }, 1000);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

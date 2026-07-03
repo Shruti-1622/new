@@ -1,0 +1,257 @@
+/* ── EDS overrides ─────────────────────────────────────────────── */
+main > .section:has(.section-heading-wrapper) { margin: 0 !important; }
+main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
+
+/* ── Shell ────────────────────────────────────────────────────── */
+.section-heading {
+  position: relative;
+  background: #0a0a0a;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ── Background image (image variant) ─────────────────────────── */
+.section-heading .sh-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.section-heading.image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.72) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Inner — matches original .hs-section + .hs-header ────────── */
+/* padding: 80px 0 60px (.hs-section) + padding: 0 5% (.hs-header) */
+.section-heading .sh-inner {
+  position: relative;
+  z-index: 1;
+  padding: 80px 5% 60px;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.section-heading .sh-inner.sh-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Gold line ────────────────────────────────────────────────── */
+.section-heading .sh-line {
+  width: 60px;
+  height: 2px;
+  background: #d9a441;
+  border-radius: 2px;
+  opacity: 0.7;
+  margin: 0 auto 48px;
+}
+
+/* ── Eyebrow — exact match to .hs-eyebrow ─────────────────────── */
+.section-heading .sh-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #d9a441;
+  margin-bottom: 12px;
+}
+
+/* ── Title — exact match to .hs-title ────────────────────────── */
+.section-heading .sh-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+/* bold word in da.live → gold (original used <span>, EDS uses <strong>) */
+.section-heading .sh-title strong,
+.section-heading .sh-title em {
+  color: #d9a441;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+/* ── Subtitle — exact match to .hs-sub ───────────────────────── */
+.section-heading .sh-sub {
+  font-size: 14px;
+  color: #808080;
+  line-height: 1.6;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── NO-LINE VARIANT ──────────────────────────────────────────── */
+.section-heading.no-line .sh-line { display: none; }
+
+/* ── IMAGE VARIANT ────────────────────────────────────────────── */
+.section-heading.image .sh-sub { color: #c8c8cc; }
+
+/* ── TABS VARIANT — Find Teams hero ──────────────────────────── */
+/* Use: Section Heading (tabs) in da.live — NO (image) needed     */
+.section-heading.tabs {
+  min-height: 380px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Dark gradient over background image — self-contained, no .image class needed */
+.section-heading.tabs::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, #0a0a0a 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gold grid overlay */
+.section-heading.tabs::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(217, 164, 65, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 164, 65, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Taller padding — matches tf-hero: padding 140px 4vw 50px */
+.section-heading.tabs .sh-inner {
+  padding: 140px 4vw 50px;
+  z-index: 3;
+}
+
+/* Spacing overrides — match original teamfinder-page.css exactly */
+.section-heading.tabs .sh-line { margin-bottom: 32px; }
+.section-heading.tabs .sh-eyebrow { color: #f3f1f0; margin-bottom: 16px; }
+.section-heading.tabs .sh-title {
+  font-size: clamp(42px, 6.5vw, 76px);
+  margin-bottom: 16px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.section-heading.tabs .sh-sub {
+  color: #a1a1aa;
+  font-size: 15px;
+  max-width: 620px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Tab buttons row ─────────────────────────────────────────── */
+.section-heading.tabs .sh-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+/* Individual tab — exact match to .tf-tab-btn */
+.section-heading.tabs .sh-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50px;
+  color: #808080;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.section-heading.tabs .sh-tab svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.section-heading.tabs .sh-tab:hover {
+  border-color: rgba(217, 164, 65, 0.35);
+  color: #e5e5e5;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Active tab — gold */
+.section-heading.tabs .sh-tab.active {
+  background: rgba(217, 164, 65, 0.12);
+  border-color: #d9a441;
+  color: #d9a441;
+  box-shadow:
+    0 8px 24px rgba(217, 164, 65, 0.12),
+    0 0 0 1px rgba(217, 164, 65, 0.2) inset;
+}
+
+.section-heading.tabs .sh-tab.active svg { opacity: 1; }
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .section-heading.tabs { min-height: 340px; }
+  .section-heading.tabs .sh-inner { padding: 120px 4vw 40px; }
+}
+
+@media (max-width: 600px) {
+  .section-heading.tabs .sh-inner { padding: 70px 5vw 30px; }
+
+  .section-heading.tabs .sh-tabs { flex-direction: column; align-items: center; }
+
+  .section-heading.tabs .sh-tab {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+
+/* ── HOF VARIANT — Hall of Fame hero ─────────────────────────── */
+/* Use: Section Heading (hof) in da.live                          */
+/* Gradient overlay — matches original hof-hero gradient          */
+.section-heading.hof::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.15) 0%, rgba(10, 10, 10, 0.6) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Taller bottom padding — matches hof-hero: 140px 4vw 100px */
+.section-heading.hof .sh-inner { padding: 140px 4vw 100px; }
+
+/* Gold line — 64px gap below, matches hof-hero::before */
+.section-heading.hof .sh-line { margin-bottom: 64px; }
+
+/* Subtitle narrower — matches hof-hero-sub max-width: 440px */
+.section-heading.hof .sh-sub { max-width: 440px; }
+
+@media (max-width: 768px) {
+  .section-heading.hof .sh-inner { padding: 120px 4vw 80px; }
+}
+
+@media (max-width: 600px) {
+  .section-heading.hof .sh-inner { padding: 80px 5vw 60px; }
+}

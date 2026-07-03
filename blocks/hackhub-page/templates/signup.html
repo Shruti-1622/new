@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackHub - Authenticate</title>
+    <link rel="stylesheet" href="/css/signup.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+    </noscript>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- LEFT PANEL -->
+        <div class="auth-visual-panel">
+            <a href="/" class="auth-logo-overlay" aria-label="HackHub Home">
+                <img src="/assets/avatar/yes.webp" alt="HackHub Logo" class="nav-logo-img">
+                <span class="nav-logo-text">Hack<span class="text-accent">Hub</span></span>
+            </a>
+
+            <div class="auth-visual-bg" style="background-image: url('/assets/auth-hero.png');"></div>
+            <div class="auth-visual-overlay"></div>
+
+            <div class="auth-visual-content">
+                <h1 class="visual-title">Build Your Vision</h1>
+                <p class="visual-subtitle">Discover hackathons, find your team, and ship something great.</p>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="auth-form-panel">
+            <div class="auth-form-wrapper">
+                <!-- Segmented Tab Control -->
+                <div class="tab-control-container">
+                    <div class="tab-slider"></div>
+                    <button type="button" class="tab-btn active" id="tab-signup">Sign Up</button>
+                    <button type="button" class="tab-btn" id="tab-login">Log In</button>
+                </div>
+
+                <!-- SIGN UP FORM -->
+                <div class="form-container active" id="signup-container">
+                    <h2 class="form-title">Create An Account</h2>
+                    <form id="signup-form" novalidate>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <input type="text" id="signup-firstname" placeholder="First Name" required autocomplete="given-name">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="signup-lastname" placeholder="Last Name" required autocomplete="family-name">
+                            </div>
+                        </div>
+
+                        <div class="input-group icon-input">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </span>
+                            <input type="email" id="signup-email" placeholder="Enter Your Email" required autocomplete="email">
+                        </div>
+
+                        <div class="input-row" style="margin-top:16px;">
+                            <div class="input-group">
+                                <select id="signup-role" required style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#fff;font-family:inherit;font-size:0.9rem;">
+                                    <option value="" disabled selected style="color:#888">Primary Role</option>
+                                    <option value="Frontend Dev" style="color:#000">Frontend Dev</option>
+                                    <option value="Backend Dev" style="color:#000">Backend Dev</option>
+                                    <option value="Full Stack Dev" style="color:#000">Full Stack Dev</option>
+                                    <option value="UI/UX Designer" style="color:#000">UI/UX Designer</option>
+                                    <option value="ML/AI Engineer" style="color:#000">ML/AI Engineer</option>
+                                    <option value="Product Manager" style="color:#000">Product Manager</option>
+                                    <option value="Other" style="color:#000">Other</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <select id="signup-experience" required style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#fff;font-family:inherit;font-size:0.9rem;">
+                                    <option value="" disabled selected style="color:#888">Experience</option>
+                                    <option value="Student" style="color:#000">Student</option>
+                                    <option value="Beginner (0-1 yr)" style="color:#000">Beginner (0-1 yr)</option>
+                                    <option value="Intermediate (1-3 yrs)" style="color:#000">Intermediate (1-3 yrs)</option>
+                                    <option value="Advanced (3+ yrs)" style="color:#000">Advanced (3+ yrs)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group icon-input" style="margin-top:16px;">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                            </span>
+                            <input type="url" id="signup-github" placeholder="GitHub URL (Optional)">
+                        </div>
+
+                        <div class="input-group" style="margin-top:16px;margin-bottom:16px;">
+                            <input type="text" id="signup-skills" placeholder="Skills (e.g. React, Node.js, Python)">
+                        </div>
+
+                        <div class="input-group icon-input password-group">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </span>
+                            <input type="password" id="signup-password" placeholder="Password" required autocomplete="new-password">
+                            <button type="button" class="password-toggle" data-target="signup-password">
+                                <svg class="eye-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                <svg class="eye" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+
+                        <div class="pw-strength-container" style="margin-top:-8px;margin-bottom:16px;">
+                            <div class="pw-strength-bars" style="display:flex;gap:6px;height:4px;">
+                                <div class="pw-bar" style="flex:1;height:100%;background:rgba(255,255,255,0.07);border-radius:2px;transition:background 0.2s;"></div>
+                                <div class="pw-bar" style="flex:1;height:100%;background:rgba(255,255,255,0.07);border-radius:2px;transition:background 0.2s;"></div>
+                                <div class="pw-bar" style="flex:1;height:100%;background:rgba(255,255,255,0.07);border-radius:2px;transition:background 0.2s;"></div>
+                            </div>
+                            <span class="pw-strength-text" style="font-size:0.75rem;color:#808080;display:block;margin-top:4px;font-family:'DM Sans',sans-serif;">Password strength</span>
+                        </div>
+
+                        <div class="input-group icon-input password-group">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </span>
+                            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required autocomplete="new-password">
+                            <button type="button" class="password-toggle" data-target="signup-confirm-password">
+                                <svg class="eye-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                <svg class="eye" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn">Create an Account</button>
+                    </form>
+                </div>
+
+                <!-- LOG IN FORM -->
+                <div class="form-container" id="login-container">
+                    <h2 class="form-title">Welcome Back</h2>
+                    <form id="login-form" novalidate>
+                        <div class="input-group icon-input">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </span>
+                            <input type="email" id="login-email" placeholder="Enter Your Email" required autocomplete="email">
+                        </div>
+
+                        <div class="input-group icon-input password-group">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </span>
+                            <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                            <button type="button" class="password-toggle" data-target="login-password">
+                                <svg class="eye-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                <svg class="eye" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn">Log In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script nonce="aem">
+    (function () {
+        // ── helpers ──────────────────────────────────────────────────────
+        function showToast(message, type) {
+            var container = document.getElementById('toast-container');
+            if (!container) return;
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + (type || 'error');
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(function () { toast.classList.add('show'); }, 10);
+            setTimeout(function () {
+                toast.classList.remove('show');
+                setTimeout(function () { toast.remove(); }, 300);
+            }, 4000);
+        }
+
+        function getRedirectUrl() {
+            var params = new URLSearchParams(window.location.search);
+            var r = params.get('redirect');
+            return r ? decodeURIComponent(r) : '/';
+        }
+
+        // ── tab switcher ─────────────────────────────────────────────────
+        function switchTab(mode) {
+            var tabSignup   = document.getElementById('tab-signup');
+            var tabLogin    = document.getElementById('tab-login');
+            var fmSignup    = document.getElementById('signup-container');
+            var fmLogin     = document.getElementById('login-container');
+            var slider      = document.querySelector('.tab-slider');
+            if (!tabSignup || !tabLogin || !fmSignup || !fmLogin) return;
+
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabSignup.classList.remove('active');
+                fmLogin.classList.add('active');
+                fmSignup.classList.remove('active');
+                if (slider) slider.style.transform = 'translateX(100%)';
+            } else {
+                tabSignup.classList.add('active');
+                tabLogin.classList.remove('active');
+                fmSignup.classList.add('active');
+                fmLogin.classList.remove('active');
+                if (slider) slider.style.transform = 'translateX(0)';
+            }
+            var url = new URL(window.location.href);
+            url.searchParams.set('mode', mode);
+            window.history.replaceState({}, '', url);
+        }
+
+        // wire tab buttons
+        var tabSignupBtn = document.getElementById('tab-signup');
+        var tabLoginBtn  = document.getElementById('tab-login');
+        if (tabSignupBtn) tabSignupBtn.addEventListener('click', function () { switchTab('signup'); });
+        if (tabLoginBtn)  tabLoginBtn.addEventListener('click',  function () { switchTab('login'); });
+
+        // set initial tab from URL
+        var initMode = new URLSearchParams(window.location.search).get('mode') || 'signup';
+        switchTab(initMode);
+
+        // ── password toggle ──────────────────────────────────────────────
+        document.querySelectorAll('.password-toggle').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var inputId = btn.getAttribute('data-target');
+                var input = document.getElementById(inputId);
+                if (!input) return;
+                var eyeOff = btn.querySelector('.eye-off');
+                var eye    = btn.querySelector('.eye');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    if (eyeOff) eyeOff.style.display = 'none';
+                    if (eye)    eye.style.display    = 'block';
+                } else {
+                    input.type = 'password';
+                    if (eyeOff) eyeOff.style.display = 'block';
+                    if (eye)    eye.style.display    = 'none';
+                }
+            });
+        });
+
+        // ── password strength ────────────────────────────────────────────
+        var pwInput = document.getElementById('signup-password');
+        var pwBars  = document.querySelectorAll('.pw-bar');
+        var pwText  = document.querySelector('.pw-strength-text');
+        if (pwInput) {
+            pwInput.addEventListener('input', function () {
+                var val = pwInput.value;
+                var score = 0;
+                if (val.length >= 6) score = 1;
+                if (val.length >= 6 && /[0-9!@#$%^&*]/.test(val)) score = 2;
+                if (val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[!@#$%^&*]/.test(val)) score = 3;
+                var colors = ['', '#ef4444', '#f59e0b', '#10b981'];
+                pwBars.forEach(function (bar, i) {
+                    bar.style.backgroundColor = i < score ? colors[score] : 'rgba(255,255,255,0.07)';
+                });
+                if (pwText) {
+                    var labels = ['Password strength', 'Weak password', 'Medium password', 'Strong password'];
+                    var labelColors = ['#808080', '#ef4444', '#f59e0b', '#10b981'];
+                    pwText.innerText = val.length === 0 ? labels[0] : labels[score];
+                    pwText.style.color = val.length === 0 ? labelColors[0] : labelColors[score];
+                }
+            });
+        }
+
+        // ── sign up form ─────────────────────────────────────────────────
+        var signupForm = document.getElementById('signup-form');
+        if (signupForm) {
+            signupForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var firstname       = document.getElementById('signup-firstname').value.trim();
+                var lastname        = document.getElementById('signup-lastname').value.trim();
+                var email           = document.getElementById('signup-email').value.trim().toLowerCase();
+                var password        = document.getElementById('signup-password').value.trim();
+                var confirmPassword = document.getElementById('signup-confirm-password').value.trim();
+                var role            = document.getElementById('signup-role').value;
+                var experience      = document.getElementById('signup-experience').value;
+                var github          = document.getElementById('signup-github').value.trim();
+                var skillsStr       = document.getElementById('signup-skills').value.trim();
+
+                if (!firstname || !lastname) { showToast('Please enter both first and last name.'); return; }
+                if (!email)                  { showToast('Please enter your email.'); return; }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address.'); return; }
+                if (!role || !experience)    { showToast('Please select your role and experience.'); return; }
+                if (password.length < 6)     { showToast('Password must be at least 6 characters.'); return; }
+                if (password !== confirmPassword) { showToast('Passwords do not match.'); return; }
+
+                var name   = firstname + ' ' + lastname;
+                var skills = skillsStr.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+                var AVATARS = [
+                    '/assets/avatar/a1.webp',  '/assets/avatar/a2.webp',  '/assets/avatar/a3.webp',
+                    '/assets/avatar/a4.webp',  '/assets/avatar/a5.webp',  '/assets/avatar/a6.webp',
+                    '/assets/avatar/a7.webp',  '/assets/avatar/a8.webp',  '/assets/avatar/a9.webp',
+                    '/assets/avatar/a10.webp', '/assets/avatar/a11.webp'
+                ];
+                var randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+
+                try {
+                    var profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+                    if (profiles[email]) { showToast('User already exists. Please log in.'); return; }
+                    profiles[email] = { name: name, email: email, role: role, experience: experience, github: github, skills: skills, avatar: randomAvatar, password: password };
+                    localStorage.setItem('hk_profiles', JSON.stringify(profiles));
+                    localStorage.setItem('hk_profile', JSON.stringify(profiles[email]));
+                    localStorage.setItem('hackhub_user', JSON.stringify({ name: name, email: email }));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUserEmail', email);
+                } catch (err) {
+                    showToast('Error saving account. Please try again.');
+                    return;
+                }
+
+                showToast('Account created! Redirecting...', 'success');
+                setTimeout(function () { window.location.href = getRedirectUrl(); }, 1200);
+            });
+        }
+
+        // ── log in form ──────────────────────────────────────────────────
+        var loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var email    = document.getElementById('login-email').value.trim().toLowerCase();
+                var password = document.getElementById('login-password').value.trim();
+
+                if (!email)    { showToast('Please enter your email.'); return; }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address.'); return; }
+                if (!password) { showToast('Please enter your password.'); return; }
+
+                try {
+                    var profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+                    var p = profiles[email];
+                    if (!p) { showToast('Account not found. Please sign up.'); return; }
+                    if (p.password && p.password !== password) { showToast('Invalid password.'); return; }
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUserEmail', email);
+                    localStorage.setItem('hk_profile', JSON.stringify(p));
+                    localStorage.setItem('hackhub_user', JSON.stringify({ name: p.name, email: p.email }));
+                } catch (err) {
+                    showToast('An error occurred during login.');
+                    return;
+                }
+
+                showToast('Logged in! Redirecting...', 'success');
+                setTimeout(function () { window.location.href = getRedirectUrl(); }, 1200);
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

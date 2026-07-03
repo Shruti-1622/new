@@ -1,0 +1,311 @@
+/* ===========================
+   NEW FUTURISTIC EVENT CARDS
+   Replaces old .event-row styles
+   Add this at the BOTTOM of hackathon-page.css
+=========================== */
+
+/* ── WRAPPER: handles glow since clip-path cuts box-shadow ── */
+.event-card-wrap {
+  filter: drop-shadow(0 0 0px transparent);
+  transition: filter .35s, transform .35s;
+}
+
+.event-card-wrap:hover {
+  filter: drop-shadow(0 0 16px rgba(217, 164, 65, .4));
+  transform: translateY(-7px);
+}
+
+/* ── OVERRIDE old .event-row completely ── */
+.event-list .event-row {
+  position: relative;
+  cursor: pointer;
+  background: var(--bg-card);
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  display: flex;
+  flex-direction: column;
+  transform: none !important;
+  box-shadow: none !important;
+  /* padding: 30px; */
+  clip-path: polygon(16px 0%, calc(100% - 16px) 0%,
+      100% 16px, 100% calc(100% - 16px),
+      calc(100% - 16px) 100%, 16px 100%,
+      0% calc(100% - 16px), 0% 16px);
+}
+
+/* glowing border */
+.event-list .event-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(16px 0%, calc(100% - 16px) 0%,
+      100% 16px, 100% calc(100% - 16px),
+      calc(100% - 16px) 100%, 16px 100%,
+      0% calc(100% - 16px), 0% 16px);
+  border: 1.5px solid rgba(217, 164, 65, .22);
+  pointer-events: none;
+  z-index: 10;
+  transition: border-color .3s;
+}
+
+.event-card-wrap:hover .event-list .event-row::before,
+.event-card-wrap:hover .event-row::before {
+  border-color: rgba(217, 164, 65, .8);
+}
+
+/* corner accent lines */
+.event-list .event-row::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 0 0/30px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 0 0/2px 30px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 100% 0/30px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 100% 0/2px 30px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 0 100%/30px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 0 100%/2px 30px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 100% 100%/30px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 100% 100%/2px 30px no-repeat;
+  pointer-events: none;
+  z-index: 11;
+  opacity: .35;
+  transition: opacity .3s;
+}
+
+.event-card-wrap:hover .event-row::after {
+  opacity: 1;
+}
+
+/* ── IMAGE ── */
+.event-list .event-image {
+  width: 100%;
+  height: 195px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.event-list .event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s;
+}
+
+.event-card-wrap:hover .event-image img {
+  transform: scale(1.07);
+}
+
+/* scanlines on image */
+.event-list .event-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px,
+      rgba(0, 0, 0, .1) 3px, rgba(0, 0, 0, .1) 4px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* fade bottom of image */
+.event-list .event-image::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, var(--bg-card));
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── BADGE ── */
+.event-list .event-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  background: rgba(217, 164, 65, .12);
+  color: var(--accent);
+  border: 1px solid rgba(217, 164, 65, .4);
+  border-radius: 0 !important;
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  backdrop-filter: blur(6px);
+}
+
+/* ── CONTENT ── */
+.event-list .event-content {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+}
+
+/* HUD divider line */
+.event-list .event-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent, rgba(217, 164, 65, .3) 30%,
+      rgba(217, 164, 65, .3) 70%, transparent);
+}
+
+/* ── DATE ROW ── */
+.event-date-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.event-date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(217, 164, 65, .08);
+  border: 1px solid rgba(217, 164, 65, .3);
+  padding: 5px 10px;
+  min-width: 52px;
+  flex-shrink: 0;
+  clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%);
+}
+
+.date-month {
+  font-family: var(--font-mono);
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.date-day {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.event-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: .67rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.event-status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── TITLE ── */
+.event-list .event-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--fg);
+  margin-bottom: 10px;
+  line-height: 1.1;
+  letter-spacing: .02em;
+}
+
+/* ── META CHIPS ── */
+.event-meta {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.event-meta span {
+  padding: 3px 9px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .08);
+  font-family: var(--font-mono);
+  font-size: .67rem;
+  letter-spacing: .04em;
+  color: var(--fg-muted);
+  clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+}
+
+.event-meta span.prize {
+  background: rgba(217, 164, 65, .08);
+  border-color: rgba(217, 164, 65, .3);
+  color: var(--accent);
+}
+
+/* ── DESCRIPTION ── */
+.event-list .event-content p {
+  color: var(--fg-muted);
+  font-size: .82rem;
+  line-height: 1.65;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+/* ── REGISTER BUTTON ── */
+.event-register-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: transparent;
+  border: 1.5px solid rgba(217, 164, 65, .5);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 50px;
+  transition: background .2s, color .2s, border-color .2s;
+  border-bottom: none !important;
+}
+
+.event-register-btn:hover {
+  background: var(--accent);
+  color: #000 !important;
+  border-color: var(--accent);
+  gap: 0 !important;
+}
+
+.btn-arrow {
+  transition: transform .2s;
+}
+
+.event-register-btn:hover .btn-arrow {
+  transform: translateX(5px);
+}

@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("CAARegistrationNTAUpsellFromLoginDialog.entrypoint",["CAARegistrationNTAUpsellFromLoginDialogQuery$Parameters","JSResourceForInteraction"],(function(t,n,r,o,a,i,l){"use strict";var e=60,s={getPreloadProps:function(n){return{queries:{queryRef:{parameters:r("CAARegistrationNTAUpsellFromLoginDialogQuery$Parameters"),variables:{context:n.context,pic_size:e}}}}},root:r("JSResourceForInteraction")("CAARegistrationNTAUpsellFromLoginDialog.react").__setRef("CAARegistrationNTAUpsellFromLoginDialog.entrypoint")};l.default=s}),98);

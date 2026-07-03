@@ -25,3 +25,574 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+/* ── FEATURED HACKATHONS VARIANT ────────────────────────── */
+.cards.featured-hackathons > ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 900px) {
+  .cards.featured-hackathons > ul {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+.cards.featured-hackathons > ul > li {
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  color: #e5e5e5;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards.featured-hackathons > ul > li:hover {
+  border-color: #D9A441;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(217, 164, 65, 0.15);
+}
+
+.cards.featured-hackathons .cards-card-image {
+  margin: 0;
+  width: 100%;
+  height: 195px;
+  overflow: hidden;
+  background: #18181b;
+  flex-shrink: 0;
+}
+
+.cards.featured-hackathons .cards-card-image picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cards.featured-hackathons .cards-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.cards.featured-hackathons > ul > li:hover .cards-card-image img {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.cards.featured-hackathons .cards-card-body {
+  padding: 1.5rem;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.cards.featured-hackathons .event-date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(217, 164, 65, 0.08);
+  border: 1px solid rgba(217, 164, 65, 0.2);
+  border-radius: 6px;
+  padding: 0.8rem;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.cards.featured-hackathons .event-month {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #D9A441;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.3rem 0;
+}
+
+.cards.featured-hackathons .event-date {
+  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #D9A441;
+  line-height: 1;
+  margin: 0;
+}
+
+.cards.featured-hackathons .event-details {
+  flex: 1;
+}
+
+.cards.featured-hackathons .event-location {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: #808080;
+  margin: 0 0 0.4rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cards.featured-hackathons .event-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e5e5e5;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.cards.featured-hackathons .event-description {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #808080;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── GALLERY CAROUSEL VARIANT ────────────────────────── */
+.cards.gallery {
+  margin-top: 2.5rem;
+}
+
+.cards.gallery > ul {
+  width: 100%;
+  height: 350px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #18181b; /* var(--bg-surface) */
+  display: flex;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cards.gallery > ul > li {
+  display: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.cards.gallery > ul > li.active {
+  display: block;
+}
+
+.cards.gallery > ul > li .cards-card-image {
+  width: 100%;
+  height: 100%;
+}
+
+.cards.gallery > ul > li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* Hide the empty body div created by default cards.js */
+.cards.gallery > ul > li .cards-card-body {
+  display: none;
+}
+
+/* Carousel Controls */
+.cards.gallery .carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.cards.gallery .carousel-btn {
+  background: #D9A441; /* var(--accent) */
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.cards.gallery .carousel-btn:hover {
+  background: #b07d2e; /* var(--accent-hover) */
+}
+
+.cards.gallery .carousel-dots {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.cards.gallery .carousel-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12); /* var(--border) */
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  border: none;
+}
+
+.cards.gallery .carousel-dot.active {
+  background: #D9A441;
+}
+
+/* ── GALLERY SECTION SPACING & LABELS ── */
+main .section:has(.cards.gallery) {
+  padding: 100px 5vw;
+  background: #18181b; /* var(--bg-surface) for section-dark */
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+main .section:has(.cards.gallery) .default-content-wrapper {
+  text-align: left;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+main .section:has(.cards.gallery) .default-content-wrapper p:first-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: #b0b0b8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+main .section:has(.cards.gallery) .default-content-wrapper .section-main-title {
+  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #e5e5e5;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+main .section:has(.cards.gallery) .default-content-wrapper .section-main-title em,
+main .section:has(.cards.gallery) .default-content-wrapper .section-main-title i {
+  font-style: normal;
+  color: #D9A441;
+}
+
+/* Hack to style the section wrapper and preceding H2 heading to match the design */
+main .section:has(.cards.featured-hackathons) {
+  padding: 80px 5vw;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+main .section:has(.cards.featured-hackathons) > div {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+main .section > div:has(.cards.featured-hackathons) > h2:first-child {
+  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 3rem;
+  color: #e5e5e5;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ── MOMENTS VARIANT ────────────────────────────────────────────────────────── */
+.cards.moments {
+  background: #0a0a0a;
+  padding: 0 5% 100px;
+}
+
+.cards.moments .moments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 240px;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Individual item */
+.cards.moments .moments-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+}
+
+.cards.moments .moments-item picture,
+.cards.moments .moments-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.75) saturate(0.85);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.cards.moments .moments-item:hover picture img,
+.cards.moments .moments-item:hover > img {
+  transform: scale(1.06);
+  filter: brightness(0.85) saturate(1);
+}
+
+/* Span helpers — match original .hof-tall / .hof-wide exactly */
+.cards.moments .moments-tall { grid-row: span 2; }
+.cards.moments .moments-wide { grid-column: span 2; }
+
+/* Hover caption overlay */
+.cards.moments .moments-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 16px 16px;
+  background: linear-gradient(to top, rgba(10, 10, 10, 0.9) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.cards.moments .moments-item:hover .moments-overlay { opacity: 1; }
+
+.cards.moments .moments-overlay span {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: #d9a441;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .cards.moments .moments-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .cards.moments { padding: 0 4% 60px; }
+
+  .cards.moments .moments-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+
+  /* Kill spans on mobile — stack everything single column */
+  .cards.moments .moments-tall,
+  .cards.moments .moments-wide {
+    grid-row: span 1;
+    grid-column: span 1;
+  }
+}
+
+/* ── HOF VARIANT ─────────────────────────────────────────────────────────── */
+.cards.hof {
+  background: transparent;
+  padding: 24px 5% 0;
+}
+
+/* Grid — matches original repeat(auto-fill, minmax(320px, 1fr)) */
+.cards.hof .hof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Card */
+.cards.hof .hof-card {
+  background: #18181b;
+  border: 1px solid rgba(217, 164, 65, 0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cards.hof .hof-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cards.hof .hof-card.revealed:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(217, 164, 65, 0.18);
+  border-color: rgba(217, 164, 65, 0.35);
+}
+
+/* Image wrap */
+.cards.hof .hof-card-img-wrap {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+}
+
+.cards.hof .hof-card-img-wrap picture,
+.cards.hof .hof-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.8) saturate(0.85);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.cards.hof .hof-card.revealed:hover .hof-card-img-wrap picture img,
+.cards.hof .hof-card.revealed:hover .hof-card-img-wrap > img {
+  transform: scale(1.05);
+  filter: brightness(0.88) saturate(1);
+}
+
+/* Medal badge — top-left */
+.cards.hof .hof-card-rank {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(10, 10, 10, 0.75);
+  border-radius: 7px;
+  padding: 4px 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Diagonal ribbon — top-right (matches original exactly) */
+.cards.hof .hof-card-ribbon {
+  position: absolute;
+  top: 18px;
+  right: -24px;
+  background: #d9a441;
+  color: #000;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 5px 32px;
+  transform: rotate(45deg);
+  transform-origin: center;
+  width: 110px;
+  text-align: center;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* Card body */
+.cards.hof .hof-card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Meta — "CloudFest 26 · 2026" */
+.cards.hof .hof-card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: #808080;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Project title */
+.cards.hof .hof-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #e5e5e5;
+  margin: 0;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/* Team name */
+.cards.hof .hof-card-team {
+  font-size: 0.82rem;
+  color: #d9a441;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Description */
+.cards.hof .hof-card-desc {
+  font-size: 0.84rem;
+  color: #808080;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Tech tags */
+.cards.hof .hof-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cards.hof .hof-tag-sm {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(217, 164, 65, 0.07);
+  border: 1px solid rgba(217, 164, 65, 0.18);
+  color: rgba(217, 164, 65, 0.75);
+  letter-spacing: 0.04em;
+}
+
+/* Footer — prize + View → */
+.cards.hof .hof-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cards.hof .hof-card-prize {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: #d9a441;
+  letter-spacing: 0.05em;
+}
+
+.cards.hof .hof-card-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(217, 164, 65, 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cards.hof .hof-card-link:hover { color: #d9a441; }
+
+/* Responsive */
+@media (min-width: 900px) {
+  .cards.hof { padding: 32px 8% 0; }
+}
+
+@media (max-width: 600px) {
+  .cards.hof .hof-grid { grid-template-columns: 1fr; }
+  .cards.hof { padding: 20px 4% 0; }
+}

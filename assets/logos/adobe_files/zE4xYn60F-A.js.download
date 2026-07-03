@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useCAARegShowBlockingDialog",["fbt","CAARegistrationYouthRegulationStrings","emptyFunction","react","useCDSConfirmationDialog"],(function(t,n,r,o,a,i,l,s){"use strict";var e,u=(e||(e=o("react"))).useCallback;function c(){var e=r("useCDSConfirmationDialog")();return u(function(t,n){n===void 0&&(n=r("emptyFunction")),e({body:r("CAARegistrationYouthRegulationStrings").regBlockingDialogBody(t),primaryButtonLabel:s._(/*BTDS*/"Close"),secondaryButtonLabel:null,testId:"caa-feta-reg-blocking-dialog",title:r("CAARegistrationYouthRegulationStrings").regBlockingDialogTitle()},n)},[e])}l.default=c}),226);

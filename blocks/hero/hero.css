@@ -1,37 +1,223 @@
-.hero-container .hero-wrapper {
-  max-width: unset;
-  padding: 0;
-}
+/* =============================================
+   HERO BLOCK — Adobe EDS / da.live
+   ============================================= */
 
+/* CSS variables (scoped so they work even without global styles.css) */
 .hero {
+  --accent:       #D9A441;
+  --accent-hover: #b07d2e;
+  --fg:           #e5e5e5;
+  --fg-muted:     #808080;
+  --font-display: 'Bebas Neue', 'Inter Tight', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  min-height: 100vh;
+  padding: 50px 10vw 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0a0a0a;
+  color: var(--fg);
+  font-family: var(--font-body);
+  /* reset any EDS default table-style display */
+  display: flex !important;
 }
 
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
-}
-
-.hero picture {
+/* ── BACKGROUND ─────────────────────────── */
+.hero .hero-bg {
   position: absolute;
-  z-index: -1;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
+  z-index: 0;
 }
 
-.hero img {
-  object-fit: cover;
+.hero .hero-bg picture,
+.hero .hero-bg img {
   width: 100%;
   height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
-@media (width >= 900px) {
+.hero .hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at center,
+      rgba(10,10,10,0.45) 0%,
+      rgba(10,10,10,0.85) 75%,
+      rgba(10,10,10,0.98) 100%),
+    linear-gradient(to top,
+      rgba(10,10,10,0.85) 0%,
+      rgba(10,10,10,0) 35%);
+}
+
+/* ── NOISE ──────────────────────────────── */
+.hero .hero-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* ── CONTENT ────────────────────────────── */
+.hero .hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 640px;
+  width: 100%;
+  text-align: center;
+  margin: 120px auto 0;
+  animation: heroFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── TITLE ──────────────────────────────── */
+.hero .hero-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 1.22;
+  letter-spacing: 0.03em;
+  margin: 0 0 1rem;
+}
+
+.hero .hero-title .line {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 900;
+  color: #ffffff;
+  display: inline-block;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.6);
+}
+
+.hero .hero-title .accent-line {
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(217,164,65,0.4);
+}
+
+.hero .cycle-text {
+  display: inline-block;
+  transition: opacity 0.35s ease;
+}
+
+/* ── DESCRIPTION ────────────────────────── */
+.hero .hero-desc {
+  color: #d4d4d8;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 1.5rem auto 2rem;
+  max-width: 460px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+/* ── CTA ────────────────────────────────── */
+.hero .hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.hero .hero-actions .btn-primary {
+  display: inline-block;
+  background: var(--accent);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 12px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+
+.hero .hero-actions .btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(217,164,65,0.35);
+}
+
+/* ── STATS ──────────────────────────────── */
+.hero .hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hero .stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.hero .stat-label {
+  font-size: 0.7rem;
+  color: #b0b0b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+}
+
+.hero .stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+
+/* ── ANIMATION ──────────────────────────── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 900px) {
   .hero {
-    padding: 40px 32px;
+    padding-top: 110px;
+    align-items: flex-start;
+  }
+
+  .hero .hero-bg picture img,
+  .hero .hero-bg img {
+    object-position: 70% center;
+  }
+
+  .hero .hero-content {
+    max-width: 100%;
+    margin-top: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero .hero-stats {
+    gap: 1rem;
+  }
+
+  .hero .stat-divider {
+    height: 24px;
   }
 }

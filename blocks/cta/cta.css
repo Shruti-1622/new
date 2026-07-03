@@ -1,0 +1,129 @@
+/* ── EDS overrides ─────────────────────────────────────────────── */
+main > .section:has(.cta-wrapper) { margin: 0 !important; }
+main > .section > .cta-wrapper { max-width: 100%; padding: 0; }
+
+/* ── Shell — exact match to .cta-section in style.css ── */
+.cta {
+  padding: 120px 5vw;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+/* ── Radial gold glow ─────────────────────────────────────────── */
+.cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(217, 164, 65, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Inner ────────────────────────────────────────────────────── */
+.cta .cta-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Pre-text — exact match to .cta-pre.mono in style.css ─────── */
+.cta .cta-pre {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #808080;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* ── Title — exact match to .cta-title in style.css ─────────── */
+.cta .cta-title {
+  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #e5e5e5;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+}
+
+/* bold/italic word → gold; also handle <span class="text-accent"> */
+.cta .cta-title strong,
+.cta .cta-title em,
+.cta .cta-title .text-accent {
+  color: #d9a441;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+/* ── Subtitle ─────────────────────────────────────────────────── */
+.cta .cta-sub {
+  font-size: 1rem;
+  color: #808080;
+  max-width: 500px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+/* ── Buttons row ─────────────────────────────────────────────── */
+.cta .cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Primary — exact match to .btn-primary.btn-large in style.css ── */
+.cta .cta-btn-primary {
+  display: inline-block;
+  background: #d9a441;
+  color: #0a0a0a;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 11px 32px;
+  border-radius: 50px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.cta .cta-btn-primary:hover {
+  background: #b07d2e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(217, 164, 65, 0.35);
+  text-decoration: none;
+  color: #0a0a0a;
+}
+
+/* Secondary — ghost pill ─────────────────────────────────────── */
+.cta .cta-btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: #e5e5e5;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 13px 28px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.cta .cta-btn-secondary:hover {
+  border-color: #d9a441;
+  background: rgba(217, 164, 65, 0.08);
+  transform: translateY(-2px);
+  text-decoration: none;
+}

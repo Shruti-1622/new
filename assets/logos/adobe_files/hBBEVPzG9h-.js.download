@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useCAAFetaIGFBConnectV2",["CAAWebAccessFlowVersionSingleton__UI_BASED","CometRelay","WebPixelRatio","useCAAFetaIGFBConnectV2Mutation.graphql"],(function(t,n,r,o,a,i,l){"use strict";var e;function s(t,a,i){var l=o("WebPixelRatio").get(),s=o("CometRelay").useMutation(e!==void 0?e:e=n("useCAAFetaIGFBConnectV2Mutation.graphql")),u=s[0],c=r("CAAWebAccessFlowVersionSingleton__UI_BASED").getAccessFlowVersion(),d=function(){return{access_flow_version:c,cryptedString:a,nextCuid:t,obid:i,scale:l}};function m(e,t){t==null||t.length}var p=function(){u({onCompleted:m,variables:d()})};return p}l.default=s}),98);

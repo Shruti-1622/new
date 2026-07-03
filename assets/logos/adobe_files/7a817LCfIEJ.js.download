@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("usePasswordEncryption",["CAAWebPasswordEncryption","CometRelay","usePasswordEncryptionQuery_query.graphql"],(function(t,n,r,o,a,i,l){"use strict";var e;function s(t){var r,a=e!==void 0?e:e=n("usePasswordEncryptionQuery_query.graphql"),i=o("CometRelay").useFragment(a,t),l=(r=i.caa_password_encryption_data)==null?void 0:r.encryption_data;return function(e){return o("CAAWebPasswordEncryption").encryptPassword(l==null?void 0:l.public_key,l==null?void 0:l.key_id,e)}}l.default=s}),98);

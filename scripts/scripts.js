@@ -16,11 +16,38 @@ import {
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
-  await loadCSS(`${window.hlx.codeBasePath}/styles/fonts.css`);
+  await loadCSS(new URL('../styles/fonts.css', import.meta.url).href);
   try {
     if (!window.location.hostname.includes('localhost')) sessionStorage.setItem('fonts-loaded', 'true');
   } catch (e) {
     // do nothing
+  }
+}
+
+/**
+ * When da.live has no content for a known route, the server returns 404.html.
+ * This intercepts that 404 and injects the correct block so EDS loads the page normally.
+ */
+function handleMissingPage(doc) {
+  if (!window.isErrorPage) return;
+
+  const pageName = window.location.pathname.replace(/^\//, '').split('/')[0] || 'index';
+
+  const hackHubPages = ['profile', 'signup', 'gallery', 'hacklist', 'organise', 'upgrade', 'teamfinder', 'hackathon', 'index'];
+
+  const main = doc.querySelector('main');
+  if (!main) return;
+
+  if (hackHubPages.includes(pageName)) {
+    main.className = '';
+    main.innerHTML = `<div><div class="hackhub-page"><div><div>${pageName}</div></div></div></div>`;
+    delete window.isErrorPage;
+    delete window.errorCode;
+  } else if (pageName === 'hackathon-detail') {
+    main.className = '';
+    main.innerHTML = `<div><div class="hackathon-detail"><div></div></div></div>`;
+    delete window.isErrorPage;
+    delete window.errorCode;
   }
 }
 
@@ -135,6 +162,7 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
+  handleMissingPage(doc);
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
@@ -170,7 +198,7 @@ async function loadLazy(doc) {
 
   loadFooter(doc.querySelector('footer'));
 
-  loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
+  loadCSS(new URL('../styles/lazy-styles.css', import.meta.url).href);
   loadFonts();
 }
 

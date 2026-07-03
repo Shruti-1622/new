@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useMAAScreenQPL",["MAAWebQPLLogger","react"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=s.useEffect,c=s.useRef;function d(e,t){var n,o,a=c(!1),i=(n=t==null?void 0:t.disabled)!=null?n:!1,l=(o=t==null?void 0:t.terminal)!=null?o:!1,s=t==null?void 0:t.cuid;u(function(){!i&&!a.current&&(a.current=!0,l?r("MAAWebQPLLogger").logFlowComplete(e,t==null?void 0:t.annotations,s):r("MAAWebQPLLogger").logScreenLanding(e,t==null?void 0:t.annotations,s))},[i,s,t==null?void 0:t.annotations,e,l])}l.default=d}),98);

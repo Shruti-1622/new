@@ -1,20 +1,184 @@
+/* ── Outer <footer> element ──────────────────────────────────────── */
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  background: #0a0a0a !important;
+  border-top: none !important;
+  padding: 0 !important;
+  font-size: unset !important;
 }
 
-footer .footer > div {
-  margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+/* Gold separator line above footer */
+footer::before {
+  content: '';
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d9a441, transparent);
+  opacity: 0.25;
 }
 
-footer .footer p {
+/* ── Block wrapper reset ─────────────────────────────────────────── */
+.footer {
+  background: transparent;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* EDS visibility rule override — block is always visible once loaded */
+footer .footer {
+  visibility: visible !important;
+}
+
+/* ── Inner layout ────────────────────────────────────────────────── */
+.footer .footer-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 5vw 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* ── Brand column ────────────────────────────────────────────────── */
+.footer .footer-brand {
+  max-width: 340px;
+}
+
+.footer .footer-brand .nav-logo {
+  margin-bottom: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #e5e5e5;
+  letter-spacing: 0.02em;
+}
+
+.footer .logo-bracket {
+  color: #d9a441;
+}
+
+.footer .footer-tagline {
+  font-size: 0.95rem;
+  color: #808080;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.footer .footer-tagline strong {
+  color: #d9a441;
+  font-weight: 600;
+}
+
+/* ── Social icons ────────────────────────────────────────────────── */
+.footer .footer-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.footer .footer-social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #808080;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.footer .footer-social-link:hover {
+  border-color: #d9a441;
+  color: #d9a441;
+  background: rgba(217, 164, 65, 0.08);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.footer .footer-social-link svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* ── Navigation columns ──────────────────────────────────────────── */
+.footer .footer-nav {
+  display: flex;
+  gap: 64px;
+  flex-wrap: wrap;
+}
+
+.footer .footer-nav-col h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e5e5e5;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.footer .footer-nav-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.footer .footer-nav-col a {
+  font-size: 0.85rem;
+  color: #808080;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer .footer-nav-col a:hover {
+  color: #d9a441;
+  text-decoration: none;
+}
+
+/* ── Bottom bar ──────────────────────────────────────────────────── */
+.footer .footer-bottom {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 5vw;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer .footer-copy,
+.footer .footer-built {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: #808080;
+  letter-spacing: 0.05em;
   margin: 0;
 }
 
-@media (width >= 900px) {
-  footer .footer > div {
-    padding: 40px 32px 24px;
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .footer .footer-main {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .footer .footer-nav {
+    gap: 32px;
+  }
+
+  .footer .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }

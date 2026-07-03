@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("MAEntAccountTypeNameUtils",["MAEntAccountTypeErrorUtils"],(function(t,n,r,o,a,i,l){"use strict";var e=(function(e){function t(t){return e.call(this,"CAAPlatformDataError "+t)||this}return babelHelpers.inheritsLoose(t,e),t})(babelHelpers.wrapNativeSuper(Error));function s(t){switch(t){case 0x453bf7349370c:case 936619743392459:return 1;case 0x7e36f3fcc43bc:case 772021112871879:return 0;case 0x8e902392e65b:return 4;default:throw new e("Unsupported app ID: "+t)}}function u(e){return e===0?"facebook":e===1?"instagram":e===3?"whatsapp":e===4?"facebook":e===5?"threads":o("MAEntAccountTypeErrorUtils").throwUnexpectedMAEntAccountTypeError(e)}l.appIdToMAEntAccountType=s,l.appTypeToCAAApiApp=u}),98);

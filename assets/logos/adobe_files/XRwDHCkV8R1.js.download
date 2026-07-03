@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("CAARegistrationYouthRegulationStrings",["fbt"],(function(t,n,r,o,a,i,l,s){"use strict";var e=Object.freeze({genderPronounTooltipUnderYouthRegulation:s._(/*BTDS*/"Your pronoun is visible to everyone. You can add a gender of your choice by editing your profile later."),regBlockingDialogBody:function(t){return s._(/*BTDS*/"To create an account, open the {app_name} app on a phone. If you have an existing account, you can log in.",[s._param("app_name",t)])},regBlockingDialogTitle:function(){return s._(/*BTDS*/"New accounts can only be created on phones")}});l.default=e}),226);

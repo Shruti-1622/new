@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("CAAFetaMMALoginButton.react",["CAALoginLoggedOutHomeStrings","XMDSButton.react","react"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react"));function u(e){var t=e.href,n=e.onPress;return s.jsx(r("XMDSButton.react"),{label:r("CAALoginLoggedOutHomeStrings").mmaLoginText,linkProps:{url:t},onPress:n,size:"large",testid:void 0,type:"text"})}u.displayName=u.name+" [from "+i.id+"]",l.default=u}),98);

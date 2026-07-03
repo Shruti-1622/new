@@ -1,0 +1,450 @@
+[
+  {
+    "id": 1,
+    "title": "InnovateTech 2026",
+    "organiser": "Google x HackVerse",
+    "organiserLogo": "G",
+    "fee": 0,
+    "prize": "₹15,00,000",
+    "tags": ["AI/ML", "Cloud", "Web"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 1500,
+    "registeredCount": 1240,
+    "registrationDeadline": "2026-08-05T23:59:00",
+    "teamFormationDeadline": "2026-08-03T23:59:00",
+    "startDate": "August 10, 2026",
+    "endDate": "August 12, 2026",
+    "image": "/assets/hackathon events/googleh.webp",
+    "bannerGradient": "linear-gradient(135deg, #1a150e, #0a0a0a)",
+    "description": "InnovateTech 2026 is Google's flagship AI & Cloud hackathon, bringing together the brightest minds to build cutting-edge solutions. Over 48 intense hours, teams will leverage Google Cloud, Vertex AI, and TensorFlow to create projects that push the boundaries of technology. With mentorship from Google engineers and ₹15 lakh in prizes, this is your chance to turn bold ideas into reality.",
+    "tracks": [
+      { "name": "AI for Good", "prize": "₹5,00,000", "description": "Build AI solutions addressing climate change, healthcare accessibility, or education equity using responsible AI principles." },
+      { "name": "Cloud Native", "prize": "₹4,00,000", "description": "Design and deploy scalable, resilient applications on Google Cloud Platform with Kubernetes, Cloud Run, or Firebase." },
+      { "name": "Web Innovation", "prize": "₹3,00,000", "description": "Create next-generation web experiences using modern frameworks, WebAssembly, or Progressive Web App technologies." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "July 1, 2026" },
+      { "label": "Team formation deadline", "date": "August 3, 2026" },
+      { "label": "Hackathon begins", "date": "August 10, 2026" },
+      { "label": "Submission deadline", "date": "August 12, 2026" },
+      { "label": "Results announced", "date": "August 20, 2026" }
+    ],
+    "sponsors": ["Google Cloud", "DeepMind", "Vertex AI"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹5,00,000" },
+      { "rank": "2nd Place", "amount": "₹3,00,000" },
+      { "rank": "3rd Place", "amount": "₹2,00,000" }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "IIT Bombay HackFest 2026",
+    "organiser": "IIT Bombay x Devfolio",
+    "organiserLogo": "IITB",
+    "fee": 0,
+    "prize": "₹7,50,000",
+    "tags": ["DeepTech", "Hardware", "ML/AI"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 5,
+    "totalSlots": 800,
+    "registeredCount": 312,
+    "registrationDeadline": "2026-09-10T23:59:00",
+    "teamFormationDeadline": "2026-09-08T23:59:00",
+    "startDate": "September 14, 2026",
+    "endDate": "September 16, 2026",
+    "image": "/assets/hackathon events/blue.webp",
+    "bannerGradient": "linear-gradient(135deg, #181510, #0a0a0a)",
+    "description": "IIT Bombay's flagship DeepTech hackathon. Prototype cutting-edge technology solutions using advanced hardware, robotics, IoT, and advanced machine learning models. Free to enter, with mentoring and prototyping kits provided for in-person teams.",
+    "tracks": [
+      { "name": "DeepTech Innovation", "prize": "₹4,50,000", "description": "Build deep tech hardware or software solutions addressing aerospace, robotics, or healthcare challenges." },
+      { "name": "ML/AI Prototype", "prize": "₹3,00,000", "description": "Design systems incorporating computer vision, NLP, or LLMs to solve industrial-grade automation problems." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "August 1, 2026" },
+      { "label": "Pre-event bootcamps", "date": "September 7, 2026" },
+      { "label": "Team formation deadline", "date": "September 8, 2026" },
+      { "label": "Hackathon begins", "date": "September 14, 2026" },
+      { "label": "Submission deadline", "date": "September 16, 2026" },
+      { "label": "Results announced", "date": "September 25, 2026" }
+    ],
+    "sponsors": ["IIT Bombay Alumni", "NVIDIA", "AWS", "Devfolio"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹4,50,000" },
+      { "rank": "2nd Place", "amount": "₹2,00,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Web3 Buildathon",
+    "organiser": "Polygon x ETHGlobal",
+    "organiserLogo": "P",
+    "fee": 0,
+    "prize": "₹10,00,000",
+    "tags": ["Web3", "Blockchain", "DeFi"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 4,
+    "totalSlots": 2000,
+    "registeredCount": 1876,
+    "registrationDeadline": "2026-10-08T23:59:00",
+    "startDate": "October 15, 2026",
+    "endDate": "October 17, 2026",
+    "image": "/assets/hackathon events/ethokyo.webp",
+    "bannerGradient": "linear-gradient(135deg, #1a120b, #0a0a0a)",
+    "description": "The Web3 Buildathon challenges developers to push the boundaries of decentralised technology. Build DApps, DeFi protocols, or NFT platforms using Polygon, Solidity, and cutting-edge blockchain tooling. Solo or team — everyone is welcome. Top projects get direct access to Polygon's accelerator programme.",
+    "tracks": [
+      { "name": "DeFi Innovation", "prize": "₹4,00,000", "description": "Build novel decentralised finance protocols — lending, DEXes, yield optimisers, or cross-chain bridges." },
+      { "name": "NFT & Gaming", "prize": "₹3,00,000", "description": "Create immersive blockchain gaming experiences or innovative NFT utility platforms." },
+      { "name": "Infrastructure", "prize": "₹3,00,000", "description": "Developer tools, SDKs, oracles, or scalability solutions for the Web3 ecosystem." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "September 10, 2026" },
+      { "label": "Mentor AMA session", "date": "October 5, 2026" },
+      { "label": "Hackathon begins", "date": "October 15, 2026" },
+      { "label": "Submission deadline", "date": "October 17, 2026" },
+      { "label": "Demo day", "date": "October 22, 2026" }
+    ],
+    "sponsors": ["Polygon", "ETHGlobal", "Alchemy", "OpenZeppelin"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹4,00,000" },
+      { "rank": "2nd Place", "amount": "₹3,00,000" },
+      { "rank": "3rd Place", "amount": "₹2,00,000" }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "BITS Pilani HackFest 2026",
+    "organiser": "BITS Pilani",
+    "organiserLogo": "BP",
+    "fee": 0,
+    "prize": "₹5,00,000",
+    "tags": ["Open Innovation", "Web3", "FinTech"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 3,
+    "maxTeam": 5,
+    "totalSlots": 600,
+    "registeredCount": 142,
+    "registrationDeadline": "2026-11-01T23:59:00",
+    "teamFormationDeadline": "2026-10-28T23:59:00",
+    "startDate": "November 5, 2026",
+    "endDate": "November 6, 2026",
+    "image": "/assets/hackathon events/cloudf.webp",
+    "bannerGradient": "linear-gradient(135deg, #15130f, #0a0a0a)",
+    "description": "BITS Pilani's premier national level open innovation developer hackathon. Build solutions across Web3, FinTech, Sustainability, or HealthTech. Gain visibility in front of top venture capitalists and receive BITS Spark accelerator mentoring support.",
+    "tracks": [
+      { "name": "Web3 Track", "prize": "₹2,50,000", "description": "Design decentralized protocols, smart contract integrations, or consumer crypto apps." },
+      { "name": "FinTech Innovation", "prize": "₹2,50,000", "description": "Develop innovative personal finance, micro-credit, or transaction infrastructure prototypes." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "October 1, 2026" },
+      { "label": "Idea submission", "date": "October 25, 2026" },
+      { "label": "Team formation deadline", "date": "October 28, 2026" },
+      { "label": "Hackathon begins", "date": "November 5, 2026" },
+      { "label": "Submission deadline", "date": "November 6, 2026" },
+      { "label": "Results announced", "date": "November 15, 2026" }
+    ],
+    "sponsors": ["BITS Spark", "Devfolio", "Polygon", "Solana"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹2,00,000" },
+      { "rank": "2nd Place", "amount": "₹1,50,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Cyber Nexus 2026",
+    "organiser": "Cisco x ISRO",
+    "organiserLogo": "C",
+    "fee": 0,
+    "prize": "₹12,00,000",
+    "tags": ["Cybersecurity", "IoT", "Space"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 500,
+    "registeredCount": 498,
+    "registrationDeadline": "2026-12-20T23:59:00",
+    "teamFormationDeadline": "2026-12-18T23:59:00",
+    "startDate": "December 25, 2026",
+    "endDate": "December 27, 2026",
+    "image": "/assets/hackathon events/cisco.webp",
+    "bannerGradient": "linear-gradient(135deg, #14110d, #0a0a0a)",
+    "description": "Cyber Nexus brings together cybersecurity experts and space technology enthusiasts for a 48-hour challenge. Co-hosted by Cisco and ISRO, participants will work on securing satellite communication systems, IoT networks, and critical infrastructure. Hybrid format with hacking hubs in Bangalore and Hyderabad.",
+    "tracks": [
+      { "name": "Space Security", "prize": "₹5,00,000", "description": "Develop security solutions for satellite communication, space data integrity, and ground station networks." },
+      { "name": "IoT Defence", "prize": "₹4,00,000", "description": "Build intrusion detection systems, secure firmware, or network monitoring tools for IoT ecosystems." },
+      { "name": "Cyber Forensics", "prize": "₹3,00,000", "description": "Create tools for digital forensics, malware analysis, or incident response automation." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "November 15, 2026" },
+      { "label": "Security bootcamp", "date": "December 15, 2026" },
+      { "label": "Team formation deadline", "date": "December 18, 2026" },
+      { "label": "Hackathon begins", "date": "December 25, 2026" },
+      { "label": "Submission deadline", "date": "December 27, 2026" },
+      { "label": "Results announced", "date": "January 5, 2027" }
+    ],
+    "sponsors": ["Cisco", "ISRO", "Palo Alto Networks", "CrowdStrike"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹5,00,000" },
+      { "rank": "2nd Place", "amount": "₹4,00,000" },
+      { "rank": "3rd Place", "amount": "₹2,00,000" }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "NeuralVerse AI",
+    "organiser": "NVIDIA x HackVerse",
+    "organiserLogo": "N",
+    "fee": 0,
+    "prize": "₹8,00,000",
+    "tags": ["AI/ML", "Deep Learning", "Computer Vision"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 3,
+    "totalSlots": 1200,
+    "registeredCount": 890,
+    "registrationDeadline": "2027-01-12T23:59:00",
+    "startDate": "January 18, 2027",
+    "endDate": "January 20, 2027",
+    "image": "/assets/hackathon events/nvidia.webp",
+    "bannerGradient": "linear-gradient(135deg, #1a1610, #0a0a0a)",
+    "description": "NeuralVerse AI is NVIDIA's premier deep learning hackathon. Leverage CUDA, TensorRT, and NVIDIA GPUs to build state-of-the-art AI models for computer vision, NLP, and generative AI. Solo-friendly with free GPU cloud credits for all participants. Winners get NVIDIA RTX hardware and fast-track interviews.",
+    "tracks": [
+      { "name": "Generative AI", "prize": "₹4,00,000", "description": "Build creative applications using diffusion models, GANs, or large language models with NVIDIA NeMo." },
+      { "name": "Computer Vision", "prize": "₹4,00,000", "description": "Develop real-time vision systems for autonomous driving, medical imaging, or industrial inspection." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "December 20, 2026" },
+      { "label": "GPU credits distributed", "date": "January 10, 2027" },
+      { "label": "Hackathon begins", "date": "January 18, 2027" },
+      { "label": "Submission deadline", "date": "January 20, 2027" },
+      { "label": "Results announced", "date": "January 30, 2027" }
+    ],
+    "sponsors": ["NVIDIA", "CUDA", "TensorRT", "AWS"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹3,50,000" },
+      { "rank": "2nd Place", "amount": "₹2,50,000" },
+      { "rank": "3rd Place", "amount": "₹1,50,000" }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "HackDTU 2026",
+    "organiser": "DTU x GitHub",
+    "organiserLogo": "DTU",
+    "fee": 0,
+    "prize": "₹6,00,000",
+    "tags": ["AI Tools", "Social Impact", "Open Source"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 1000,
+    "registeredCount": 456,
+    "registrationDeadline": "2027-02-01T23:59:00",
+    "teamFormationDeadline": "2027-01-28T23:59:00",
+    "startDate": "February 5, 2027",
+    "endDate": "February 7, 2027",
+    "image": "/assets/hackathon events/github.webp",
+    "bannerGradient": "linear-gradient(135deg, #16120e, #0a0a0a)",
+    "description": "Delhi Technological University's flagship national level software hackathon. Over 36 hours, build impactful open-source tools addressing civic tech, educational accessibility, and custom developer tools. Participants get exclusive DTU swags and GitHub credits.",
+    "tracks": [
+      { "name": "AI Tools", "prize": "₹2,50,000", "description": "Build tools, integrations, or models that augment efficiency, education, or coding speed." },
+      { "name": "Social Good", "prize": "₹2,00,000", "description": "Open-source projects addressing accessibility, environmental monitoring, or local communities." },
+      { "name": "Mobile First", "prize": "₹1,50,000", "description": "Build cross-platform mobile prototypes solving day-to-day productivity challenges." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "January 1, 2027" },
+      { "label": "Kickoff workshop", "date": "January 25, 2027" },
+      { "label": "Team formation deadline", "date": "January 28, 2027" },
+      { "label": "Hackathon begins", "date": "February 5, 2027" },
+      { "label": "Submission deadline", "date": "February 7, 2027" },
+      { "label": "Results announced", "date": "February 15, 2027" }
+    ],
+    "sponsors": ["DTU", "GitHub", "Vercel", "Supabase"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹2,50,000" },
+      { "rank": "2nd Place", "amount": "₹2,00,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Enigma ML Challenge",
+    "organiser": "IIT BHU x DRDO",
+    "organiserLogo": "E",
+    "fee": 0,
+    "prize": "₹3,00,000",
+    "tags": ["ML", "Data Science", "Research"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 3,
+    "totalSlots": 400,
+    "registeredCount": 88,
+    "registrationDeadline": "2027-03-01T23:59:00",
+    "startDate": "March 5, 2027",
+    "endDate": "March 7, 2027",
+    "image": "/assets/hackathon events/en.webp",
+    "bannerGradient": "linear-gradient(135deg, #1c150c, #0a0a0a)",
+    "description": "Enigma is a research-focused ML challenge co-organised by IIT BHU and DRDO. Participants tackle real-world datasets from defence, agriculture, and public health sectors. Solo-friendly with mentorship from IIT professors and DRDO scientists. Top solutions may be adopted for national projects.",
+    "tracks": [
+      { "name": "Defence Analytics", "prize": "₹1,50,000", "description": "Apply ML to satellite imagery analysis, signal processing, or predictive maintenance for defence systems." },
+      { "name": "AgriTech AI", "prize": "₹1,50,000", "description": "Build models for crop disease detection, yield prediction, or precision agriculture using real farm datasets." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "February 1, 2027" },
+      { "label": "Dataset release", "date": "February 20, 2027" },
+      { "label": "Team formation deadline", "date": "February 28, 2027" },
+      { "label": "Hackathon begins", "date": "March 5, 2027" },
+      { "label": "Submission deadline", "date": "March 7, 2027" },
+      { "label": "Results announced", "date": "March 15, 2027" }
+    ],
+    "sponsors": ["IIT BHU", "DRDO", "NVIDIA", "Google Research"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹1,50,000" },
+      { "rank": "2nd Place", "amount": "₹1,00,000" },
+      { "rank": "3rd Place", "amount": "₹50,000" }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "CloudFest 26",
+    "organiser": "CloudFest",
+    "organiserLogo": "CF",
+    "fee": 0,
+    "prize": "₹5,00,000",
+    "tags": ["AI/ML", "Web3", "Cloud"],
+    "status": "upcoming",
+    "format": "in-person",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 600,
+    "registeredCount": 210,
+    "registrationDeadline": "2026-07-20T23:59:00",
+    "startDate": "July 24, 2026",
+    "endDate": "July 25, 2026",
+    "location": "Bangalore",
+    "image": "/assets/hackathon events/cloudfest.webp",
+    "bannerGradient": "linear-gradient(135deg, #0d1a2e, #0a0a0a)",
+    "description": "CloudFest 26 is a 48-hour AI & Web3 hackathon in Bangalore featuring a ₹5L prize pool. Compete to build innovative cloud-native and decentralised solutions, with mentorship from industry leaders. Open to teams of 2–4.",
+    "tracks": [
+      { "name": "AI & Machine Learning", "prize": "₹2,50,000", "description": "Build intelligent applications powered by machine learning, NLP, or computer vision." },
+      { "name": "Web3 & Blockchain", "prize": "₹2,50,000", "description": "Create decentralised apps, smart contracts, or blockchain-based solutions." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "June 15, 2026" },
+      { "label": "Team formation deadline", "date": "July 20, 2026" },
+      { "label": "Hackathon begins", "date": "July 24, 2026" },
+      { "label": "Submission deadline", "date": "July 25, 2026" },
+      { "label": "Results announced", "date": "July 28, 2026" }
+    ],
+    "sponsors": ["AWS", "Polygon", "Chainlink"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹2,50,000" },
+      { "rank": "2nd Place", "amount": "₹1,50,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Adobe 26",
+    "organiser": "Adobe India",
+    "organiserLogo": "A",
+    "fee": 0,
+    "prize": "PPI + Internship",
+    "tags": ["Design", "Creative Tech", "UI/UX"],
+    "status": "upcoming",
+    "format": "in-person",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 3,
+    "totalSlots": 400,
+    "registeredCount": 175,
+    "registrationDeadline": "2026-07-04T23:59:00",
+    "startDate": "July 8, 2026",
+    "endDate": "July 9, 2026",
+    "location": "Delhi",
+    "image": "/assets/hackathon events/office.webp",
+    "bannerGradient": "linear-gradient(135deg, #1a0a0a, #0a0a0a)",
+    "description": "Adobe's flagship India hackathon offers Pre-Placement Interviews and internship opportunities alongside exciting prizes. Build creative technology solutions using Adobe's suite of APIs and tools. Top performers are fast-tracked into Adobe's talent pipeline.",
+    "tracks": [
+      { "name": "Creative AI", "prize": "PPI + Internship", "description": "Use Adobe APIs and generative AI to build the next generation of creative tools." },
+      { "name": "Experience Design", "prize": "PPI + Internship", "description": "Design and prototype delightful user experiences using Adobe XD and Express." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "June 1, 2026" },
+      { "label": "Team formation deadline", "date": "July 4, 2026" },
+      { "label": "Hackathon begins", "date": "July 8, 2026" },
+      { "label": "Submission deadline", "date": "July 9, 2026" },
+      { "label": "Results announced", "date": "July 15, 2026" }
+    ],
+    "sponsors": ["Adobe", "Behance"],
+    "prizes": [
+      { "rank": "Winner", "amount": "PPI + Internship" },
+      { "rank": "Runner-up", "amount": "Internship Offer" },
+      { "rank": "Finalist", "amount": "Adobe Swag Kit" }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Amazon 26",
+    "organiser": "Amazon India",
+    "organiserLogo": "AMZ",
+    "fee": 0,
+    "prize": "₹10,00,000",
+    "tags": ["Cloud", "E-Commerce", "AI"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 1000,
+    "registeredCount": 380,
+    "registrationDeadline": "2026-08-05T23:59:00",
+    "startDate": "August 9, 2026",
+    "endDate": "August 11, 2026",
+    "location": "Hyderabad",
+    "image": "/assets/hackathon events/amazonfeat.webp",
+    "bannerGradient": "linear-gradient(135deg, #1a1000, #0a0a0a)",
+    "description": "Amazon's national-level developer competition with ₹10L in cash prizes and internship opportunities. HackOn With Amazon challenges you to build scalable, customer-obsessed solutions using AWS services. Top teams get fast-tracked for full-time roles at Amazon.",
+    "tracks": [
+      { "name": "AWS Cloud Innovation", "prize": "₹5,00,000", "description": "Build highly available, cost-effective solutions leveraging AWS Lambda, DynamoDB, and SageMaker." },
+      { "name": "Customer Experience", "prize": "₹3,00,000", "description": "Re-imagine e-commerce or logistics experiences using AI, personalisation, and last-mile delivery tech." },
+      { "name": "Open Innovation", "prize": "₹2,00,000", "description": "Solve any real-world problem using Amazon's technology stack." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "July 1, 2026" },
+      { "label": "Online round", "date": "August 2, 2026" },
+      { "label": "Team formation deadline", "date": "August 5, 2026" },
+      { "label": "Hackathon begins", "date": "August 9, 2026" },
+      { "label": "Submission deadline", "date": "August 11, 2026" },
+      { "label": "Results announced", "date": "August 20, 2026" }
+    ],
+    "sponsors": ["Amazon", "AWS", "Alexa"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹5,00,000" },
+      { "rank": "2nd Place", "amount": "₹3,00,000" },
+      { "rank": "3rd Place", "amount": "₹2,00,000" }
+    ]
+  }
+]

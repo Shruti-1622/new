@@ -1,1 +1,65 @@
 /* add global styles that can be loaded post LCP here */
+
+/* ── HOF divider label — "Grand Champion · 2026" style ─────────
+   Applied via Section Metadata (style: hof-label) in da.live.
+   Reuse the same pattern for any line–text–line divider on the
+   Hall of Fame page (e.g. "Winners Gallery · 2026").
+   ─────────────────────────────────────────────────────────────── */
+/* ── HOF winners section — background region for filter + cards grid ────────
+   Applied via Section Metadata (style: hof-winners) in da.live.
+   Contains: Filter Bar block (pills) + hof-cards block (winners grid).
+   ─────────────────────────────────────────────────────────────────────────── */
+.section.hof-winners {
+  background: #111111;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 0 !important;
+  padding: 0 0 100px;
+}
+
+.section.hof-label {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 100px 5% 48px;
+  margin: 0 !important;
+}
+
+.section.hof-label .default-content-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section.hof-label .default-content-wrapper p,
+.section.hof-label .default-content-wrapper pre {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: normal;
+}
+
+.section.hof-label .default-content-wrapper pre code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+.section.hof-label .default-content-wrapper p::before,
+.section.hof-label .default-content-wrapper p::after,
+.section.hof-label .default-content-wrapper pre::before,
+.section.hof-label .default-content-wrapper pre::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(217, 164, 65, 0.2), transparent);
+  max-width: 200px;
+}

@@ -1,0 +1,327 @@
+[
+  {
+    "id": 1,
+    "title": "InnovateTech 2025",
+    "organiser": "Google x HackHub",
+    "organiserLogo": "G",
+    "fee": 299,
+    "prize": "₹15,00,000",
+    "tags": ["AI/ML", "Cloud", "Web"],
+    "status": "live",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 1500,
+    "registeredCount": 1240,
+    "registrationDeadline": "2025-07-05T23:59:00",
+    "teamFormationDeadline": "2025-07-03T23:59:00",
+    "startDate": "July 10, 2025",
+    "endDate": "July 12, 2025",
+    "bannerGradient": "linear-gradient(135deg, #1a150e, #0a0a0a)",
+    "image": "assets/hackathon events/googleh.webp",
+    "description": "InnovateTech 2025 is Google's flagship AI & Cloud hackathon, bringing together the brightest minds to build cutting-edge solutions.",
+    "tracks": [
+      { "name": "AI for Good", "prize": "₹5,00,000", "description": "Build AI solutions addressing climate change, healthcare accessibility, or education equity." },
+      { "name": "Cloud Native", "prize": "₹4,00,000", "description": "Design and deploy scalable applications on Google Cloud Platform." },
+      { "name": "Web Innovation", "prize": "₹3,00,000", "description": "Create next-generation web experiences using modern technologies." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "June 1, 2025", "past": true },
+      { "label": "Team formation deadline", "date": "July 3, 2025", "past": false },
+      { "label": "Hackathon begins", "date": "July 10, 2025", "past": false },
+      { "label": "Submission deadline", "date": "July 12, 2025", "past": false },
+      { "label": "Results announced", "date": "July 20, 2025", "past": false }
+    ],
+    "sponsors": ["Google Cloud", "DeepMind", "Vertex AI"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹5,00,000", "track": "Overall" },
+      { "rank": "2nd Place", "amount": "₹3,00,000", "track": "Overall" },
+      { "rank": "3rd Place", "amount": "₹2,00,000", "track": "Overall" }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "IIT Bombay HackFest 2026",
+    "organiser": "IIT Bombay x Devfolio",
+    "organiserLogo": "IITB",
+    "fee": 0,
+    "prize": "₹7,50,000",
+    "tags": ["DeepTech", "Hardware", "ML/AI"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 5,
+    "totalSlots": 800,
+    "registeredCount": 312,
+    "registrationDeadline": "2026-09-10T23:59:00",
+    "teamFormationDeadline": "2026-09-08T23:59:00",
+    "startDate": "September 14, 2026",
+    "endDate": "September 16, 2026",
+    "bannerGradient": "linear-gradient(135deg, #181510, #0a0a0a)",
+    "image": "assets/hackathon events/blue.webp",
+    "description": "IIT Bombay's flagship DeepTech hackathon. Prototype cutting-edge technology solutions using advanced hardware, robotics, Internet of Things (IoT), and advanced machine learning models. Free to enter, with mentoring and prototyping kits provided for in-person teams.",
+    "tracks": [
+      { "name": "DeepTech Innovation", "prize": "₹4,50,000", "description": "Build deep tech hardware or software solutions addressing aerospace, robotics, or healthcare challenges." },
+      { "name": "ML/AI Prototype", "prize": "₹3,00,000", "description": "Design systems incorporating computer vision, NLP, or LLMs to solve industrial-grade automation problems." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "August 1, 2026", "past": false },
+      { "label": "Pre-event bootcamps", "date": "September 7, 2026", "past": false },
+      { "label": "Team formation deadline", "date": "September 8, 2026", "past": false },
+      { "label": "Hackathon begins", "date": "September 14, 2026", "past": false },
+      { "label": "Submission deadline", "date": "September 16, 2026", "past": false },
+      { "label": "Results announced", "date": "September 25, 2026", "past": false }
+    ],
+    "sponsors": ["IIT Bombay Alumni", "NVIDIA", "AWS", "Devfolio"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹4,50,000" },
+      { "rank": "2nd Place", "amount": "₹2,00,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Web3 Buildathon",
+    "organiser": "Polygon x ETHGlobal",
+    "organiserLogo": "P",
+    "fee": 199,
+    "prize": "₹10,00,000",
+    "tags": ["Web3", "Blockchain", "DeFi"],
+    "status": "live",
+    "format": "online",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 4,
+    "totalSlots": 2000,
+    "registeredCount": 1876,
+    "registrationDeadline": "2025-07-08T23:59:00",
+    "teamFormationDeadline": "2025-07-06T23:59:00",
+    "startDate": "July 15, 2025",
+    "endDate": "July 17, 2025",
+    "bannerGradient": "linear-gradient(135deg, #1a120b, #0a0a0a)",
+    "image": "assets/hackathon events/ethokyo.webp",
+    "description": "The Web3 Buildathon challenges developers to push the boundaries of decentralised technology.",
+    "tracks": [
+      { "name": "DeFi Innovation", "prize": "₹4,00,000", "description": "Build novel decentralised finance protocols." },
+      { "name": "NFT & Gaming", "prize": "₹3,00,000", "description": "Create immersive blockchain gaming or NFT utility platforms." },
+      { "name": "Infrastructure", "prize": "₹3,00,000", "description": "Developer tools, SDKs, or scalability solutions for Web3." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "June 10, 2025", "past": true },
+      { "label": "Hackathon begins", "date": "July 15, 2025", "past": false },
+      { "label": "Submission deadline", "date": "July 17, 2025", "past": false },
+      { "label": "Demo day", "date": "July 22, 2025", "past": false }
+    ],
+    "sponsors": ["Polygon", "ETHGlobal", "Alchemy", "OpenZeppelin"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹4,00,000", "track": "Overall" },
+      { "rank": "2nd Place", "amount": "₹3,00,000", "track": "Overall" },
+      { "rank": "3rd Place", "amount": "₹2,00,000", "track": "Overall" }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "BITS Pilani HackFest 2026",
+    "organiser": "BITS Pilani",
+    "organiserLogo": "BP",
+    "fee": 0,
+    "prize": "₹5,00,000",
+    "tags": ["Open Innovation", "Web3", "FinTech"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 3,
+    "maxTeam": 5,
+    "totalSlots": 600,
+    "registeredCount": 142,
+    "registrationDeadline": "2026-11-01T23:59:00",
+    "teamFormationDeadline": "2026-10-28T23:59:00",
+    "startDate": "November 5, 2026",
+    "endDate": "November 6, 2026",
+    "bannerGradient": "linear-gradient(135deg, #15130f, #0a0a0a)",
+    "image": "assets/hackathon events/cloudf.webp",
+    "description": "BITS Pilani's premier national level open innovation developer hackathon. Build solutions across Web3, FinTech, Sustainability, or HealthTech. Gain visibility in front of top venture capitalists and receive BITS Spark accelerator mentoring support.",
+    "tracks": [
+      { "name": "Web3 Track", "prize": "₹2,50,000", "description": "Design decentralized protocols, smart contract integrations, or consumer crypto apps." },
+      { "name": "FinTech Innovation", "prize": "₹2,50,000", "description": "Develop innovative personal finance, micro-credit, or transaction infrastructure prototypes." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "October 1, 2026", "past": false },
+      { "label": "Idea submission", "date": "October 25, 2026", "past": false },
+      { "label": "Team formation deadline", "date": "October 28, 2026", "past": false },
+      { "label": "Hackathon begins", "date": "November 5, 2026", "past": false },
+      { "label": "Submission deadline", "date": "November 6, 2026", "past": false },
+      { "label": "Results announced", "date": "November 15, 2026", "past": false }
+    ],
+    "sponsors": ["BITS Spark", "Devfolio", "Polygon", "Solana"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹2,00,000" },
+      { "rank": "2nd Place", "amount": "₹1,50,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Cyber Nexus 2025",
+    "organiser": "Cisco x ISRO",
+    "organiserLogo": "C",
+    "fee": 499,
+    "prize": "₹12,00,000",
+    "tags": ["Cybersecurity", "IoT", "Space"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 500,
+    "registeredCount": 498,
+    "registrationDeadline": "2025-08-20T23:59:00",
+    "teamFormationDeadline": "2025-08-18T23:59:00",
+    "startDate": "August 25, 2025",
+    "endDate": "August 27, 2025",
+    "bannerGradient": "linear-gradient(135deg, #14110d, #0a0a0a)",
+    "image": "assets/hackathon events/cisco.webp",
+    "description": "Cyber Nexus brings together cybersecurity experts and space technology enthusiasts for a 48-hour challenge.",
+    "tracks": [
+      { "name": "Space Security", "prize": "₹5,00,000", "description": "Develop security solutions for satellite communication." },
+      { "name": "IoT Defence", "prize": "₹4,00,000", "description": "Build intrusion detection systems for IoT ecosystems." },
+      { "name": "Cyber Forensics", "prize": "₹3,00,000", "description": "Create tools for digital forensics or incident response." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "July 15, 2025", "past": false },
+      { "label": "Team formation deadline", "date": "August 18, 2025", "past": false },
+      { "label": "Hackathon begins", "date": "August 25, 2025", "past": false },
+      { "label": "Submission deadline", "date": "August 27, 2025", "past": false },
+      { "label": "Results announced", "date": "September 5, 2025", "past": false }
+    ],
+    "sponsors": ["Cisco", "ISRO", "Palo Alto Networks", "CrowdStrike"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹5,00,000", "track": "Overall" },
+      { "rank": "2nd Place", "amount": "₹4,00,000", "track": "Overall" },
+      { "rank": "3rd Place", "amount": "₹2,00,000", "track": "Overall" }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "NeuralVerse AI",
+    "organiser": "NVIDIA x HackHub",
+    "organiserLogo": "N",
+    "fee": 0,
+    "prize": "₹8,00,000",
+    "tags": ["AI/ML", "Deep Learning", "Computer Vision"],
+    "status": "live",
+    "format": "online",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 3,
+    "totalSlots": 1200,
+    "registeredCount": 890,
+    "registrationDeadline": "2025-07-12T23:59:00",
+    "teamFormationDeadline": "2025-07-10T23:59:00",
+    "startDate": "July 18, 2025",
+    "endDate": "July 20, 2025",
+    "bannerGradient": "linear-gradient(135deg, #1a1610, #0a0a0a)",
+    "image": "assets/hackathon events/nvidia.webp",
+    "description": "NeuralVerse AI is NVIDIA's premier deep learning hackathon. Solo-friendly with free GPU cloud credits.",
+    "tracks": [
+      { "name": "Generative AI", "prize": "₹4,00,000", "description": "Build creative applications using diffusion models or LLMs." },
+      { "name": "Computer Vision", "prize": "₹4,00,000", "description": "Develop real-time vision systems for various domains." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "June 20, 2025", "past": true },
+      { "label": "Hackathon begins", "date": "July 18, 2025", "past": false },
+      { "label": "Submission deadline", "date": "July 20, 2025", "past": false },
+      { "label": "Results announced", "date": "July 30, 2025", "past": false }
+    ],
+    "sponsors": ["NVIDIA", "CUDA", "TensorRT", "AWS"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹3,50,000", "track": "Overall" },
+      { "rank": "2nd Place", "amount": "₹2,50,000", "track": "Overall" },
+      { "rank": "3rd Place", "amount": "₹1,50,000", "track": "Overall" }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "HackDTU 2026",
+    "organiser": "DTU x GitHub",
+    "organiserLogo": "DTU",
+    "fee": 0,
+    "prize": "₹6,00,000",
+    "tags": ["AI Tools", "Social Impact", "Open Source"],
+    "status": "upcoming",
+    "format": "online",
+    "teamRequired": true,
+    "minTeam": 2,
+    "maxTeam": 4,
+    "totalSlots": 1000,
+    "registeredCount": 456,
+    "registrationDeadline": "2027-02-01T23:59:00",
+    "teamFormationDeadline": "2027-01-28T23:59:00",
+    "startDate": "February 5, 2027",
+    "endDate": "February 7, 2027",
+    "bannerGradient": "linear-gradient(135deg, #16120e, #0a0a0a)",
+    "image": "assets/hackathon events/github.webp",
+    "description": "Delhi Technological University's flagship national level software hackathon. Over 36 hours, build impactful open-source tools addressing civic tech, educational accessibility, and custom developer tools. Participants get exclusive DTU swags and GitHub credits.",
+    "tracks": [
+      { "name": "AI Tools", "prize": "₹2,50,000", "description": "Build tools, integrations, or models that augment efficiency, education, or coding speed." },
+      { "name": "Social Good", "prize": "₹2,00,000", "description": "Open-source projects addressing accessibility, environmental monitoring, or local communities." },
+      { "name": "Mobile First", "prize": "₹1,50,000", "description": "Build cross-platform mobile prototypes solving day-to-day productivity challenges." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "January 1, 2027", "past": false },
+      { "label": "Kickoff workshop", "date": "January 25, 2027", "past": false },
+      { "label": "Team formation deadline", "date": "January 28, 2027", "past": false },
+      { "label": "Hackathon begins", "date": "February 5, 2027", "past": false },
+      { "label": "Submission deadline", "date": "February 7, 2027", "past": false },
+      { "label": "Results announced", "date": "February 15, 2027", "past": false }
+    ],
+    "sponsors": ["DTU", "GitHub", "Vercel", "Supabase"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹2,50,000" },
+      { "rank": "2nd Place", "amount": "₹2,00,000" },
+      { "rank": "3rd Place", "amount": "₹1,00,000" }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Enigma ML Challenge",
+    "organiser": "IIT BHU x DRDO",
+    "organiserLogo": "E",
+    "fee": 0,
+    "prize": "₹3,00,000",
+    "tags": ["ML", "Data Science", "Research"],
+    "status": "upcoming",
+    "format": "hybrid",
+    "teamRequired": false,
+    "minTeam": 1,
+    "maxTeam": 3,
+    "totalSlots": 400,
+    "registeredCount": 88,
+    "registrationDeadline": "2025-11-01T23:59:00",
+    "teamFormationDeadline": "2025-10-28T23:59:00",
+    "startDate": "November 5, 2025",
+    "endDate": "November 7, 2025",
+    "bannerGradient": "linear-gradient(135deg, #1c150c, #0a0a0a)",
+    "image": "assets/hackathon events/en.webp",
+    "description": "Enigma is a research-focused ML challenge co-organised by IIT BHU and DRDO.",
+    "tracks": [
+      { "name": "Defence Analytics", "prize": "₹1,50,000", "description": "Apply ML to satellite imagery or signal processing for defence." },
+      { "name": "AgriTech AI", "prize": "₹1,50,000", "description": "Build models for crop disease detection or precision agriculture." }
+    ],
+    "timeline": [
+      { "label": "Registrations open", "date": "October 1, 2025", "past": false },
+      { "label": "Team formation deadline", "date": "October 28, 2025", "past": false },
+      { "label": "Hackathon begins", "date": "November 5, 2025", "past": false },
+      { "label": "Submission deadline", "date": "November 7, 2025", "past": false },
+      { "label": "Results announced", "date": "November 15, 2025", "past": false }
+    ],
+    "sponsors": ["IIT BHU", "DRDO", "NVIDIA", "Google Research"],
+    "prizes": [
+      { "rank": "1st Place", "amount": "₹1,50,000", "track": "Overall" },
+      { "rank": "2nd Place", "amount": "₹1,00,000", "track": "Overall" },
+      { "rank": "3rd Place", "amount": "₹50,000", "track": "Overall" }
+    ]
+  }
+]

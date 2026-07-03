@@ -1,0 +1,233 @@
+/* ============================================================
+   HACKLIST PAGE STYLES
+   HackVerse premium dark UI — with strict 8px border-radius standard
+   ============================================================ */
+
+.hacklist-section {
+  padding: 100px 5% 80px;
+  min-height: calc(100vh - 400px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hacklist-header {
+  text-align: center;
+  margin-bottom: 56px;
+  animation: hl-fade-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.hacklist-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.hacklist-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 64px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+.hacklist-title span {
+  color: var(--gold);
+}
+
+.hacklist-sub {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── GRID LAYOUT ── */
+.hacklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  width: 100%;
+
+}
+
+/* ── STRICT 8px BORDER RADIUS OVERRIDES FOR HACKLIST PAGE ── */
+.hacklist-page .hs-card {
+  width: 100% !important;
+  height: 380px !important;
+  border-radius: 8px !important;
+  /* Strict 8px constraint */
+  margin: 0 auto;
+}
+
+.hacklist-page .hs-card-btn {
+  border-radius: 50px !important;
+  /* Strict 50px pill shape constraint */
+}
+
+.hacklist-page .hs-like-btn {
+  border-radius: 50% !important;
+  /* Circular like button */
+}
+
+/* Modal and related elements */
+.hacklist-page .hm-modal {
+  border-radius: 8px !important;
+  /* Strict 8px constraint */
+}
+
+.hacklist-page .hm-register {
+  border-radius: 50px !important;
+  /* Premium rounded pill shape */
+}
+
+.hacklist-page .hm-close {
+  border-radius: 50% !important;
+  /* Circular close button */
+}
+
+.hacklist-page .hm-stat {
+  border-radius: 8px !important;
+  /* Strict 8px constraint */
+}
+
+/* Navbar items */
+.hacklist-page .btn-primary,
+.hacklist-page .nav-cta,
+.hacklist-page .btn-primary.nav-cta {
+  border-radius: 50px !important;
+  /* Premium rounded pill shape */
+}
+
+/* ── EMPTY STATE ── */
+.hacklist-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 40px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 8px !important;
+  /* Strict 8px constraint */
+  max-width: 500px;
+  margin: 40px auto;
+  animation: hl-fade-in 0.4s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+.hacklist-empty-icon {
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+}
+
+.hacklist-empty-icon svg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.5;
+}
+
+.hacklist-empty h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.hacklist-empty p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.hacklist-empty .browse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  background: var(--gold);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 50px !important;
+  /* Premium rounded pill shape */
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.hacklist-empty .browse-btn:hover {
+  background: #f5c14e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(217, 164, 65, 0.35);
+}
+
+/* Card removal transition */
+.hs-card.fade-out {
+  animation: hl-card-fade-out 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes hl-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hl-card-pop {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hl-card-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hacklist-section {
+    padding: 80px 4% 60px;
+  }
+
+  .hacklist-grid {
+    gap: 20px;
+  }
+}
+
+/* Card Meta & Modal Stat SVGs Accent Color */
+.hs-card-meta svg,
+.event-meta svg,
+.hm-stat-icon svg {
+  color: var(--accent, var(--gold, #D9A441)) !important;
+}

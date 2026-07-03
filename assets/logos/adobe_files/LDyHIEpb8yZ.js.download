@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("CometLoggedOutFBUpsellHooks.react",["getTopMostRouteInfo","useCometRouterState"],(function(t,n,r,o,a,i,l){"use strict";function e(){var e=r("useCometRouterState")();return e==null?null:r("getTopMostRouteInfo")(e)}function s(){var t;return(t=e())==null||(t=t.route)==null?void 0:t.upsellConfig}l.useCometUpsellConfig=s}),98);

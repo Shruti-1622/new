@@ -12,7 +12,7 @@
 
 :root {
   /* colors */
-  --background-color: white;
+  --background-color: #0b0b0d;
   --light-color: #f8f8f8;
   --dark-color: #505050;
   --text-color: #131313;
@@ -53,7 +53,7 @@
   src: local('Arial');
 }
 
-@media (width >= 900px) {
+@media (width >=900px) {
   :root {
     /* body sizes */
     --body-font-size-m: 18px;
@@ -112,12 +112,62 @@ h6 {
   scroll-margin: 40px;
 }
 
-h1 { font-size: var(--heading-font-size-xxl); }
-h2 { font-size: var(--heading-font-size-xl); }
-h3 { font-size: var(--heading-font-size-l); }
-h4 { font-size: var(--heading-font-size-m); }
-h5 { font-size: var(--heading-font-size-s); }
-h6 { font-size: var(--heading-font-size-xs); }
+h1 {
+  font-size: var(--heading-font-size-xxl);
+}
+
+h2 {
+  font-size: var(--heading-font-size-xl);
+}
+
+h3 {
+  font-size: var(--heading-font-size-l);
+}
+
+h4 {
+  font-size: var(--heading-font-size-m);
+}
+
+h5 {
+  font-size: var(--heading-font-size-s);
+}
+
+h6 {
+  font-size: var(--heading-font-size-xs);
+}
+
+/* ── FAQ section ── background + heading color overrides ── */
+.faq-section {
+  background: #18181b !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  padding: 80px 5vw !important;
+}
+
+/* Make default-content-wrapper text visible on dark FAQ background */
+.faq-section .default-content-wrapper p {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: 5px !important;
+  text-transform: uppercase !important;
+}
+
+.faq-section .default-content-wrapper h2 {
+  color: #e5e5e5 !important;
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: clamp(2.5rem, 5vw, 4rem) !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  margin-top: 0 !important;
+  margin-bottom: 3rem !important;
+}
+
+.faq-section .default-content-wrapper h2 em,
+.faq-section .default-content-wrapper h2 span {
+  color: #D9A441 !important;
+  font-style: normal !important;
+}
 
 p,
 dl,
@@ -142,7 +192,7 @@ pre {
   white-space: pre;
 }
 
-main > div {
+main>div {
   margin: 40px 16px;
 }
 
@@ -168,6 +218,7 @@ a:hover {
 /* buttons */
 p.button-wrapper {
   margin: 12px 0;
+  text-align: center;
 }
 
 a.button:any-link,
@@ -197,20 +248,34 @@ button.button:disabled {
   pointer-events: none;
 }
 
+/* ── PRIMARY (GOLD) BUTTON ── */
 a.button.primary,
 button.button.primary {
-  border-color: var(--text-color);
-  background-color: var(--text-color);
-  color: var(--background-color);
+  display: inline-flex;
+  background: #D9A441;
+  color: #0a0a0a;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 9px 24px;
+  border: 1px solid transparent;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 0 0 0 rgba(217, 164, 65, 0.4);
+  white-space: nowrap;
 }
 
 a.button.primary:hover,
 a.button.primary:focus-visible,
 button.button.primary:hover,
 button.button.primary:focus-visible {
-  border-color: var(--dark-color);
-  background-color: var(--dark-color);
-  color: var(--light-color);
+  background: #b07d2e;
+  border-color: transparent;
+  color: #0a0a0a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(217, 164, 65, 0.35);
 }
 
 a.button.primary[aria-disabled="true"],
@@ -219,11 +284,14 @@ a.button.primary[aria-disabled="true"]:focus-visible,
 button.button.primary:disabled,
 button.button.primary:disabled:hover,
 button.button.primary:disabled:focus-visible {
-  background-color: var(--light-color);
-  border-color: var(--light-color);
-  color: var(--dark-color);
+  background-color: var(--dark-color);
+  border-color: transparent;
+  color: #808080;
+  transform: none;
+  box-shadow: none;
 }
 
+/* ── SECONDARY BUTTON ── */
 a.button.secondary,
 button.button.secondary {
   border-color: var(--text-color);
@@ -251,7 +319,7 @@ button.button.secondary:disabled:focus-visible {
   color: var(--dark-color);
 }
 
-/* high-impact call-to-action */
+/* ── ACCENT BUTTON ── */
 a.button.accent,
 button.button.accent {
   border-color: var(--link-color);
@@ -296,22 +364,22 @@ main img {
 }
 
 /* sections */
-main > .section {
+main>.section {
   margin: 40px 0;
 }
 
-main > .section > div {
+main>.section>div {
   max-width: 1200px;
   margin: auto;
   padding: 0 24px;
 }
 
-main > .section:first-of-type {
+main>.section:first-of-type {
   margin-top: 0;
 }
 
-@media (width >= 900px) {
-  main > .section > div {
+@media (width >=900px) {
+  main>.section>div {
     padding: 0 32px;
   }
 }

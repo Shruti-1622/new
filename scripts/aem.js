@@ -521,12 +521,13 @@ async function loadBlock(block) {
     block.dataset.blockStatus = 'loading';
     const { blockName } = block.dataset;
     try {
-      const cssLoaded = loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.css`);
+      const cssUrl = new URL(`../blocks/${blockName}/${blockName}.css`, import.meta.url).href;
+      const cssLoaded = loadCSS(cssUrl);
       const decorationComplete = new Promise((resolve) => {
         (async () => {
           try {
             const mod = await import(
-              `${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.js`
+              `../blocks/${blockName}/${blockName}.js`
             );
             if (mod.default) {
               await mod.default(block);

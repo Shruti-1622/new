@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useCAAFetaHasStateSynced",["react"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=s.useMemo,c=s.useRef,d=s.useState;function m(e){var t=c(new Set),n=d(0),r=n[0],o=n[1],a=u(function(){return e.map(function(e,n){return function(r){t.current.has(n)||(t.current.add(n),o(t.current.size)),e(r)}})},[e]),i=r===e.length;return{hasAllStateSynced:i,wrappedSetters:a}}l.default=m}),98);

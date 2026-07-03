@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useApproveFromAnotherDevicePoller",["react"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=s.useEffect,c=s.useRef;function d(e,t,n,r,o){var a=c(!1);u(function(){var i=function(t){window.clearInterval(t)},l=function(){a.current||(a.current=!0,e({onMutationCompleted:function(t){switch(t){case"ALLOWED":i(s),n();break;case"DENIED":i(s),r();break;case"EXPIRED":i(s),o();break;case"PENDING":break}a.current=!1},onMutationError:function(){a.current=!1}}))};l();var s=window.setInterval(l,t);return function(){i(s)}},[e,t,n,r,o])}l.default=d}),98);

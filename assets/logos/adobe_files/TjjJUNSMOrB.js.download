@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useCAALoginUpsellARNotification",["fbt","useCDSConfirmationDialog"],(function(t,n,r,o,a,i,l,s){"use strict";function e(){var e=r("useCDSConfirmationDialog")(),t=function(n){var t=n==null?void 0:n.notification_info;t!=null&&e({body:t.message,disableClosingWithMask:!0,primaryButtonLabel:s._(/*BTDS*/"OK"),secondaryButtonLabel:null,title:t.title},function(){})};return t}l.default=e}),226);

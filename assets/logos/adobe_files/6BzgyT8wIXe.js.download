@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useSyncInputAfterHydration",["CometSSRRenderingStateHooks","react"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=s.useEffectEvent,c=s.useLayoutEffect,d=s.useRef;function m(e){var t=d(null),n=d(!1),r=d(o("CometSSRRenderingStateHooks").useIsServerRenderingOrHydrating()),a=u(function(t){e(t)});return c(function(){if(!n.current&&r.current){var e,o=t==null||(e=t.current)==null?void 0:e.value;a(o!=null?o:""),n.current=!0}},[t]),t}l.default=m}),98);

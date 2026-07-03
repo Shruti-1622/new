@@ -1,0 +1,195 @@
+/* ── EDS section overrides ──────────────────────────────────────────────── */
+main > .section:has(.filter-bar-wrapper) { margin: 0 !important; }
+main > .section > .filter-bar-wrapper { max-width: 100%; padding: 0; }
+
+/* ── Shell ──────────────────────────────────────────────────────────────── */
+.filter-bar {
+  background: #0a0a0a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 20px 5% 28px;
+}
+
+.filter-bar .fb-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Search row — column on mobile, row on 600px+ ───────────────────────── */
+.filter-bar .fb-search-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ── Search wrap ─────────────────────────────────────────────────────────── */
+.filter-bar .fb-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Search input ────────────────────────────────────────────────────────── */
+.filter-bar .fb-input {
+  width: 100%;
+  padding: 14px 48px 14px 20px;
+  background: #13141c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  color: #e4e4e7;
+  font-family: var(--font-body, 'DM Sans', sans-serif);
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.filter-bar .fb-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+/* hide native clear button so our icon stays clean */
+.filter-bar .fb-input::-webkit-search-cancel-button { display: none; }
+
+.filter-bar .fb-input:hover {
+  border-color: rgba(217, 164, 65, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.filter-bar .fb-input:focus {
+  border-color: rgba(217, 164, 65, 0.75);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 1px rgba(217, 164, 65, 0.75), 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Search icon (magnifier) ─────────────────────────────────────────────── */
+.filter-bar .fb-search-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: opacity 0.2s ease;
+}
+
+.filter-bar .fb-input:focus ~ .fb-search-icon { opacity: 0.7; }
+
+/* ── Dropdown wrap ───────────────────────────────────────────────────────── */
+.filter-bar .fb-dropdown-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Native select — styled dark, chevron via background-image ───────────── */
+.filter-bar .fb-dropdown {
+  width: 100%;
+  padding: 14px 40px 14px 16px;
+  background: #13141c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  color: #e4e4e7;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  transition: border-color 0.25s ease;
+}
+
+.filter-bar .fb-dropdown:hover { border-color: rgba(217, 164, 65, 0.4); }
+.filter-bar .fb-dropdown:focus { border-color: rgba(217, 164, 65, 0.75); outline: none; }
+
+/* ── Pills row ───────────────────────────────────────────────────────────── */
+.filter-bar .fb-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Secondary group auto right-aligns whenever it follows a primary group */
+.filter-bar .fb-pills-row .fb-pills + .fb-pills { margin-left: auto; }
+
+/* ── Pills group ─────────────────────────────────────────────────────────── */
+.filter-bar .fb-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Individual pill ─────────────────────────────────────────────────────── */
+.filter-bar .fb-pill {
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50px;
+  color: #808080;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-bar .fb-pill:hover {
+  border-color: rgba(217, 164, 65, 0.4);
+  color: #d9a441;
+  background: rgba(217, 164, 65, 0.04);
+}
+
+.filter-bar .fb-pill.active {
+  background: rgba(217, 164, 65, 0.1);
+  border-color: #d9a441;
+  color: #d9a441;
+  box-shadow: 0 2px 10px rgba(217, 164, 65, 0.08);
+}
+
+/* ── 600px — search + dropdown side by side ─────────────────────────────── */
+@media (min-width: 600px) {
+  .filter-bar .fb-search-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .filter-bar .fb-dropdown-wrap { width: 160px; }
+}
+
+/* ── 900px — wider gutters ───────────────────────────────────────────────── */
+@media (min-width: 900px) {
+  .filter-bar { padding: 24px 8% 32px; }
+}
+
+/* ── 1200px ──────────────────────────────────────────────────────────────── */
+@media (min-width: 1200px) {
+  .filter-bar { padding: 24px 8% 36px; }
+}
+
+/* ── HOF winners context — transparent bg, no bottom border, taller top ──── */
+.section.hof-winners .filter-bar {
+  background: transparent;
+  border-bottom: none;
+  padding: 64px 5% 32px;
+}
+
+@media (min-width: 900px) {
+  .section.hof-winners .filter-bar { padding: 72px 8% 40px; }
+}

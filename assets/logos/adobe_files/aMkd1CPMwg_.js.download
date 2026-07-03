@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useNetworkDetectionAndStopLoading",["clearInterval","emptyFunction","react","setInterval"],(function(t,n,r,o,a,i,l){"use strict";var e,s=e||(e=o("react")),u=s.useEffect,c=s.useState;function d(e,t){t===void 0&&(t=r("emptyFunction"));var n=c(0),o=n[0],a=n[1];u(function(){if(e){var t=function(){if(window.navigator.connection){var e=window.navigator.connection.downlink,t=window.navigator.connection.rtt;e===0&&t===0&&a(function(e){return e+1})}};t();var n=r("setInterval")(t,1e4);return function(){r("clearInterval")(n)}}},[e]),o===4&&(a(0),t(!0))}l.default=d}),98);

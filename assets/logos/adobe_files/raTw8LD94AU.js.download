@@ -1,0 +1,3 @@
+;/*FB_PKG_DELIM*/
+
+__d("useCDSWebLoginMutation",["CometRelay","WebPixelRatio","useCDSWebLoginMutation.graphql"],(function(t,n,r,o,a,i,l){"use strict";var e;function s(t,r){var a=o("CometRelay").useMutation(e!==void 0?e:e=n("useCDSWebLoginMutation.graphql")),i=a[0],l=a[1],s=function(n){var e=function(r){t==null||t(r,n)},a=function(t){r==null||r(t,n)};i({onCompleted:e,onError:a,variables:{input:n,scale:o("WebPixelRatio").get()}})};return[s,l]}l.default=s}),98);

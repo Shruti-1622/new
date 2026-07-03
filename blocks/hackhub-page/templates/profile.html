@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.replace('/signup?mode=login&redirect=' + encodeURIComponent(window.location.href));
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - HackHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap">
+  </noscript>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/create-team-modal.css">
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/" class="nav-logo" aria-label="HackHub Home">
+      <span class="logo-bracket">{</span>HackHub<span class="logo-bracket">}</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/hackathon">Hackathons</a></li>
+      <li><a href="/teamfinder">Find Teams</a></li>
+      <li><a href="/gallery">Hall of Fame</a></li>
+      <li><a href="/hacklist">Hacklist</a></li>
+    </ul>
+    <a href="/signup" id="auth-signup-btn" class="btn-primary nav-cta" style="display:none">Get Started</a>
+    <div id="auth-controls-container" style="display:flex;align-items:center;gap:16px;">
+      <div id="auth-notification-wrap" style="display:none;position:relative;">
+        <button id="auth-notif-btn" aria-label="Notifications" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;padding:0;outline:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="auth-notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:10px;font-weight:bold;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;border:2px solid #0f0f1a;">0</span>
+        </button>
+        <div id="auth-notif-dropdown" style="display:none;position:absolute;top:calc(100% + 12px);right:-50px;width:320px;max-height:400px;background:rgba(14,15,18,0.98);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow-y:auto;z-index:8999;">
+          <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);font-family:var(--font-body);font-weight:700;font-size:14px;color:#c9a84c;">Notifications</div>
+          <div id="auth-notif-list" style="display:flex;flex-direction:column;"></div>
+        </div>
+      </div>
+      <div id="auth-profile-wrap" style="display:none;position:relative;">
+        <button id="auth-avatar-btn" aria-label="Profile menu" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e 0%,#0f0f1a 100%);border:1.5px solid #c9a84c;box-shadow:0 0 10px rgba(201,168,76,0.25),0 0 0 1px rgba(201,168,76,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:box-shadow 0.2s,border-color 0.2s;flex-shrink:0;padding:0;outline:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </button>
+        <div id="auth-dropdown" style="display:none;position:absolute;top:calc(100% + 12px);right:0;min-width:180px;background:rgba(14,15,18,0.96);backdrop-filter:blur(20px);border:1px solid rgba(217,164,65,0.25);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;z-index:8999;">
+          <style>
+            @keyframes auth-drop-in{from{opacity:0;transform:translateY(-8px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+            #auth-avatar-btn:hover{box-shadow:0 0 18px rgba(217,164,65,0.45),0 0 0 1px rgba(217,164,65,0.2)!important;border-color:#e8b84b!important}
+            #auth-dropdown a,#auth-dropdown button{display:flex!important;align-items:center!important;gap:.7rem!important;width:100%!important;padding:.8rem 1.2rem!important;background:none!important;border:none!important;border-radius:0!important;color:rgba(217,164,65,0.9)!important;font-family:var(--font-body)!important;font-size:.83rem!important;font-weight:600!important;letter-spacing:.02em!important;text-decoration:none!important;cursor:pointer!important;transition:background 0.15s,color 0.15s,padding-left 0.15s!important;text-align:left!important;box-sizing:border-box!important}
+            #auth-dropdown a:hover,#auth-dropdown button:hover{background:rgba(217,164,65,0.12)!important;color:#fff!important;padding-left:1.5rem!important}
+            #auth-dropdown .auth-dd-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(217,164,65,0.25),transparent);margin:0!important}
+            #auth-dropdown .auth-dd-logout{color:rgba(248,113,113,0.85)!important}
+            #auth-dropdown .auth-dd-logout:hover{background:rgba(248,113,113,0.1)!important;color:#fca5a5!important}
+          </style>
+          <a href="/profile" id="auth-dd-profile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Profile
+          </a>
+          <div class="auth-dd-divider"></div>
+          <button id="auth-dd-logout" class="auth-dd-logout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+    <a href="#" id="auth-dashboard-btn" class="btn-primary nav-cta" style="display:none;">Dashboard</a>
+    <a href="#" id="auth-profile-btn" class="btn-primary nav-cta" style="display:none;margin-left:.5rem;">Profile</a>
+    <a href="#" id="auth-logout-btn" class="btn-primary nav-cta" style="display:none;margin-left:.5rem;">Logout</a>
+    <button class="hamburger" id="hamburger">&#9776;</button>
+  </nav>
+
+  <!-- MAIN WRAPPER -->
+  <div class="pf-page">
+    <div class="pf-main">
+
+      <!-- PROFILE CARD -->
+      <div class="pf-profile-card" id="pfCard">
+        <div class="pf-avatar" id="pfAvatar">
+
+        </div>
+
+        <div class="pf-info">
+
+          <h2 id="pfName">Harish Ramachandran</h2>
+
+          <div class="pf-role" id="pfRole">UI/UX Designer</div>
+
+          <div class="pf-bio" id="pfBio">Passionate about crafting intuitive design experiences.</div>
+
+          <div class="pf-meta" id="pfMeta">
+
+            <span><i class="pf-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg></i><span id="pfCity">Hyderabad</span></span>
+            <span><i class="pf-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  style="vertical-align: middle; margin-right: 4px;">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                  </path>
+                </svg></i><span id="pfPhone">+91 76661875209</span></span>
+            <a id="pfLinkedinLink" href="#" target="_blank"><i class="pf-icon"><svg width="14" height="14"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg></i><span id="pfLinkedinText">LinkedIn</span></a>
+            <a id="pfGithubLink" href="#" target="_blank"><i class="pf-icon"><svg width="14" height="14"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                  <path
+                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                  </path>
+                </svg></i><span id="pfGithubText">GitHub</span></a>
+
+          </div>
+          <div class="pf-skills-display" id="pfSkillsDisplay"></div>
+          <div class="pf-membership-container" style="margin-top: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+            <span id="pfMembershipBadge" style="display:inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: var(--font-body); letter-spacing: 0.05em; text-transform: uppercase;"></span>
+            <button id="pfUpgradeBtn" style="background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: var(--font-body); cursor: pointer; transition: all 0.2s;"></button>
+          </div>
+        </div>
+
+        <button class="pf-edit-btn" id="pfEditBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Edit Profile
+        </button>
+
+      </div>
+
+      <!-- EDIT PROFILE MODAL (inline, not fixed) -->
+      <div class="pf-edit-modal" id="pfEditModal">
+        <div class="pf-edit-inner">
+          <div class="pf-edit-header">
+            <span class="pf-edit-eyebrow">Your Info</span>
+            <span class="pf-edit-title">Edit Profile</span>
+          </div>
+          <div class="pf-edit-body">
+            <div class="pf-edit-row">
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">Full Name</label>
+                <input class="pf-edit-input" id="inpName" type="text" placeholder="Your full name" maxlength="60">
+              </div>
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">Role / Title</label>
+                <input class="pf-edit-input" id="inpRole" type="text" placeholder="e.g. Full Stack Dev" maxlength="50">
+              </div>
+            </div>
+            <div class="pf-edit-field">
+              <label class="pf-edit-label">Bio</label>
+              <textarea class="pf-edit-input pf-edit-textarea" id="inpBio" placeholder="Short intro about yourself..."
+                maxlength="200"></textarea>
+            </div>
+            <div class="pf-edit-field">
+              <label class="pf-edit-label">Profile Image</label>
+              <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+                <div class="pf-avatar" id="pfEditAvatarPreview"
+                  style="width:60px; height:60px; border-radius:50%; background:#c9a227; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                  <img src="" id="imgEditAvatarPreview"
+                    style="width:100%; height:100%; object-fit:cover; display:block;">
+                </div>
+                <div style="flex:1;">
+                  <input type="file" id="inpAvatarFile" accept="image/*" style="display:none;">
+                  <button type="button" class="btn-primary" id="btnUploadAvatar"
+                    style="padding:8px 16px; font-size:12px; background:#c9a227; color:#0d0d0d; border:none; border-radius:50px; cursor:pointer; font-family:'Orbitron',sans-serif; font-weight:700; transition:opacity 0.2s;">Upload
+                    Image</button>
+                  <div style="font-size:11px; color:#888; margin-top:6px; font-family:'JetBrains Mono',monospace;">Max
+                    size: 2MB</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-edit-row">
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">City</label>
+                <input class="pf-edit-input" id="inpCity" type="text" placeholder="Hyderabad" maxlength="40">
+              </div>
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">Phone</label>
+                <input class="pf-edit-input" id="inpPhone" type="text" placeholder="+91 ..." maxlength="20">
+              </div>
+            </div>
+            <div class="pf-edit-row">
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">LinkedIn URL</label>
+                <input class="pf-edit-input" id="inpLinkedin" type="url" placeholder="https://linkedin.com/in/...">
+              </div>
+              <div class="pf-edit-field">
+                <label class="pf-edit-label">GitHub URL</label>
+                <input class="pf-edit-input" id="inpGithub" type="url" placeholder="https://github.com/...">
+              </div>
+            </div>
+            <div class="pf-edit-field">
+              <label class="pf-edit-label">Skills <span style="color:#555;font-size:10px;letter-spacing:0">(press Enter
+                  to add)</span></label>
+              <div style="display:flex;gap:8px;">
+                <input class="pf-edit-input" id="inpSkill" type="text" placeholder="e.g. Figma, React..." maxlength="30"
+                  style="flex:1">
+                <button class="pf-add-btn" id="pfAddSkillBtn">+ Add</button>
+              </div>
+              <div class="pf-edit-skills-list" id="editSkillsList"></div>
+            </div>
+          </div>
+          <div class="pf-edit-footer">
+            <button class="pf-cancel-btn" id="pfCancelBtn">Cancel</button>
+            <button class="pf-save-btn" id="pfSaveBtn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS GRID -->
+      <div class="pf-stats-grid">
+        <div class="pf-stat-card">
+          <div class="pf-stat-label">Teams Applied</div>
+          <div class="pf-stat-value" id="statApplied">0</div>
+          <div class="pf-stat-sub">Total applications</div>
+        </div>
+        <div class="pf-stat-card">
+          <div class="pf-stat-label">Teams Created</div>
+          <div class="pf-stat-value" id="statCreated">0</div>
+          <div class="pf-stat-sub">By you</div>
+        </div>
+        <div class="pf-stat-card">
+          <div class="pf-stat-label">Accepted</div>
+          <div class="pf-stat-value" id="statAccepted">0</div>
+          <div class="pf-stat-sub pf-green">Confirmed</div>
+        </div>
+        <div class="pf-stat-card">
+          <div class="pf-stat-label">Pending</div>
+          <div class="pf-stat-value" id="statPending">0</div>
+          <div class="pf-stat-sub pf-gold">Awaiting reply</div>
+        </div>
+      </div>
+
+      <!-- TAB NAVIGATION -->
+      <div class="pf-tabs">
+        <button class="pf-tab-btn active" onclick="Profile.switchTab('tab-registered')">My Hackathons & Teams</button>
+        <button class="pf-tab-btn" onclick="Profile.switchTab('tab-applied')">Teams I Applied To</button>
+        <button class="pf-tab-btn" onclick="Profile.switchTab('tab-created')">Teams I Created</button>
+        <button class="pf-tab-btn" onclick="Profile.switchTab('tab-completed')">Completed Teams</button>
+      </div>
+
+      <!-- TAB CONTENT PANELS -->
+      <div class="pf-tab-content">
+
+        <!-- REGISTERED HACKATHONS -->
+        <div class="pf-section-card active" id="tab-registered">
+          <div id="registeredHackathonsList"></div>
+        </div>
+
+        <!-- APPLIED TEAMS -->
+        <div class="pf-section-card" id="tab-applied" style="display:none;">
+          <div id="appliedTeamsList"></div>
+        </div>
+
+        <!-- CREATED TEAMS -->
+        <div class="pf-section-card" id="tab-created" style="display:none;">
+          <div id="createdTeamsList"></div>
+        </div>
+
+        <!-- COMPLETED TEAMS -->
+        <div class="pf-section-card" id="tab-completed" style="display:none;">
+          <div id="completedTeamsList"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" aria-label="HackVerse Home">
+          <img src="assets/avatar/yes.webp" alt="HackVerse Logo" class="nav-logo-img">
+      <span class="nav-logo-text">Hack<span class="text-accent">Verse</span></span>
+        </a>
+        <p class="footer-tagline">We love <strong>software</strong> and people who <strong>ship it</strong>.</p>
+        <div class="footer-socials">
+          <a href="https://github.com/Shruti-1622" target="_blank" rel="noopener" class="footer-social-link"
+            aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+            </svg></a>
+          <a href="https://x.com/shruti_gupta_" target="_blank" rel="noopener" class="footer-social-link"
+            aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+            </svg></a>
+          <a href="https://www.linkedin.com/in/shruti-gupta-6a057a20a/" target="_blank" rel="noopener"
+            class="footer-social-link" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+              <rect x="2" y="9" width="4" height="12" />
+              <circle cx="4" cy="4" r="2" />
+            </svg></a>
+        </div>
+      </div>
+      <nav class="footer-nav">
+        <div class="footer-nav-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="hackathon.html">Hackathons</a></li>
+            <li><a href="teamfinder.html">Find Teams</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+        <div class="footer-nav-col">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="mailto:shruti.gupta.in@gmail.com">Contact Me</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 HackVerse. All rights reserved.</p>
+      <p class="footer-built">Built with <svg width="10" height="10" viewBox="0 0 24 24" fill="#ff4444" stroke="#ff4444"
+          stroke-width="2" style="vertical-align: middle; margin: 0 2px;">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
+        </svg> for hackers</p>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  </script>
+  <script src="js/hackathons-data.js"></script>
+  <script src="js/reg-state.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/create-team-modal.js"></script>
+  <script src="js/auth.js?v=1.1"></script>
+
+  <!-- Custom Confirm Modal -->
+  <div class="tm-confirm-overlay" id="tm-confirm-overlay">
+    <div class="tm-confirm-box">
+      <div class="tm-confirm-accent-bar"></div>
+      <div class="tm-confirm-content">
+        <div class="tm-confirm-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <h3 class="tm-confirm-title">Withdraw Application?</h3>
+        <p class="tm-confirm-msg">This will remove your application from this team. You can always re-apply later.</p>
+        <div class="tm-confirm-actions">
+          <button class="tm-confirm-yes" id="tm-confirm-yes">Yes, Withdraw</button>
+          <button class="tm-confirm-cancel" id="tm-confirm-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

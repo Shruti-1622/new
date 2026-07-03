@@ -1,0 +1,236 @@
+.hackhub-page {
+  min-height: 100vh;
+  background: #0b0b0d;
+}
+
+.eds-shell {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SPONSORS / MARQUEE TICKER
+   Duplicated here from /css/style.css so it is available as a first-class
+   EDS block stylesheet (loaded before any JS fires), eliminating any race
+   condition between the dynamic style.css load and the DOM swap.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.sponsors {
+  padding: 10px 0 52px;
+  background: #ffffff;
+  border-top: 3px solid rgba(217, 164, 65, 0.3);
+  border-bottom: 3px solid rgba(217, 164, 65, 0.3);
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Full-bleed: breaks out of any parent max-width or padding constraint */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.sponsors h2 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #555555;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  margin-top: 20px;
+}
+
+.marquee-outer {
+  overflow: hidden;
+  width: 100%;
+  display: block;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, #fff 12%, #fff 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #fff 12%, #fff 88%, transparent);
+}
+
+.marquee-belt {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+  animation: marquee-scroll 30s linear infinite;
+  width: max-content;
+  padding: 8px 0;
+  will-change: transform;
+}
+
+/* Use !important to beat EDS styles.css `main img { height:auto; width:auto }` */
+.marquee-belt img {
+  height: 52px !important;
+  width: auto !important;
+  max-width: 140px;
+  opacity: 0.85;
+  filter: grayscale(20%);
+  transition: opacity 0.3s, transform 0.3s, filter 0.3s;
+  flex-shrink: 0;
+  object-fit: contain;
+  display: block;
+}
+
+.marquee-belt img:hover {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.1);
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FOOTER — canonical HackHub footer, injected by injectCanonicalFooter()
+   Exact match to .footer rules in /css/style.css.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.footer {
+  padding: 0;
+  border-top: none;
+  background: #0a0a0a;
+}
+
+.footer::before {
+  content: '';
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d9a441, transparent);
+  opacity: 0.25;
+}
+
+.footer-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 5vw 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  max-width: 340px;
+}
+
+.footer-brand .nav-logo {
+  margin-bottom: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #e5e5e5;
+  letter-spacing: 0.02em;
+}
+
+.footer-brand .logo-bracket {
+  color: #d9a441;
+}
+
+.footer-tagline {
+  font-size: 0.95rem;
+  color: #808080;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.footer-tagline strong {
+  color: #d9a441;
+  font-weight: 600;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #808080;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.footer-social-link:hover {
+  border-color: #d9a441;
+  color: #d9a441;
+  background: rgba(217, 164, 65, 0.08);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.footer-social-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 64px;
+  flex-wrap: wrap;
+}
+
+.footer-nav-col h3 {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e5e5e5;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.footer-nav-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-nav-col a {
+  font-size: 0.85rem;
+  color: #808080;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-nav-col a:hover {
+  color: #d9a441;
+  text-decoration: none;
+}
+
+.footer-bottom {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 5vw;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-copy,
+.footer-built {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: #808080;
+  letter-spacing: 0.05em;
+  margin: 0;
+}

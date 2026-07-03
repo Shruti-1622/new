@@ -1,0 +1,188 @@
+/* =============================================
+   REUSABLE PAYMENT FORM — css/payment-form.css
+   ============================================= */
+
+/* Form Wrapper container */
+.pay-form-wrapper {
+  max-width: 460px;
+  margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
+  color: #ffffff;
+}
+
+/* ── ACTUAL FORM INPUTS ── */
+.pay-actual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #111113;
+  border: 1px solid #232326;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.pay-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.pay-row {
+  display: flex;
+  gap: 16px;
+}
+
+.pay-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #a1a1aa;
+}
+
+.pay-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #fff;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pay-input::placeholder {
+  color: #52525b;
+}
+
+.pay-input:focus {
+  outline: none;
+  border-color: #c9a227;
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Card Number Input with Embedded Brand Icon */
+.pay-input-with-icon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.pay-input-with-icon .pay-input {
+  padding-right: 50px;
+}
+
+.pay-input-brand-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 20px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.icon-visa {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40"><path fill="%23fff" d="M16.9 29.5L10.3 7.8C9.9 6.2 8.7 5.2 7 5.2H.3L0 5.6C1.4 6 4.3 6.9 6.2 7.9c1.2.6 1.5.9 2 2.4l6 22.8H21l10.4-23.7h-7l-7.5 17.5zM45.5 8c-2.4-.9-6.2-1.3-9.7-1.3-10.4 0-17.6 5.4-17.6 13C18.2 25.4 25.2 26 25.2 29.5c0 1.1-.9 2.5-4.1 2.5-4.1 0-7.3-1.8-9.1-2.7l-.6-.3-.6 5c1.5.7 5 1.4 8.7 1.4 11 0 18.2-5.4 18.2-13.7.1-6.1-6.9-8.4-6.9-11 0-1 1-2.4 4.2-2.4 2.6 0 4.6.6 6 1.2l.6.3L45.5 8zm24.1 21.5L76 8h-6.6c-2 0-3 1.2-3.4 2.8L56 29.5h6.9l1.3-3.6h8.4l.8 3.6h6.2zm-9.3-8.8l2.7-7.2c-.1.2.5-1.4.9-2.3l1.5 7.1c-.1-.1-5.1 2.4-5.1 2.4zm44-12.7H98.8c-2 0-3.3.9-3.9 2.5L84.2 29.5h7l1.4-3.8h8.6l.8 3.8h6.1L104.3 8zm-8.8 12.7l3-8.3 1.7 8.3H95.5z"/></svg>');
+  opacity: 1;
+}
+
+.icon-mastercard {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70"><circle cx="43" cy="35" r="28" fill="%23eb001b" opacity="0.95"/><circle cx="77" cy="35" r="28" fill="%23ff5f00" opacity="0.85"/><path fill="%23f79e1b" d="M60 17.7a27.9 27.9 0 0 0-7 17.3 27.9 27.9 0 0 0 7 17.3 27.9 27.9 0 0 0 7-17.3 27.9 27.9 0 0 0-7-17.3z"/></svg>');
+  opacity: 1;
+}
+
+.icon-rupay {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40"><text x="10" y="28" fill="%23fff" font-family="sans-serif" font-weight="900" font-style="italic" font-size="24">RuPay</text></svg>');
+  opacity: 1;
+}
+
+.icon-generic {
+  opacity: 0;
+}
+
+/* Validation Errors */
+.pay-error-msg {
+  background: rgba(224, 80, 80, 0.08);
+  border: 1px solid rgba(224, 80, 80, 0.2);
+  color: #e05050;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: center;
+  font-weight: 500;
+  animation: pay-shake 0.3s ease-in-out;
+}
+
+@keyframes pay-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Pay Submit Button */
+.pay-submit-btn {
+  background: var(--accent, #c9a227);
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s, transform 0.2s, color 0.3s;
+  box-shadow: 0 4px 12px rgba(201, 162, 39, 0.25);
+  margin-top: 8px;
+}
+
+.pay-submit-btn:hover {
+  background: #f0c040;
+  box-shadow: 0 6px 16px rgba(201, 162, 39, 0.4);
+}
+
+.pay-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.pay-submit-btn:disabled {
+  background: #333;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Loading Spinner inside submit button */
+.pay-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: pay-spin 0.6s linear infinite;
+}
+
+@keyframes pay-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success transition state */
+.pay-submit-btn.payment-success {
+  background: #10b981 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}

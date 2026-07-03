@@ -1,0 +1,199 @@
+/* =============================================
+   UPGRADE CHECKOUT PAGE — css/upgrade.css
+   ============================================= */
+
+.up-page {
+  background: var(--bg, #0d0d0d);
+  min-height: calc(100vh - 160px);
+  padding: 120px 24px 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.up-container {
+  max-width: 1000px;
+  width: 100%;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: up-fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes up-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* LEFT SECTION: Benefits & Marketing */
+.up-benefits-section {
+  padding: 48px;
+  border-right: 1px solid #242424;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: radial-gradient(circle at 10% 10%, rgba(201, 162, 39, 0.05) 0%, transparent 60%);
+}
+
+.up-eyebrow {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent, #c9a227);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.up-title {
+  font-family: var(--font-display, sans-serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.up-subtitle {
+  font-size: 15px;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.up-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.up-feature-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.up-feature-icon {
+  width: 20px;
+  height: 20px;
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--accent, #c9a227);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.up-feature-text h3 {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.up-feature-text p {
+  font-size: 13px;
+  color: #71717a;
+  line-height: 1.5;
+}
+
+.up-pricing-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.up-pricing-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.up-pricing-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-display, sans-serif);
+}
+
+.up-period {
+  font-size: 14px;
+  color: #71717a;
+  font-weight: normal;
+}
+
+.up-pricing-subtext {
+  font-size: 12px;
+  color: #71717a;
+}
+
+/* RIGHT SECTION: Checkout checkoutFormContainer */
+.up-checkout-section {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  background: #121214;
+}
+
+.up-checkout-title {
+  font-family: var(--font-display, sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.up-checkout-sub {
+  font-size: 13.5px;
+  color: #71717a;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+#paymentFormContainer {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Responsive columns scaling */
+@media(max-width: 900px) {
+  .up-container {
+    grid-template-columns: 1fr;
+  }
+  .up-benefits-section {
+    border-right: none;
+    border-bottom: 1px solid #242424;
+    padding: 32px;
+  }
+  .up-checkout-section {
+    padding: 32px;
+  }
+  .up-page {
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+}
