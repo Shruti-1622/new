@@ -36,6 +36,8 @@ function handleMissingPage(doc) {
   if (!main) return;
 
   if (hackHubPages.includes(pageName) && !main.querySelector('.hackhub-page')) {
+    // Capture any author-pasted images from da.live blocks before wiping the DOM
+    window.GALLERY_IMAGES = [...main.querySelectorAll('img')].map((img) => img.src).filter((s) => s && !s.startsWith('data:'));
     main.className = '';
     main.innerHTML = `<div><div class="hackhub-page"><div><div>${pageName}</div></div></div></div>`;
     delete window.isErrorPage;

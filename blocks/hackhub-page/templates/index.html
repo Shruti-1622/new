@@ -373,23 +373,8 @@
         <h2 class="section-title">Event <span class="text-accent">Moments</span></h2>
 
         <div class="carousel-container">
-          <div class="carousel">
-            <div class="carousel-slide">
-              <img src="assets/carousel/teamss.webp" alt="Teams collaborating at hackathon" decoding="async" width="900"
-                height="500">
-            </div>
-            <div class="carousel-slide">
-              <img src="assets/carousel/yellow.webp" alt="Hackathon participants" loading="lazy" decoding="async"
-                width="900" height="500">
-            </div>
-            <div class="carousel-slide">
-              <img src="assets/carousel/winner.webp" alt="Hackathon winners" loading="lazy" decoding="async" width="900"
-                height="500">
-            </div>
-            <div class="carousel-slide">
-              <img src="assets/carousel/event.webp" alt="Hackathon event" loading="lazy" decoding="async" width="900"
-                height="500">
-            </div>
+          <div class="carousel" id="eventMomentsCarousel">
+            <!-- slides injected by inline script below; falls back to git assets if no da.live images -->
           </div>
 
           <div class="carousel-controls">
@@ -627,6 +612,23 @@
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.querySelector('.nav-links');
     hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+    // Build gallery slides — use author-pasted da.live images, fallback to git assets
+    (function () {
+      var carousel = document.getElementById('eventMomentsCarousel');
+      if (!carousel) return;
+      var imgs = (window.GALLERY_IMAGES && window.GALLERY_IMAGES.length)
+        ? window.GALLERY_IMAGES
+        : [
+          '/assets/carousel/teamss.webp',
+          '/assets/carousel/yellow.webp',
+          '/assets/carousel/winner.webp',
+          '/assets/carousel/event.webp',
+        ];
+      carousel.innerHTML = imgs.map(function (src, i) {
+        return '<div class="carousel-slide' + (i === 0 ? ' active' : '') + '"><img src="' + src + '" alt="Event moment" loading="lazy" decoding="async" width="900" height="500"></div>';
+      }).join('');
+    }());
 
     // Carousel
     const slides = document.querySelectorAll('.carousel-slide');
