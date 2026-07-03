@@ -25,25 +25,22 @@ async function loadFonts() {
 }
 
 /**
- * When da.live has no content for a known route, the server returns 404.html.
- * This intercepts that 404 and injects the correct block so EDS loads the page normally.
+ * Ensures the correct block exists for known HackHub routes.
+ * Handles both 404 pages (window.isErrorPage) and pages where the author
+ * wrote plain text instead of a table block (block class not found in DOM).
  */
 function handleMissingPage(doc) {
-  if (!window.isErrorPage) return;
-
   const pageName = window.location.pathname.replace(/^\//, '').split('/')[0] || 'index';
-
   const hackHubPages = ['profile', 'signup', 'gallery', 'hacklist', 'organise', 'upgrade', 'teamfinder', 'hackathon', 'index'];
-
   const main = doc.querySelector('main');
   if (!main) return;
 
-  if (hackHubPages.includes(pageName)) {
+  if (hackHubPages.includes(pageName) && !main.querySelector('.hackhub-page')) {
     main.className = '';
     main.innerHTML = `<div><div class="hackhub-page"><div><div>${pageName}</div></div></div></div>`;
     delete window.isErrorPage;
     delete window.errorCode;
-  } else if (pageName === 'hackathon-detail') {
+  } else if (pageName === 'hackathon-detail' && !main.querySelector('.hackathon-detail')) {
     main.className = '';
     main.innerHTML = `<div><div class="hackathon-detail"><div></div></div></div>`;
     delete window.isErrorPage;
