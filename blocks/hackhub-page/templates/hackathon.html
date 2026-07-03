@@ -327,14 +327,33 @@
       function splitCSV(str) {
         return typeof str === 'string' ? str.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : (str || []);
       }
-      // Load static image fallbacks from code path (git-served, never overridden by da.live sheet)
-      var codeImages = {};
-      try {
-        var imgXhr = new XMLHttpRequest();
-        imgXhr.open('GET', '/blocks/hackhub-page/images.json', false);
-        imgXhr.send(null);
-        if (imgXhr.status === 200) codeImages = JSON.parse(imgXhr.responseText);
-      } catch (e) { /* ignore */ }
+      // Default images by slug and by numeric id — inline in template so no fetch needed
+      var codeImages = {
+        'google-innovatetech-2026': '/assets/hackathon events/googleh.webp',
+        'iitb-hackfest-2026': '/assets/hackathon events/blue.webp',
+        'web3-buildathon-2026': '/assets/hackathon events/ethokyo.webp',
+        'bits-hackfest-2026': '/assets/hackathon events/cloudf.webp',
+        'cyber-nexus-2026': '/assets/hackathon events/cisco.webp',
+        'neuralverse-ai-2027': '/assets/hackathon events/nvidia.webp',
+        'hackdtu-2026': '/assets/hackathon events/github.webp',
+        'enigma-ml-2027': '/assets/hackathon events/en.webp',
+        'adobe-india-2026': '/assets/hackathon events/office.webp',
+        'amazon-hackon-2026': '/assets/hackathon events/ama.avif',
+        'microsoft-imagine-cup-2026': '/assets/hackathon events/microsoftt.webp',
+        'cloudfest-hackathon-2026': '/assets/hackathon events/cloudfest.webp',
+        1: '/assets/hackathon events/googleh.webp',
+        2: '/assets/hackathon events/blue.webp',
+        3: '/assets/hackathon events/ethokyo.webp',
+        4: '/assets/hackathon events/cloudf.webp',
+        5: '/assets/hackathon events/cisco.webp',
+        6: '/assets/hackathon events/nvidia.webp',
+        7: '/assets/hackathon events/github.webp',
+        8: '/assets/hackathon events/en.webp',
+        9: '/assets/hackathon events/office.webp',
+        10: '/assets/hackathon events/ama.avif',
+        11: '/assets/hackathon events/microsoftt.webp',
+        12: '/assets/hackathon events/cloudfest.webp',
+      };
 
       try {
         var xhr = new XMLHttpRequest();
@@ -373,7 +392,7 @@
               startDate: c.startDate || '',
               endDate: c.endDate || '',
               bannerGradient: c.bannerGradient || '',
-              image: c.image || (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || codeImages[c.slug] || '',
+              image: c.image || (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || codeImages[c.slug] || codeImages[parseInt(c.id)] || '',
               description: d.description || '',
               tracks: parseJSON(d.tracks, []),
               timeline: parseJSON(d.timeline, []),
