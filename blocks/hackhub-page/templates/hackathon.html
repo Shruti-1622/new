@@ -359,6 +359,12 @@
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/hackathons.json', false);
         xhr.send(null);
+        // If da.live sheet is unavailable, fall back to static code-path data
+        if (xhr.status !== 200) {
+          xhr = new XMLHttpRequest();
+          xhr.open('GET', '/blocks/hackhub-page/hackathons.json', false);
+          xhr.send(null);
+        }
         if (xhr.status === 200) {
           var payload = JSON.parse(xhr.responseText);
           // Support multi-sheet (two tabs: cards + details) and single-sheet fallback
