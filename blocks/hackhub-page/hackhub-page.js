@@ -79,7 +79,20 @@ async function runScripts(scripts) {
 
 export default async function decorate(block) {
   const routeName = window.location.pathname.split('/').filter(Boolean).pop() || 'index';
-  const pageName = block.textContent.trim() || routeName;
+
+  // Row 0: template name. Rows 1+: slug | author-pasted image
+  const rows = [...block.children];
+  const pageName = rows[0]?.querySelector(':scope > div')?.textContent.trim() || routeName;
+
+  const imageMap = {};
+  rows.slice(1).forEach((row) => {
+    const cells = [...row.querySelectorAll(':scope > div')];
+    const slug = cells[0]?.textContent.trim();
+    const img = cells[1]?.querySelector('img');
+    if (slug && img) imageMap[slug] = img.src;
+  });
+  window.HACKATHON_IMAGES = imageMap;
+
   const response = await fetch(`${TEMPLATE_ROOT}/${pageName}.html`);
 
   if (!response.ok) {
