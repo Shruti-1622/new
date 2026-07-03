@@ -398,7 +398,7 @@
               startDate: c.startDate || '',
               endDate: c.endDate || '',
               bannerGradient: c.bannerGradient || '',
-              image: (c.image || '').replace('hackathon events', 'hackathon-events') || (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || codeImages[c.slug] || codeImages[parseInt(c.id)] || '',
+              image: (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || codeImages[c.slug] || codeImages[parseInt(c.id)] || '',
               description: d.description || '',
               tracks: parseJSON(d.tracks, []),
               timeline: parseJSON(d.timeline, []),
