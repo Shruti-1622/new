@@ -327,6 +327,20 @@
       function splitCSV(str) {
         return typeof str === 'string' ? str.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : (str || []);
       }
+      var IMG = {
+        'google-innovatetech-2026':   '/assets/hackathon events/googleh.webp',
+        'iitb-hackfest-2026':         '/assets/hackathon events/blue.webp',
+        'web3-buildathon-2026':       '/assets/hackathon events/ethokyo.webp',
+        'bits-hackfest-2026':         '/assets/hackathon events/cloudf.webp',
+        'cyber-nexus-2026':           '/assets/hackathon events/cisco.webp',
+        'neuralverse-ai-2027':        '/assets/hackathon events/nvidia.webp',
+        'hackdtu-2026':               '/assets/hackathon events/github.webp',
+        'enigma-ml-2027':             '/assets/hackathon events/en.webp',
+        'adobe-india-2026':           '/assets/hackathon events/office.webp',
+        'amazon-hackon-2026':         '/assets/hackathon events/ama.avif',
+        'microsoft-imagine-cup-2026': '/assets/hackathon events/microsoftt.webp',
+        'cloudfest-hackathon-2026':   '/assets/hackathon events/cloudfest.webp',
+      };
       try {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/hackathons.json', false);
@@ -364,7 +378,7 @@
               startDate: c.startDate || '',
               endDate: c.endDate || '',
               bannerGradient: c.bannerGradient || '',
-              image: c.image || '',
+              image: c.image || IMG[c.slug] || '',
               description: d.description || '',
               tracks: parseJSON(d.tracks, []),
               timeline: parseJSON(d.timeline, []),
