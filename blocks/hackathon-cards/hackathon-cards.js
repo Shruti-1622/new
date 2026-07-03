@@ -154,8 +154,35 @@ function decorateSaved(block) {
   });
 }
 
+// ── Parse a fetched hackathon detail page and extract card data ───────────────
+function parseDetailPage(html, slug) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const data = {};
+  doc.querySelectorAll('div').forEach((div) => {
+    const kids = [...div.children];
+    if (kids.length !== 2) return;
+    const key = kids[0]?.textContent.trim().toLowerCase();
+    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags'].includes(key)) {
+      data[key] = kids[1];
+    }
+  });
+  const img = data.image?.querySelector('img');
+  return {
+    key: slug,
+    id: slug,
+    imgSrc: img?.src || '',
+    imgAlt: data.title?.textContent.trim() || '',
+    title: data.title?.textContent.trim() || '',
+    org: (data.organiser || data.organizer)?.textContent.trim() || '',
+    tag: (data.tags?.textContent.trim() || '').split(',')[0].trim(),
+    date: data.date?.textContent.trim() || '',
+    prize: data.prize?.textContent.trim() || '',
+    href: `/hackathons/${slug}`,
+  };
+}
+
 // ── CAROUSEL (main) ───────────────────────────────────────────────────────────
-export default function decorate(block) {
+export default async function decorate(block) {
   if (block.classList.contains('saved')) {
     decorateSaved(block);
     return;
@@ -176,41 +203,33 @@ export default function decorate(block) {
     document.head.append(pc1, pc2, fl);
   }
 
-  // Parse rows — rows WITH an image = cards; row WITHOUT image = view-all CTA
+  // Each row = one slug pointing to a /hackathons/[slug] da.live page
+  // Last row with a link = "View All" CTA
   const rows = [...block.children];
-  let viewAllHref = '#';
+  let viewAllHref = '/hackathons';
   let viewAllLabel = 'View All Events';
+  const slugs = [];
 
-  const cardsData = [];
-  rows.forEach((row, i) => {
-    const cells = [...row.children];
-    const title = cells[1]?.textContent.trim();
-
-    // A row is a card if it has a title in column 1 (even if no image uploaded yet)
-    if (title) {
-      const img = cells[0]?.querySelector('img');
-      cardsData.push({
-        key: `hc-${i}`,
-        id: cardsData.length + 1,
-        imgSrc: img?.src || '',
-        imgAlt: img?.alt || '',
-        title,
-        org: cells[2]?.textContent.trim() || '',
-        tag: cells[3]?.textContent.trim() || '',
-        date: cells[4]?.textContent.trim() || '',
-        prize: cells[5]?.textContent.trim() || '',
-        href: `/hackathon-detail?id=${cardsData.length + 1}`,
-      });
-      return;
-    }
-
-    // No title → treat as the "View All" CTA row
+  rows.forEach((row) => {
     const linkEl = row.querySelector('a');
     if (linkEl) {
       viewAllHref = linkEl.href;
       viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
+      return;
     }
+    const slug = row.querySelector('div')?.textContent.trim();
+    if (slug) slugs.push(slug);
   });
+
+  // Fetch all detail pages in parallel and extract card data from da.live content
+  const results = await Promise.all(slugs.map(async (slug) => {
+    try {
+      const resp = await fetch(`/hackathons/${slug}.plain.html`);
+      if (!resp.ok) return null;
+      return parseDetailPage(await resp.text(), slug);
+    } catch { return null; }
+  }));
+  const cardsData = results.filter(Boolean);
 
   // Build card HTML string — heart state driven by hh-saved
   function cardHTML(d) {
