@@ -154,16 +154,29 @@ function decorateSaved(block) {
   });
 }
 
-// ── Sheet fetch — da.live sheet is the only source of truth ──────────────────
+// ── Fetch card data from da.live sheet + images from da.live detail pages ─────
 async function fetchFromSheet() {
   const resp = await fetch('/hackathons.json');
   if (!resp.ok) return [];
   const json = await resp.json();
   const rows = (json[':type'] === 'multi-sheet' ? json.cards?.data : json.data) || [];
+
+  // Fetch each detail page in parallel to get the author-pasted image
+  const imageMap = {};
+  await Promise.all(rows.map(async (c) => {
+    try {
+      const pageResp = await fetch(`/hackathons/${c.slug}.plain.html`);
+      if (!pageResp.ok) return;
+      const doc = new DOMParser().parseFromString(await pageResp.text(), 'text/html');
+      const img = doc.querySelector('img');
+      if (img) imageMap[c.slug] = img.src;
+    } catch { /* no image pasted yet */ }
+  }));
+
   return rows.map((c, i) => ({
     key: c.slug || `hc-${i}`,
     id: c.id || i + 1,
-    imgSrc: c.image || '',
+    imgSrc: imageMap[c.slug] || '',
     imgAlt: c.title || '',
     title: c.title || '',
     org: c.organiser || c.organizer || '',
