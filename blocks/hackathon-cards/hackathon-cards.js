@@ -154,8 +154,28 @@ function decorateSaved(block) {
   });
 }
 
+// ── Sheet fetch — da.live sheet is the only source of truth ──────────────────
+async function fetchFromSheet() {
+  const resp = await fetch('/hackathons.json');
+  if (!resp.ok) return [];
+  const json = await resp.json();
+  const rows = (json[':type'] === 'multi-sheet' ? json.cards?.data : json.data) || [];
+  return rows.map((c, i) => ({
+    key: c.slug || `hc-${i}`,
+    id: c.id || i + 1,
+    imgSrc: c.image || '',
+    imgAlt: c.title || '',
+    title: c.title || '',
+    org: c.organiser || c.organizer || '',
+    tag: (c.tags || c.category || '').split(',')[0].trim(),
+    date: c.startDate || '',
+    prize: c.prize || '',
+    href: `/hackathons/${c.slug}`,
+  }));
+}
+
 // ── CAROUSEL (main) ───────────────────────────────────────────────────────────
-export default function decorate(block) {
+export default async function decorate(block) {
   if (block.classList.contains('saved')) {
     decorateSaved(block);
     return;
@@ -211,6 +231,12 @@ export default function decorate(block) {
       viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
     }
   });
+
+  // No table data authored → fetch from da.live sheet
+  if (!cardsData.length) {
+    const fetched = await fetchFromSheet();
+    cardsData.push(...fetched);
+  }
 
   // Build card HTML string — heart state driven by hh-saved
   function cardHTML(d) {

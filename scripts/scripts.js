@@ -25,32 +25,6 @@ async function loadFonts() {
 }
 
 /**
- * Ensures the correct block exists for known HackHub routes.
- * Handles both 404 pages (window.isErrorPage) and pages where the author
- * wrote plain text instead of a table block (block class not found in DOM).
- */
-function handleMissingPage(doc) {
-  const pageName = window.location.pathname.replace(/^\//, '').split('/')[0] || 'index';
-  const hackHubPages = ['profile', 'signup', 'gallery', 'hacklist', 'organise', 'upgrade', 'teamfinder', 'hackathon', 'index'];
-  const main = doc.querySelector('main');
-  if (!main) return;
-
-  if (hackHubPages.includes(pageName) && !main.querySelector('.hackhub-page')) {
-    // Capture any author-pasted images from da.live blocks before wiping the DOM
-    window.GALLERY_IMAGES = [...main.querySelectorAll('img')].map((img) => img.src).filter((s) => s && !s.startsWith('data:'));
-    main.className = '';
-    main.innerHTML = `<div><div class="hackhub-page"><div><div>${pageName}</div></div></div></div>`;
-    delete window.isErrorPage;
-    delete window.errorCode;
-  } else if (pageName === 'hackathon-detail' && !main.querySelector('.hackathon-detail')) {
-    main.className = '';
-    main.innerHTML = `<div><div class="hackathon-detail"><div></div></div></div>`;
-    delete window.isErrorPage;
-    delete window.errorCode;
-  }
-}
-
-/**
  * Turns `/widgets/...` links into widget blocks.
  * @param {Element} main The container element
  */
@@ -161,7 +135,6 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  handleMissingPage(doc);
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
