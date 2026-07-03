@@ -19,7 +19,7 @@
     "startDate": "July 10, 2025",
     "endDate": "July 12, 2025",
     "bannerGradient": "linear-gradient(135deg, #1a150e, #0a0a0a)",
-    "image": "assets/hackathon events/googleh.webp",
+    "image": "assets/hackathon-events/googleh.webp",
     "description": "InnovateTech 2025 is Google's flagship AI & Cloud hackathon, bringing together the brightest minds to build cutting-edge solutions.",
     "tracks": [
       { "name": "AI for Good", "prize": "₹5,00,000", "description": "Build AI solutions addressing climate change, healthcare accessibility, or education equity." },
@@ -60,7 +60,7 @@
     "startDate": "September 14, 2026",
     "endDate": "September 16, 2026",
     "bannerGradient": "linear-gradient(135deg, #181510, #0a0a0a)",
-    "image": "assets/hackathon events/blue.webp",
+    "image": "assets/hackathon-events/blue.webp",
     "description": "IIT Bombay's flagship DeepTech hackathon. Prototype cutting-edge technology solutions using advanced hardware, robotics, Internet of Things (IoT), and advanced machine learning models. Free to enter, with mentoring and prototyping kits provided for in-person teams.",
     "tracks": [
       { "name": "DeepTech Innovation", "prize": "₹4,50,000", "description": "Build deep tech hardware or software solutions addressing aerospace, robotics, or healthcare challenges." },
@@ -101,7 +101,7 @@
     "startDate": "July 15, 2025",
     "endDate": "July 17, 2025",
     "bannerGradient": "linear-gradient(135deg, #1a120b, #0a0a0a)",
-    "image": "assets/hackathon events/ethokyo.webp",
+    "image": "assets/hackathon-events/ethokyo.webp",
     "description": "The Web3 Buildathon challenges developers to push the boundaries of decentralised technology.",
     "tracks": [
       { "name": "DeFi Innovation", "prize": "₹4,00,000", "description": "Build novel decentralised finance protocols." },
@@ -141,7 +141,7 @@
     "startDate": "November 5, 2026",
     "endDate": "November 6, 2026",
     "bannerGradient": "linear-gradient(135deg, #15130f, #0a0a0a)",
-    "image": "assets/hackathon events/cloudf.webp",
+    "image": "assets/hackathon-events/cloudf.webp",
     "description": "BITS Pilani's premier national level open innovation developer hackathon. Build solutions across Web3, FinTech, Sustainability, or HealthTech. Gain visibility in front of top venture capitalists and receive BITS Spark accelerator mentoring support.",
     "tracks": [
       { "name": "Web3 Track", "prize": "₹2,50,000", "description": "Design decentralized protocols, smart contract integrations, or consumer crypto apps." },
@@ -182,7 +182,7 @@
     "startDate": "August 25, 2025",
     "endDate": "August 27, 2025",
     "bannerGradient": "linear-gradient(135deg, #14110d, #0a0a0a)",
-    "image": "assets/hackathon events/cisco.webp",
+    "image": "assets/hackathon-events/cisco.webp",
     "description": "Cyber Nexus brings together cybersecurity experts and space technology enthusiasts for a 48-hour challenge.",
     "tracks": [
       { "name": "Space Security", "prize": "₹5,00,000", "description": "Develop security solutions for satellite communication." },
@@ -223,7 +223,7 @@
     "startDate": "July 18, 2025",
     "endDate": "July 20, 2025",
     "bannerGradient": "linear-gradient(135deg, #1a1610, #0a0a0a)",
-    "image": "assets/hackathon events/nvidia.webp",
+    "image": "assets/hackathon-events/nvidia.webp",
     "description": "NeuralVerse AI is NVIDIA's premier deep learning hackathon. Solo-friendly with free GPU cloud credits.",
     "tracks": [
       { "name": "Generative AI", "prize": "₹4,00,000", "description": "Build creative applications using diffusion models or LLMs." },
@@ -262,7 +262,7 @@
     "startDate": "February 5, 2027",
     "endDate": "February 7, 2027",
     "bannerGradient": "linear-gradient(135deg, #16120e, #0a0a0a)",
-    "image": "assets/hackathon events/github.webp",
+    "image": "assets/hackathon-events/github.webp",
     "description": "Delhi Technological University's flagship national level software hackathon. Over 36 hours, build impactful open-source tools addressing civic tech, educational accessibility, and custom developer tools. Participants get exclusive DTU swags and GitHub credits.",
     "tracks": [
       { "name": "AI Tools", "prize": "₹2,50,000", "description": "Build tools, integrations, or models that augment efficiency, education, or coding speed." },
@@ -304,7 +304,7 @@
     "startDate": "November 5, 2025",
     "endDate": "November 7, 2025",
     "bannerGradient": "linear-gradient(135deg, #1c150c, #0a0a0a)",
-    "image": "assets/hackathon events/en.webp",
+    "image": "assets/hackathon-events/en.webp",
     "description": "Enigma is a research-focused ML challenge co-organised by IIT BHU and DRDO.",
     "tracks": [
       { "name": "Defence Analytics", "prize": "₹1,50,000", "description": "Apply ML to satellite imagery or signal processing for defence." },

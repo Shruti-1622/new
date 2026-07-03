@@ -18,7 +18,7 @@
     "teamFormationDeadline": "2026-08-03T23:59:00",
     "startDate": "August 10, 2026",
     "endDate": "August 12, 2026",
-    "image": "/assets/hackathon events/googleh.webp",
+    "image": "/assets/hackathon-events/googleh.webp",
     "bannerGradient": "linear-gradient(135deg, #1a150e, #0a0a0a)",
     "description": "InnovateTech 2026 is Google's flagship AI & Cloud hackathon, bringing together the brightest minds to build cutting-edge solutions. Over 48 intense hours, teams will leverage Google Cloud, Vertex AI, and TensorFlow to create projects that push the boundaries of technology. With mentorship from Google engineers and ₹15 lakh in prizes, this is your chance to turn bold ideas into reality.",
     "tracks": [
@@ -59,7 +59,7 @@
     "teamFormationDeadline": "2026-09-08T23:59:00",
     "startDate": "September 14, 2026",
     "endDate": "September 16, 2026",
-    "image": "/assets/hackathon events/blue.webp",
+    "image": "/assets/hackathon-events/blue.webp",
     "bannerGradient": "linear-gradient(135deg, #181510, #0a0a0a)",
     "description": "IIT Bombay's flagship DeepTech hackathon. Prototype cutting-edge technology solutions using advanced hardware, robotics, IoT, and advanced machine learning models. Free to enter, with mentoring and prototyping kits provided for in-person teams.",
     "tracks": [
@@ -99,7 +99,7 @@
     "registrationDeadline": "2026-10-08T23:59:00",
     "startDate": "October 15, 2026",
     "endDate": "October 17, 2026",
-    "image": "/assets/hackathon events/ethokyo.webp",
+    "image": "/assets/hackathon-events/ethokyo.webp",
     "bannerGradient": "linear-gradient(135deg, #1a120b, #0a0a0a)",
     "description": "The Web3 Buildathon challenges developers to push the boundaries of decentralised technology. Build DApps, DeFi protocols, or NFT platforms using Polygon, Solidity, and cutting-edge blockchain tooling. Solo or team — everyone is welcome. Top projects get direct access to Polygon's accelerator programme.",
     "tracks": [
@@ -140,7 +140,7 @@
     "teamFormationDeadline": "2026-10-28T23:59:00",
     "startDate": "November 5, 2026",
     "endDate": "November 6, 2026",
-    "image": "/assets/hackathon events/cloudf.webp",
+    "image": "/assets/hackathon-events/cloudf.webp",
     "bannerGradient": "linear-gradient(135deg, #15130f, #0a0a0a)",
     "description": "BITS Pilani's premier national level open innovation developer hackathon. Build solutions across Web3, FinTech, Sustainability, or HealthTech. Gain visibility in front of top venture capitalists and receive BITS Spark accelerator mentoring support.",
     "tracks": [
@@ -181,7 +181,7 @@
     "teamFormationDeadline": "2026-12-18T23:59:00",
     "startDate": "December 25, 2026",
     "endDate": "December 27, 2026",
-    "image": "/assets/hackathon events/cisco.webp",
+    "image": "/assets/hackathon-events/cisco.webp",
     "bannerGradient": "linear-gradient(135deg, #14110d, #0a0a0a)",
     "description": "Cyber Nexus brings together cybersecurity experts and space technology enthusiasts for a 48-hour challenge. Co-hosted by Cisco and ISRO, participants will work on securing satellite communication systems, IoT networks, and critical infrastructure. Hybrid format with hacking hubs in Bangalore and Hyderabad.",
     "tracks": [
@@ -222,7 +222,7 @@
     "registrationDeadline": "2027-01-12T23:59:00",
     "startDate": "January 18, 2027",
     "endDate": "January 20, 2027",
-    "image": "/assets/hackathon events/nvidia.webp",
+    "image": "/assets/hackathon-events/nvidia.webp",
     "bannerGradient": "linear-gradient(135deg, #1a1610, #0a0a0a)",
     "description": "NeuralVerse AI is NVIDIA's premier deep learning hackathon. Leverage CUDA, TensorRT, and NVIDIA GPUs to build state-of-the-art AI models for computer vision, NLP, and generative AI. Solo-friendly with free GPU cloud credits for all participants. Winners get NVIDIA RTX hardware and fast-track interviews.",
     "tracks": [
@@ -262,7 +262,7 @@
     "teamFormationDeadline": "2027-01-28T23:59:00",
     "startDate": "February 5, 2027",
     "endDate": "February 7, 2027",
-    "image": "/assets/hackathon events/github.webp",
+    "image": "/assets/hackathon-events/github.webp",
     "bannerGradient": "linear-gradient(135deg, #16120e, #0a0a0a)",
     "description": "Delhi Technological University's flagship national level software hackathon. Over 36 hours, build impactful open-source tools addressing civic tech, educational accessibility, and custom developer tools. Participants get exclusive DTU swags and GitHub credits.",
     "tracks": [
@@ -303,7 +303,7 @@
     "registrationDeadline": "2027-03-01T23:59:00",
     "startDate": "March 5, 2027",
     "endDate": "March 7, 2027",
-    "image": "/assets/hackathon events/en.webp",
+    "image": "/assets/hackathon-events/en.webp",
     "bannerGradient": "linear-gradient(135deg, #1c150c, #0a0a0a)",
     "description": "Enigma is a research-focused ML challenge co-organised by IIT BHU and DRDO. Participants tackle real-world datasets from defence, agriculture, and public health sectors. Solo-friendly with mentorship from IIT professors and DRDO scientists. Top solutions may be adopted for national projects.",
     "tracks": [
@@ -344,7 +344,7 @@
     "startDate": "July 24, 2026",
     "endDate": "July 25, 2026",
     "location": "Bangalore",
-    "image": "/assets/hackathon events/cloudfest.webp",
+    "image": "/assets/hackathon-events/cloudfest.webp",
     "bannerGradient": "linear-gradient(135deg, #0d1a2e, #0a0a0a)",
     "description": "CloudFest 26 is a 48-hour AI & Web3 hackathon in Bangalore featuring a ₹5L prize pool. Compete to build innovative cloud-native and decentralised solutions, with mentorship from industry leaders. Open to teams of 2–4.",
     "tracks": [
@@ -384,7 +384,7 @@
     "startDate": "July 8, 2026",
     "endDate": "July 9, 2026",
     "location": "Delhi",
-    "image": "/assets/hackathon events/office.webp",
+    "image": "/assets/hackathon-events/office.webp",
     "bannerGradient": "linear-gradient(135deg, #1a0a0a, #0a0a0a)",
     "description": "Adobe's flagship India hackathon offers Pre-Placement Interviews and internship opportunities alongside exciting prizes. Build creative technology solutions using Adobe's suite of APIs and tools. Top performers are fast-tracked into Adobe's talent pipeline.",
     "tracks": [
@@ -424,7 +424,7 @@
     "startDate": "August 9, 2026",
     "endDate": "August 11, 2026",
     "location": "Hyderabad",
-    "image": "/assets/hackathon events/amazonfeat.webp",
+    "image": "/assets/hackathon-events/amazonfeat.webp",
     "bannerGradient": "linear-gradient(135deg, #1a1000, #0a0a0a)",
     "description": "Amazon's national-level developer competition with ₹10L in cash prizes and internship opportunities. HackOn With Amazon challenges you to build scalable, customer-obsessed solutions using AWS services. Top teams get fast-tracked for full-time roles at Amazon.",
     "tracks": [
