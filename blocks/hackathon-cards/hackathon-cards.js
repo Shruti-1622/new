@@ -154,41 +154,8 @@ function decorateSaved(block) {
   });
 }
 
-// ── Fetch card data from da.live sheet + images from da.live detail pages ─────
-async function fetchFromSheet() {
-  const resp = await fetch('/hackathons.json');
-  if (!resp.ok) return [];
-  const json = await resp.json();
-  const rows = (json[':type'] === 'multi-sheet' ? json.cards?.data : json.data) || [];
-
-  // Fetch each detail page in parallel to get the author-pasted image
-  const imageMap = {};
-  await Promise.all(rows.map(async (c) => {
-    try {
-      const pageResp = await fetch(`/hackathons/${c.slug}.plain.html`);
-      if (!pageResp.ok) return;
-      const doc = new DOMParser().parseFromString(await pageResp.text(), 'text/html');
-      const img = doc.querySelector('img');
-      if (img) imageMap[c.slug] = img.src;
-    } catch { /* no image pasted yet */ }
-  }));
-
-  return rows.map((c, i) => ({
-    key: c.slug || `hc-${i}`,
-    id: c.id || i + 1,
-    imgSrc: imageMap[c.slug] || '',
-    imgAlt: c.title || '',
-    title: c.title || '',
-    org: c.organiser || c.organizer || '',
-    tag: (c.tags || c.category || '').split(',')[0].trim(),
-    date: c.startDate || '',
-    prize: c.prize || '',
-    href: `/hackathons/${c.slug}`,
-  }));
-}
-
 // ── CAROUSEL (main) ───────────────────────────────────────────────────────────
-export default async function decorate(block) {
+export default function decorate(block) {
   if (block.classList.contains('saved')) {
     decorateSaved(block);
     return;
@@ -244,12 +211,6 @@ export default async function decorate(block) {
       viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
     }
   });
-
-  // No table data authored → fetch from da.live sheet
-  if (!cardsData.length) {
-    const fetched = await fetchFromSheet();
-    cardsData.push(...fetched);
-  }
 
   // Build card HTML string — heart state driven by hh-saved
   function cardHTML(d) {
