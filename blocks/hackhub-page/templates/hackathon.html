@@ -327,6 +327,15 @@
       function splitCSV(str) {
         return typeof str === 'string' ? str.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : (str || []);
       }
+      // Load static image fallbacks from code path (git-served, never overridden by da.live sheet)
+      var codeImages = {};
+      try {
+        var imgXhr = new XMLHttpRequest();
+        imgXhr.open('GET', '/blocks/hackhub-page/images.json', false);
+        imgXhr.send(null);
+        if (imgXhr.status === 200) codeImages = JSON.parse(imgXhr.responseText);
+      } catch (e) { /* ignore */ }
+
       try {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/hackathons.json', false);
@@ -364,7 +373,7 @@
               startDate: c.startDate || '',
               endDate: c.endDate || '',
               bannerGradient: c.bannerGradient || '',
-              image: c.image || (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || '',
+              image: c.image || (window.HACKATHON_IMAGES && window.HACKATHON_IMAGES[c.slug]) || codeImages[c.slug] || '',
               description: d.description || '',
               tracks: parseJSON(d.tracks, []),
               timeline: parseJSON(d.timeline, []),
