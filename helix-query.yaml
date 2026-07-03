@@ -1,0 +1,31 @@
+version: 1
+
+indices:
+  hackathons:
+    include:
+      - /hackathons/**
+    properties:
+      title:
+        select: head > meta[property="og:title"]
+        value: attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: attribute(el, "content")
+      description:
+        select: head > meta[name="description"]
+        value: attribute(el, "content")
+      date:
+        select: head > meta[name="date"]
+        value: attribute(el, "content")
+      prize:
+        select: head > meta[name="prize"]
+        value: attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: attribute(el, "content")
+      mode:
+        select: head > meta[name="mode"]
+        value: attribute(el, "content")
+      tags:
+        select: head > meta[name="tags"]
+        value: attribute(el, "content")
