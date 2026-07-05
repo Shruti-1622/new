@@ -221,10 +221,14 @@ export default async function decorate(block) {
     if (slug) slugs.push(slug);
   });
 
+  // On localhost the AEM CLI may not proxy client-side fetch; hit preview directly.
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const contentBase = isLocal ? 'https://main--new--shruti-1622.aem.page' : '';
+
   // Fetch all detail pages in parallel and extract card data from da.live content
   const results = await Promise.all(slugs.map(async (slug) => {
     try {
-      const resp = await fetch(`/hackathons/${slug}.plain.html`);
+      const resp = await fetch(`${contentBase}/hackathons/${slug}.plain.html`);
       if (!resp.ok) return null;
       return parseDetailPage(await resp.text(), slug);
     } catch { return null; }

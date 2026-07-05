@@ -1,7 +1,7 @@
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/hackathon', label: 'Hackathons' },
-  { href: '/teamfinder', label: 'Find Teams' },
+  { href: '/find-teams', label: 'Find Teams' },
   { href: '/gallery', label: 'Hall of Fame' },
   { href: '/hacklist', label: 'Hacklist' },
 ];
