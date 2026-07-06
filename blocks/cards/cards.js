@@ -374,9 +374,11 @@ export default async function decorate(block) {
     return;
   }
 
-  // Featured hackathons — fetches real data from /hackathons/[slug] pages
+  // Featured hackathons — fetches real data from /hackathons/[slug] pages.
+  // Deliberately not awaited: aem.js loads sections strictly sequentially, so
+  // blocking here would delay every section after this one on the page.
   if (block.classList.contains('featured-hackathons')) {
-    await decorateFeaturedHackathons(block);
+    decorateFeaturedHackathons(block);
     return;
   }
 
