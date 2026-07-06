@@ -352,10 +352,14 @@ async function decorateFeaturedHackathons(block) {
   block.innerHTML = '';
   block.append(ul);
 
+  // Built after scripts.js's one-time decorateButtons() pass already ran, so it
+  // won't auto-convert this link into a button — apply the same classes by hand.
   const viewAllPara = document.createElement('p');
+  viewAllPara.className = 'button-wrapper';
   const viewAllLink = document.createElement('a');
   viewAllLink.href = viewAllHref;
-  viewAllLink.innerHTML = `<strong>${viewAllLabel}</strong>`;
+  viewAllLink.className = 'button primary';
+  viewAllLink.textContent = viewAllLabel;
   viewAllPara.append(viewAllLink);
   block.append(viewAllPara);
 }
