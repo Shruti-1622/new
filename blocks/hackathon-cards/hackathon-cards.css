@@ -220,15 +220,31 @@ main > .section > .hackathon-cards-wrapper { max-width: 100%; padding: 0; }
   border-radius: 4px;
 }
 
+.hackathon-cards .hc-countdown {
+  background: rgba(217, 164, 65, 0.15) !important;
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: #f0c674 !important;
+  font-weight: 700;
+}
+
 .hackathon-cards .hc-countdown-urgent {
-  background: rgba(224, 80, 80, 0.15) !important;
-  color: #ff8080;
-  font-weight: 600;
+  background: rgba(224, 80, 80, 0.18) !important;
+  border-color: rgba(255, 80, 80, 0.5);
+  color: #ff8080 !important;
+  animation: hc-countdown-pulse 1.4s ease-in-out infinite;
 }
 
 .hackathon-cards .hc-countdown-closed {
   background: rgba(255, 255, 255, 0.04) !important;
-  color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-weight: 500;
+  animation: none;
+}
+
+@keyframes hc-countdown-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 /* ── Explore button ───────────────────────────────────────────── */
