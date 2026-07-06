@@ -154,6 +154,21 @@ function decorateSaved(block) {
   });
 }
 
+// Computed once per card at render time (not a ticking timer) — a deadline
+// that's days away doesn't need per-second updates, and this avoids running
+// per-card intervals across the whole (tripled, for the infinite scroll) carousel.
+function formatCountdown(deadlineStr) {
+  if (!deadlineStr) return null;
+  const deadline = new Date(deadlineStr);
+  if (Number.isNaN(deadline.getTime())) return null;
+  const msLeft = deadline.getTime() - Date.now();
+  const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+  if (daysLeft < 0) return { text: 'Closed', urgent: false, closed: true };
+  if (daysLeft === 0) return { text: 'Closes today', urgent: true, closed: false };
+  if (daysLeft === 1) return { text: '1 day left', urgent: true, closed: false };
+  return { text: `${daysLeft} days left`, urgent: daysLeft <= 3, closed: false };
+}
+
 // ── Parse a fetched hackathon detail page and extract card data ───────────────
 function parseDetailPage(html, slug) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -162,7 +177,7 @@ function parseDetailPage(html, slug) {
     const kids = [...div.children];
     if (kids.length !== 2) return;
     const key = kids[0]?.textContent.trim().toLowerCase();
-    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags'].includes(key)) {
+    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags', 'deadline'].includes(key)) {
       data[key] = kids[1];
     }
   });
@@ -177,6 +192,7 @@ function parseDetailPage(html, slug) {
     tag: (data.tags?.textContent.trim() || '').split(',')[0].trim(),
     date: data.date?.textContent.trim() || '',
     prize: data.prize?.textContent.trim() || '',
+    countdown: formatCountdown(data.deadline?.textContent.trim()),
     href: `/hackathons/${slug}`,
   };
 }
@@ -251,6 +267,7 @@ export default async function decorate(block) {
           <div class="hc-card-meta">
             <span>${d.date}</span>
             ${d.prize ? `<span>${d.prize}</span>` : ''}
+            ${d.countdown ? `<span class="hc-countdown${d.countdown.urgent ? ' hc-countdown-urgent' : ''}${d.countdown.closed ? ' hc-countdown-closed' : ''}">${d.countdown.text}</span>` : ''}
           </div>
           <span class="hc-card-btn">Explore →</span>
         </div>

@@ -220,6 +220,17 @@ main > .section > .hackathon-cards-wrapper { max-width: 100%; padding: 0; }
   border-radius: 4px;
 }
 
+.hackathon-cards .hc-countdown-urgent {
+  background: rgba(224, 80, 80, 0.15) !important;
+  color: #ff8080;
+  font-weight: 600;
+}
+
+.hackathon-cards .hc-countdown-closed {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.35);
+}
+
 /* ── Explore button ───────────────────────────────────────────── */
 .hackathon-cards .hc-card-btn {
   display: inline-flex;
