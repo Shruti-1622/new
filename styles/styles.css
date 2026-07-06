@@ -53,6 +53,16 @@
   src: local('Arial');
 }
 
+/* Bebas Neue is a very condensed display font; a plain sans-serif fallback
+   renders noticeably wider at the same font-size, which can wrap headings
+   onto an extra line and cause a layout shift once Bebas Neue loads.
+   size-adjust measured against real rendered text width (see PR notes). */
+@font-face {
+  font-family: bebas-neue-fallback;
+  size-adjust: 60%;
+  src: local('Arial');
+}
+
 @media (width >=900px) {
   :root {
     /* body sizes */

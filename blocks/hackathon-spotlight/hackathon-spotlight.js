@@ -1,3 +1,19 @@
+// AEM's asset service can re-encode any image on the fly via the `format` query
+// param. Raw <img> fallbacks keep whatever format the source file was uploaded as
+// (often PNG/JPG), which can be many times larger than the WebP variant already
+// available as a sibling <source> in the <picture> — requesting it directly here
+// avoids having to keep the <picture> wrapper around just for format negotiation.
+function toWebp(src) {
+  if (!src) return src;
+  try {
+    const url = new URL(src, window.location.href);
+    if (url.searchParams.has('format')) url.searchParams.set('format', 'webply');
+    return url.toString();
+  } catch {
+    return src;
+  }
+}
+
 export default function decorate(block) {
   const rows = [...block.children];
   if (rows.length < 2) return;
@@ -104,6 +120,7 @@ export default function decorate(block) {
 
   // Background: image OR video link in cell 1
   const posterImg = posterCell.querySelector('img');
+  if (posterImg) posterImg.src = toWebp(posterImg.src);
   const videoAnchor = [...posterCell.querySelectorAll('a')].find(
     (a) => a.href && a.href.includes('.mp4'),
   );
@@ -135,6 +152,7 @@ export default function decorate(block) {
   sideRows.forEach((row) => {
     const [imgCell, cardTitleCell, linkCell] = [...row.children];
     const img = imgCell ? imgCell.querySelector('img') : null;
+    if (img) img.src = toWebp(img.src);
     const cardLink = linkCell ? linkCell.querySelector('a') : null;
 
     const card = document.createElement('div');

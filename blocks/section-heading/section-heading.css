@@ -69,7 +69,7 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 
 /* ── Title — exact match to .hs-title ────────────────────────── */
 .section-heading .sh-title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Bebas Neue', bebas-neue-fallback, sans-serif;
   font-size: clamp(36px, 5vw, 64px);
   letter-spacing: 2px;
   text-transform: uppercase;
