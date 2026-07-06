@@ -151,6 +151,25 @@ main > .section > .hackathon-cards-wrapper { max-width: 100%; padding: 0; }
   transform: scale(1.1);
 }
 
+/* ── Skill-match badge (top-left, next to the heart button) ───── */
+.hackathon-cards .hc-skill-match {
+  position: absolute;
+  top: 14px;
+  left: 56px;
+  z-index: 3;
+  padding: 4px 12px;
+  background: rgba(63, 201, 128, 0.15);
+  border: 1px solid rgba(63, 201, 128, 0.4);
+  color: #3fc980;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 100px;
+  backdrop-filter: blur(6px);
+}
+
 /* ── Category badge (top-right) ───────────────────────────────── */
 .hackathon-cards .hc-card-cat {
   position: absolute;

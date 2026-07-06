@@ -1,3 +1,58 @@
+const MONTHS = {
+  january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+  july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
+};
+
+// Parses the freeform authored `date` text ("July 9 – 10, 2026" or
+// "November 15, 2026 – March 1, 2027" or "July 8, 2026") into real start/end
+// Date objects, so the calendar link doesn't need its own ISO date field.
+function parseEventDates(dateText) {
+  if (!dateText) return null;
+  let m = dateText.match(/^([A-Za-z]+)\s+(\d{1,2})(?:\s*[–-]\s*(\d{1,2}))?,\s*(\d{4})$/);
+  if (m) {
+    const [, monthName, d1, d2, year] = m;
+    const month = MONTHS[monthName.toLowerCase()];
+    if (month === undefined) return null;
+    const start = new Date(Number(year), month, Number(d1));
+    const end = new Date(Number(year), month, Number(d2 || d1));
+    return { start, end };
+  }
+  m = dateText.match(/^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s*[–-]\s*([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/);
+  if (m) {
+    const [, m1, d1, y1, m2, d2, y2] = m;
+    const month1 = MONTHS[m1.toLowerCase()];
+    const month2 = MONTHS[m2.toLowerCase()];
+    if (month1 === undefined || month2 === undefined) return null;
+    return { start: new Date(Number(y1), month1, Number(d1)), end: new Date(Number(y2), month2, Number(d2)) };
+  }
+  return null;
+}
+
+// Deliberately uses local getters, not toISOString() -- these dates were built
+// with `new Date(y, m, d)` (local midnight), and converting to UTC first can
+// shift the calendar day by one depending on the viewer's timezone.
+function toGCalDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}${m}${d}`;
+}
+
+// Google Calendar all-day events treat the end date as exclusive, so it needs
+// bumping by one day to actually cover the last day of the hackathon.
+function buildGoogleCalendarUrl({ title, description, location, start, end }) {
+  const endExclusive = new Date(end);
+  endExclusive.setDate(endExclusive.getDate() + 1);
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toGCalDate(start)}/${toGCalDate(endExclusive)}`,
+    details: description,
+    location: location || '',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 export default function decorate(block) {
   if (!document.getElementById('hd-fonts')) {
     const link = document.createElement('link');
@@ -91,6 +146,14 @@ export default function decorate(block) {
   // ── Build page HTML ───────────────────────────────────────────────
   const perc = totalSlots ? Math.min(100, Math.round((registeredCount / totalSlots) * 100)) : 0;
   const spots = totalSlots - registeredCount;
+  const eventDates = parseEventDates(dateText);
+  const calendarUrl = eventDates ? buildGoogleCalendarUrl({
+    title,
+    description: description.slice(0, 900),
+    location: format,
+    start: eventDates.start,
+    end: eventDates.end,
+  }) : null;
   const alreadyReg = state.isReg(hackId);
   const wishSlug = hackId.split('/').filter(Boolean).pop() || hackId;
   const alreadyWish = (() => { try { return JSON.parse(localStorage.getItem('hh-saved') || '[]').some((c) => c.key === wishSlug); } catch { return false; } })();
@@ -203,6 +266,12 @@ export default function decorate(block) {
             ${alreadyWish ? heartFilled : heartSvg}
             <span id="hd-wish-label">${alreadyWish ? 'Wishlisted' : 'Add to Wishlist'}</span>
           </button>
+
+          ${calendarUrl ? `
+          <a class="hd-calendar-btn" href="${calendarUrl}" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Add to Calendar</span>
+          </a>` : ''}
         </div>
       </div>
     </div>`;

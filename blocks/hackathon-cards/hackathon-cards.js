@@ -169,15 +169,47 @@ function formatCountdown(deadlineStr) {
   return { text: `${daysLeft} days left`, urgent: daysLeft <= 3, closed: false };
 }
 
+// Reads the logged-in student's saved profile skills once (cheap, synchronous,
+// no network). Returns [] if not logged in / no skills saved, in which case
+// the match badge is simply not shown (see computeSkillMatch below).
+function getUserSkills() {
+  try {
+    const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
+    let profile = null;
+    if (email) {
+      const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+      profile = profiles[email];
+    }
+    if (!profile) profile = JSON.parse(localStorage.getItem('hk_profile') || 'null');
+    const { skills } = profile || {};
+    if (Array.isArray(skills)) return skills.map((s) => s.toLowerCase().trim()).filter(Boolean);
+    if (typeof skills === 'string') return skills.split(',').map((s) => s.toLowerCase().trim()).filter(Boolean);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+// Simple containment match: how many of the student's own skills appear
+// anywhere in the hackathon's (freeform) skills text. No badge if the
+// student has no saved skills or the hackathon lists none.
+function computeSkillMatch(userSkills, hackathonSkillsText) {
+  if (!userSkills.length || !hackathonSkillsText) return null;
+  const haystack = hackathonSkillsText.toLowerCase();
+  const matched = userSkills.filter((s) => haystack.includes(s));
+  if (!matched.length) return null;
+  return Math.round((matched.length / userSkills.length) * 100);
+}
+
 // ── Parse a fetched hackathon detail page and extract card data ───────────────
-function parseDetailPage(html, slug) {
+function parseDetailPage(html, slug, userSkills) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const data = {};
   doc.querySelectorAll('div').forEach((div) => {
     const kids = [...div.children];
     if (kids.length !== 2) return;
     const key = kids[0]?.textContent.trim().toLowerCase();
-    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags', 'deadline'].includes(key)) {
+    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags', 'deadline', 'skills'].includes(key)) {
       data[key] = kids[1];
     }
   });
@@ -193,6 +225,7 @@ function parseDetailPage(html, slug) {
     date: data.date?.textContent.trim() || '',
     prize: data.prize?.textContent.trim() || '',
     countdown: formatCountdown(data.deadline?.textContent.trim()),
+    matchPct: computeSkillMatch(userSkills, data.skills?.textContent.trim()),
     href: `/hackathons/${slug}`,
   };
 }
@@ -237,12 +270,15 @@ export default async function decorate(block) {
     if (slug) slugs.push(slug);
   });
 
+  // Read once, reused for every card — avoids re-parsing localStorage per card.
+  const userSkills = getUserSkills();
+
   // Fetch all detail pages in parallel and extract card data from da.live content
   const results = await Promise.all(slugs.map(async (slug) => {
     try {
       const resp = await fetch(`/hackathons/${slug}.plain.html`);
       if (!resp.ok) return null;
-      return parseDetailPage(await resp.text(), slug);
+      return parseDetailPage(await resp.text(), slug, userSkills);
     } catch { return null; }
   }));
   const cardsData = results.filter(Boolean);
@@ -260,6 +296,7 @@ export default async function decorate(block) {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
+        ${d.matchPct !== null ? `<span class="hc-skill-match">${d.matchPct}% Match</span>` : ''}
         <span class="hc-card-cat">${d.tag}</span>
         <div class="hc-card-body">
           <span class="hc-card-organizer">${d.org}</span>

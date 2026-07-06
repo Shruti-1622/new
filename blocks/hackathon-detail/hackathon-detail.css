@@ -294,6 +294,20 @@ main > .section > .hackathon-detail-wrapper { max-width: none !important; paddin
 .hackathon-detail .hd-wish-btn:hover { border-color: #ef4444; color: #ef4444; }
 .hackathon-detail .hd-wish-btn.hd-wishlisted { border-color: #ef4444; color: #ef4444; }
 
+/* ── Add to Calendar button ──────────────────────────────────────── */
+.hackathon-detail .hd-calendar-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 10px; margin-top: 10px; background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50px;
+  color: rgba(255, 255, 255, 0.45); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; text-decoration: none;
+  box-sizing: border-box; transition: all 0.2s;
+}
+
+.hackathon-detail .hd-calendar-btn:hover {
+  border-color: #d9a441; color: #d9a441; text-decoration: none;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (min-width: 900px) {
   .hackathon-detail .hd-layout { grid-template-columns: 1fr 380px; }
