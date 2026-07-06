@@ -52,81 +52,83 @@ function getEmail() {
   return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
 }
 
+function parseBlockRows(container) {
+  const data = {};
+  [...container.querySelectorAll(':scope > div')].forEach((row) => {
+    const cols = [...row.querySelectorAll(':scope > div')];
+    if (cols.length < 2) return;
+    const key = cols[0].textContent.trim().toLowerCase();
+    if (key === 'avatar') {
+      const img = cols[1].querySelector('img');
+      data.avatar = img ? img.src : '';
+    } else {
+      data[key] = cols[1].textContent.trim();
+    }
+  });
+  return data;
+}
+
+function buildTeam(data) {
+  const name = data.name || '';
+  if (!name) return null;
+
+  const roles = (data.roles || '').split(',').map((s) => {
+    const parts = s.trim().split(':');
+    return { n: parts[0].trim(), o: (parts[1] || 'open').trim() === 'open' };
+  }).filter((r) => r.n);
+
+  const members = (data.members || '').split(',').map((s, i) => {
+    const clean = s.trim().replace(/\s*\([^)]*\)/, '');
+    const roleMatch = s.match(/\(([^)]+)\)/);
+    return { n: clean, r: roleMatch ? roleMatch[1] : (i === 0 ? 'Team Lead' : 'Member') };
+  }).filter((m) => m.n);
+
+  const techStack = (data['tech-stack'] || '').split(',').map((s) => s.trim()).filter(Boolean);
+
+  return {
+    id: slugify(name),
+    team: name,
+    name: data.hackathon || '',
+    avatar: data.avatar || getRandomAvatar(),
+    theme: data.theme || '',
+    description: data.description || '',
+    deadline: data.deadline || '',
+    creationDate: data['creation-date'] || '',
+    totalSpots: parseInt(data['total-spots'], 10) || 5,
+    experienceLevel: data.experience || 'All Levels',
+    techStack,
+    members,
+    roles,
+    applied: false,
+    userCreated: false,
+  };
+}
+
 async function fetchTeamsData(dataPage) {
   try {
-    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    const base = isLocal ? 'https://main--new--shruti-1622.aem.page' : '';
-    const res = await fetch(`${base}${dataPage}.plain.html`);
+    const res = await fetch(`${dataPage}.plain.html`);
     if (!res.ok) return { config: { categories: ['All Events'], hackathons: [] }, teams: [] };
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const tables = [...doc.querySelectorAll('table')];
 
-    const config = { categories: ['All Events'], hackathons: [] };
+    const config = {
+      categories: ['All Events'], hackathons: [], experienceLevels: [], extraFields: [],
+    };
     const teams = [];
 
-    tables.forEach((table) => {
-      const firstCell = table.querySelector('td')?.textContent.trim().toLowerCase();
+    // da.live returns EDS block-div format: <div class="team-config">, <div class="team-data">
+    const configDiv = doc.querySelector('.team-config');
+    if (configDiv) {
+      const d = parseBlockRows(configDiv);
+      if (d.categories) config.categories = d.categories.split(',').map((s) => s.trim()).filter(Boolean);
+      if (d.hackathons) config.hackathons = d.hackathons.split(',').map((s) => s.trim()).filter(Boolean);
+      if (d['experience-levels']) config.experienceLevels = d['experience-levels'].split(',').map((s) => s.trim()).filter(Boolean);
+      if (d['extra-fields']) config.extraFields = d['extra-fields'].split(',').map((s) => s.trim()).filter(Boolean);
+    }
 
-      if (firstCell === 'team-config') {
-        [...table.querySelectorAll('tr')].slice(1).forEach((row) => {
-          const cells = [...row.querySelectorAll('td')];
-          if (cells.length < 2) return;
-          const key = cells[0].textContent.trim().toLowerCase();
-          const val = cells[1].textContent.trim();
-          if (key === 'categories') config.categories = val.split(',').map((s) => s.trim()).filter(Boolean);
-          if (key === 'hackathons') config.hackathons = val.split(',').map((s) => s.trim()).filter(Boolean);
-        });
-      }
-
-      if (firstCell === 'team-data') {
-        const data = {};
-        [...table.querySelectorAll('tr')].slice(1).forEach((row) => {
-          const cells = [...row.querySelectorAll('td')];
-          if (cells.length < 2) return;
-          const key = cells[0].textContent.trim().toLowerCase();
-          if (key === 'avatar') {
-            const img = cells[1].querySelector('img');
-            data.avatar = img ? img.src : '';
-          } else {
-            data[key] = cells[1].textContent.trim();
-          }
-        });
-
-        const name = data.name || '';
-        if (!name) return;
-
-        const roles = (data.roles || '').split(',').map((s) => {
-          const parts = s.trim().split(':');
-          return { n: parts[0].trim(), o: (parts[1] || 'open').trim() === 'open' };
-        }).filter((r) => r.n);
-
-        const members = (data.members || '').split(',').map((s, i) => {
-          const clean = s.trim().replace(/\s*\([^)]*\)/, '');
-          const roleMatch = s.match(/\(([^)]+)\)/);
-          return { n: clean, r: roleMatch ? roleMatch[1] : (i === 0 ? 'Team Lead' : 'Member') };
-        }).filter((m) => m.n);
-
-        const techStack = (data['tech-stack'] || '').split(',').map((s) => s.trim()).filter(Boolean);
-
-        teams.push({
-          id: slugify(name),
-          team: name,
-          name: data.hackathon || '',
-          avatar: data.avatar || getRandomAvatar(),
-          theme: data.theme || '',
-          description: data.description || '',
-          deadline: data.deadline || '',
-          creationDate: data['creation-date'] || '',
-          totalSpots: parseInt(data['total-spots'], 10) || 5,
-          experienceLevel: data.experience || 'All Levels',
-          techStack,
-          members,
-          roles,
-          applied: false,
-          userCreated: false,
-        });
-      }
+    [...doc.querySelectorAll('.team-data')].forEach((teamDiv) => {
+      const team = buildTeam(parseBlockRows(teamDiv));
+      if (team) teams.push(team);
     });
 
     return { config, teams };
@@ -178,6 +180,16 @@ function loadUserCreatedTeams(TEAMS) {
     let needsSave = false;
     saved.forEach((t) => {
       if (!t.avatar) { t.avatar = getRandomAvatar(); needsSave = true; }
+      // Recompute role.o from approved applications so the grid filter stays accurate
+      // after approve/withdraw actions performed on the profile page.
+      if (Array.isArray(t.roles) && Array.isArray(t.applications)) {
+        t.roles.forEach((role) => {
+          const approvedCount = t.applications.filter(
+            (a) => a.role === role.n && a.status === 'approve',
+          ).length;
+          role.o = approvedCount === 0;
+        });
+      }
       TEAMS.push(t);
     });
     if (needsSave) localStorage.setItem('hk_user_teams', JSON.stringify(saved));
@@ -373,6 +385,8 @@ export default async function decorate(block) {
 
   const { openCreate } = initCreateModal({
     hackathons: config.hackathons,
+    experienceLevels: config.experienceLevels,
+    extraFields: config.extraFields,
     getRandomAvatar,
     onCreated: (newTeam) => {
       TEAMS.push(newTeam);
@@ -474,6 +488,22 @@ export default async function decorate(block) {
     doRenderGrid();
   });
 
+  // ── 9b. If filter-bar block is on the page, delegate all filtering to it ───
+  if (document.querySelector('.filter-bar')) {
+    const toolbar = block.querySelector('.tf-toolbar');
+    if (toolbar) toolbar.style.display = 'none';
+    document.addEventListener('filter-bar:change', (e) => {
+      const { type, value } = e.detail || {};
+      if (type === 'search') { _query = value; doRenderGrid(); }
+      if (type === 'filters') { _filter = value; doRenderGrid(); }
+      if (type === 'dropdown') {
+        _roleFilter = value === 'all-roles' ? 'All Roles'
+          : value.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        doRenderGrid();
+      }
+    });
+  }
+
   // ── 10. Tab switching via sh-tab-switch event ──────────────────────────────
   document.addEventListener('sh-tab-switch', (e) => {
     const tab = e.detail?.tab;
@@ -488,25 +518,20 @@ export default async function decorate(block) {
     }
   });
 
-  // ── 11. Auth gates (capture phase) ────────────────────────────────────────
-  block.querySelector('#tc-grid')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tm-apply-btn');
-    if (btn && !btn.disabled && !btn.classList.contains('applied')) {
-      if (window.Auth && !window.Auth.isLoggedIn()) {
-        e.stopImmediatePropagation();
-        window.Auth.showLoginRequired();
-      }
-    }
-  }, true);
+  // ── 11. Auth gates (capture phase) — temporarily disabled for testing ───────
+  // TODO: re-enable auth gates after testing
+  // block.querySelector('#tc-grid')?.addEventListener('click', (e) => {
+  //   const btn = e.target.closest('.tm-apply-btn');
+  //   if (btn && !btn.disabled && !btn.classList.contains('applied')) {
+  //     if (window.Auth && !window.Auth.isLoggedIn()) {
+  //       e.stopImmediatePropagation();
+  //       window.Auth.showLoginRequired();
+  //     }
+  //   }
+  // }, true);
 
-  block.querySelector('#tc-open-create-btn')?.addEventListener('click', (e) => {
-    if (window.Auth && !window.Auth.isLoggedIn()) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      window.Auth.showLoginRequired();
-    } else {
-      openCreate();
-    }
+  block.querySelector('#tc-open-create-btn')?.addEventListener('click', () => {
+    openCreate();
   }, true);
 
   // ── 12. Global APIs ────────────────────────────────────────────────────────

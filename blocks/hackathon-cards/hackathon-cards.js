@@ -60,7 +60,7 @@ function decorateSaved(block) {
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
     card.innerHTML = `
-      ${d.imgSrc ? `<img class="hc-card-img" src="${d.imgSrc}" alt="${d.imgAlt || ''}" loading="lazy">` : ''}
+      ${d.imgSrc ? `<div class="hc-card-img" role="img" aria-label="${d.imgAlt || ''}" style="background-image:url('${d.imgSrc}')"></div>` : ''}
       <div class="hc-card-scrim"></div>
       <button class="hc-like-btn liked" aria-label="Remove from saved" type="button">
         <svg class="hc-like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -221,14 +221,10 @@ export default async function decorate(block) {
     if (slug) slugs.push(slug);
   });
 
-  // On localhost the AEM CLI may not proxy client-side fetch; hit preview directly.
-  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  const contentBase = isLocal ? 'https://main--new--shruti-1622.aem.page' : '';
-
   // Fetch all detail pages in parallel and extract card data from da.live content
   const results = await Promise.all(slugs.map(async (slug) => {
     try {
-      const resp = await fetch(`${contentBase}/hackathons/${slug}.plain.html`);
+      const resp = await fetch(`/hackathons/${slug}.plain.html`);
       if (!resp.ok) return null;
       return parseDetailPage(await resp.text(), slug);
     } catch { return null; }
@@ -241,7 +237,7 @@ export default async function decorate(block) {
     const heart = saved ? `fill="currentColor" stroke="currentColor"` : `fill="none" stroke="currentColor"`;
     return `
       <div class="hc-card" data-key="${d.key}" data-href="${d.href}" role="button" tabindex="0">
-        ${d.imgSrc ? `<img class="hc-card-img" src="${d.imgSrc}" alt="${d.imgAlt}" loading="lazy">` : '<div class="hc-card-img hc-card-img-placeholder"></div>'}
+        ${d.imgSrc ? `<div class="hc-card-img" role="img" aria-label="${d.imgAlt}" style="background-image:url('${d.imgSrc}')"></div>` : '<div class="hc-card-img hc-card-img-placeholder"></div>'}
         <div class="hc-card-scrim"></div>
         <button class="hc-like-btn${saved ? ' liked' : ''}" aria-label="Save hackathon" type="button">
           <svg class="hc-like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ${heart} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

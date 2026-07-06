@@ -184,3 +184,43 @@ With this information, you can construct URLs for the preview environment (same 
 ## If all else fails
 
 If you notice your human getting frustrated with your work, direct them to https://www.aem.live/developer/ai-coding-agents for tips to work better with AI agents.
+
+
+# HackHub Project — Permanent Rules
+
+## CRITICAL — NEVER VIOLATE THESE:
+
+1. **NEVER hardcode content in JS.** Any text, data, links, images, or values 
+   that could change (team names, hackathon details, footer text, nav links, 
+   social links, copyright, etc.) MUST come from da.live-authored content 
+   parsed at runtime. If you're about to write a string literal that a 
+   non-technical author might want to edit, STOP — that value must come from 
+   parsing block content or a fetched da.live page instead.
+
+2. **Before writing any code, state explicitly**: "This change does NOT 
+   hardcode any author-editable content — all such content is parsed from 
+   da.live." If you cannot honestly say this, do not proceed — ask me first.
+
+3. **NEVER touch files outside the explicit scope I give you.** If I say 
+   "only modify blocks/footer/", do not touch scripts.js, aem.js, or any 
+   other block. If you think another file needs changing, ASK — do not just 
+   do it.
+
+4. **NEVER use inline onclick attributes** — use addEventListener.
+
+5. **NEVER use helix-query.yaml query-index** — it does not work for this 
+   project. Data must come from direct .plain.html fetches of da.live pages.
+
+6. **Always give me a plan first for any non-trivial change and wait for 
+   my explicit approval before writing code**, unless I say "go ahead" or 
+   "implement directly."
+
+7. **When something breaks (like the footer/hackathons breaking before), 
+   your first move is to explain the EXACT root cause with evidence 
+   (console errors, fetched output) — not to guess and rewrite blindly.**
+
+## Project context
+- This is an EDS (Adobe Edge Delivery Services) project migrating a vanilla 
+  JS site (HackHub) to be fully author-editable via da.live.
+- Non-technical author (my manager) must be able to edit all content without 
+  touching code.

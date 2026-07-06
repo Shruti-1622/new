@@ -104,6 +104,11 @@ export default async function decorate(block) {
     bgWrap.className = 'hero-bg';
     if (bgImg) {
       bgWrap.appendChild(bgImg.tagName === 'IMG' ? (() => { const p = document.createElement('picture'); p.appendChild(bgImg); return p; })() : bgImg);
+      const heroImg = bgImg.tagName === 'IMG' ? bgImg : bgImg.querySelector('img');
+      if (heroImg) {
+        heroImg.setAttribute('fetchpriority', 'high');
+        heroImg.setAttribute('loading', 'eager');
+      }
     }
     bgWrap.appendChild(Object.assign(document.createElement('div'), { className: 'hero-bg-overlay' }));
     block.appendChild(bgWrap);

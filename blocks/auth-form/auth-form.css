@@ -1,0 +1,450 @@
+/* ── Page takeover: hide EDS chrome, reset section constraints ──────────────── */
+body.auth-page header,
+body.auth-page footer {
+  display: none !important;
+}
+
+body.auth-page main > .section {
+  margin: 0 !important;
+}
+
+body.auth-page main > .section > div {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.auth-page main > div {
+  margin: 0 !important;
+}
+
+/* ── Root layout ─────────────────────────────────────────────────────────────── */
+.auth-form {
+  display: block;
+  width: 100%;
+}
+
+.auth-form .af-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #09090b;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* ── Left visual panel ──────────────────────────────────────────────────────── */
+.auth-form .af-visual {
+  flex: 1;
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+}
+
+.auth-form .af-visual-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  filter: brightness(0.75) contrast(0.95) saturate(0.85);
+  z-index: 0;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-form .af-visual:hover .af-visual-bg {
+  transform: scale(1.02);
+}
+
+.auth-form .af-visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 7, 6, 0.25) 0%,
+    rgba(10, 9, 8, 0.35) 40%,
+    rgba(9, 8, 7, 0.75) 70%,
+    rgba(9, 9, 11, 0.97) 100%
+  );
+  z-index: 1;
+}
+
+.auth-form .af-logo-link {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: transform 0.25s;
+}
+
+.auth-form .af-logo-link:hover {
+  transform: translateY(-1px) scale(1.02);
+  text-decoration: none;
+}
+
+.auth-form .af-logo-img {
+  height: 54px !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(217, 164, 65, 0.15));
+  transition: filter 0.25s;
+}
+
+.auth-form .af-logo-link:hover .af-logo-img {
+  filter: drop-shadow(0 0 14px rgba(217, 164, 65, 0.5));
+}
+
+.auth-form .af-logo-text {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.auth-form .af-visual-content {
+  position: relative;
+  z-index: 3;
+  max-width: 480px;
+}
+
+.auth-form .af-visual-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem !important;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 1rem !important;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff 0%, #d4c5a9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-form .af-visual-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0 !important;
+}
+
+/* ── Right form panel ────────────────────────────────────────────────────────── */
+.auth-form .af-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-form .af-form-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Tab control ─────────────────────────────────────────────────────────────── */
+.auth-form .af-tabs-control {
+  position: relative;
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 4px;
+  border-radius: 9999px;
+  width: fit-content;
+  align-self: center;
+}
+
+.auth-form .af-tab-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: linear-gradient(135deg, #d9a441, #f5c14e);
+  border-radius: 9999px;
+  z-index: 1;
+  transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 15px rgba(217, 164, 65, 0.3);
+}
+
+.auth-form .af-tab-btn {
+  position: relative;
+  z-index: 2;
+  background: none;
+  border: none;
+  outline: none;
+  color: rgba(161, 161, 170, 1);
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.6rem 2.2rem;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: color 0.3s;
+  letter-spacing: 0.04em;
+}
+
+.auth-form .af-tab-btn.active {
+  color: #000;
+}
+
+/* ── Form panels ─────────────────────────────────────────────────────────────── */
+.auth-form .af-panel {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.auth-form .af-panel.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.auth-form .af-form-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem !important;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 2rem !important;
+  letter-spacing: -0.5px;
+  text-align: center;
+  -webkit-text-fill-color: unset;
+}
+
+/* ── Form fields ─────────────────────────────────────────────────────────────── */
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.auth-form .af-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-form .af-row .af-field {
+  flex: 1;
+}
+
+.auth-form .af-field {
+  position: relative;
+}
+
+.auth-form .af-field input,
+.auth-form .af-field select {
+  width: 100%;
+  padding: 0.95rem 1.2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.auth-form .af-field select {
+  cursor: pointer;
+}
+
+.auth-form .af-field select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.auth-form .af-icon-field input {
+  padding-left: 3rem;
+}
+
+.auth-form .af-field input:focus,
+.auth-form .af-field select:focus {
+  border-color: #d9a441;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(217, 164, 65, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.auth-form .af-field input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.auth-form .af-field-icon {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.25s;
+  z-index: 1;
+}
+
+.auth-form .af-pw-field input {
+  padding-right: 3rem;
+}
+
+/* ── Password toggle ─────────────────────────────────────────────────────────── */
+.auth-form .af-pw-toggle {
+  position: absolute;
+  right: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.auth-form .af-pw-toggle:hover {
+  color: #fff;
+}
+
+/* ── Password strength ───────────────────────────────────────────────────────── */
+.auth-form .af-pw-strength {
+  margin-top: -0.5rem;
+}
+
+.auth-form .af-pw-bars {
+  display: flex;
+  gap: 6px;
+  height: 4px;
+}
+
+.auth-form .af-pw-bar {
+  flex: 1;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.auth-form .af-pw-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: #808080;
+  display: block;
+  margin-top: 4px;
+  transition: color 0.2s;
+}
+
+/* ── Submit button ───────────────────────────────────────────────────────────── */
+.auth-form .af-submit-btn {
+  width: 100%;
+  padding: 1.1rem;
+  background: linear-gradient(135deg, #d9a441, #f5c14e);
+  border: none;
+  border-radius: 50px;
+  color: #000;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  margin-top: 1rem;
+  box-shadow: 0 4px 20px rgba(217, 164, 65, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+
+.auth-form .af-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(217, 164, 65, 0.45);
+  filter: brightness(1.05);
+}
+
+.auth-form .af-submit-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Toast notifications ─────────────────────────────────────────────────────── */
+#af-toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  z-index: 10000;
+}
+
+.af-toast-item {
+  background: rgba(18, 18, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.af-toast-item.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.af-toast-item.error {
+  border-left: 4px solid #ef4444;
+}
+
+.af-toast-item.success {
+  border-left: 4px solid #10b981;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .auth-form .af-container {
+    padding: 0.5rem;
+  }
+
+  .auth-form .af-visual {
+    display: none;
+  }
+
+  .auth-form .af-right {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-form .af-row {
+    flex-direction: column;
+  }
+
+  .auth-form .af-form-wrap {
+    gap: 1.5rem;
+  }
+}

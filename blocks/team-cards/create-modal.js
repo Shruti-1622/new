@@ -1,12 +1,21 @@
 const EXPERIENCE_LEVELS = ['Beginner Friendly', 'All Levels', 'Intermediate', 'Advanced'];
 
-export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
+export function initCreateModal({
+  hackathons, experienceLevels, extraFields, getRandomAvatar, onCreated,
+}) {
   let roles = [];
   let stack = [];
   let currentStep = 1;
 
+  const LEVELS = (experienceLevels && experienceLevels.length) ? experienceLevels : EXPERIENCE_LEVELS;
   const hackOptions = hackathons.map((h) => `<option value="${h}">${h}</option>`).join('');
-  const expOptions = EXPERIENCE_LEVELS.map((e) => `<option value="${e}">${e}</option>`).join('');
+  const expOptions = LEVELS.map((e) => `<option value="${e}">${e}</option>`).join('');
+  const toFieldId = (label) => `ctm-extra-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const extraFieldsHTML = (extraFields || []).map((f) => `
+    <div class="ctm-field">
+      <label class="ctm-label" for="${toFieldId(f)}">${f}</label>
+      <input class="ctm-input" id="${toFieldId(f)}" type="text" placeholder="${f}" autocomplete="off">
+    </div>`).join('');
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="ctm-overlay" id="ctm-overlay">
@@ -75,6 +84,7 @@ export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
                 <input class="ctm-input" id="ctm-deadline" type="date">
               </div>
             </div>
+            ${extraFieldsHTML}
           </div>
           <div class="ctm-form-step" id="ctm-step-container-3" style="display:none;">
             <div class="ctm-section-label">Your Squad Info</div>
@@ -262,8 +272,8 @@ export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
   }
 
   function openCreate() {
-    const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
-    if (!email) { alert('Please log in to create a team.'); return; }
+    const email = (localStorage.getItem('currentUserEmail') || 'test@hackhub.dev').trim().toLowerCase();
+    // TODO: restore auth gate — if (!email) { alert('Please log in to create a team.'); return; }
 
     const profiles = (() => { try { return JSON.parse(localStorage.getItem('hk_profiles') || '{}'); } catch { return {}; } })();
     const membership = (profiles[email] || {}).membership || 'free';
@@ -287,6 +297,7 @@ export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
     ['ctm-team-name', 'ctm-theme', 'ctm-desc', 'ctm-lead', 'ctm-role-input', 'ctm-stack-input', 'ctm-spots', 'ctm-current-members', 'ctm-deadline'].forEach((id) => {
       const el = $(id); if (el) el.value = '';
     });
+    (extraFields || []).forEach((f) => { const el = $(toFieldId(f)); if (el) el.value = ''; });
     ['ctm-hackathon', 'ctm-exp'].forEach((id) => { const el = $(id); if (el) el.selectedIndex = 0; });
 
     const formBody = $('ctm-form-body');
@@ -319,6 +330,11 @@ export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
     const membersArr = [{ n: lead, r: 'Team Lead' }];
     for (let i = 1; i < currentMembers; i += 1) membersArr.push({ n: `Member ${i + 1}`, r: 'Member' });
 
+    const extras = {};
+    (extraFields || []).forEach((f) => {
+      extras[f] = ($(toFieldId(f))?.value || '').trim();
+    });
+
     const newTeam = {
       id: Date.now(),
       team: teamName,
@@ -338,6 +354,7 @@ export function initCreateModal({ hackathons, getRandomAvatar, onCreated }) {
       userCreated: true,
       creatorEmail: email,
       applications: [],
+      ...extras,
     };
 
     try {

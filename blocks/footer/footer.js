@@ -72,6 +72,46 @@ function parseTable(table) {
   };
 }
 
+function cellHTML(el) {
+  const p = el.querySelector(':scope > p');
+  return (p && el.children.length === 1) ? p.innerHTML : el.innerHTML;
+}
+
+function parseDiv(container) {
+  let logo = '';
+  let taglineHTML = '';
+  const socials = [];
+  const navCols = [];
+  let copyright = '';
+  let builtHTML = '';
+
+  [...container.querySelectorAll(':scope > div')].forEach((row) => {
+    const cols = [...row.querySelectorAll(':scope > div')];
+    if (cols.length < 2) return;
+    const key = cols[0].textContent.trim().toLowerCase();
+    const val = cols[1];
+    if (!key || key === 'footer') return;
+    if (key === 'logo') { logo = val.textContent.trim(); return; }
+    if (key === 'tagline') { taglineHTML = cellHTML(val); return; }
+    if (key === 'github' || key === 'twitter' || key === 'linkedin') {
+      const a = val.querySelector('a');
+      socials.push({ platform: key, href: a ? a.getAttribute('href') : val.textContent.trim() });
+      return;
+    }
+    if (key === 'copyright') { copyright = val.textContent.trim(); return; }
+    if (key === 'built') { builtHTML = cellHTML(val).replace(/[❤♥]/g, HEART_SVG); return; }
+    const links = [...val.querySelectorAll('a')].map((a) => ({
+      text: a.textContent.trim(),
+      href: a.getAttribute('href') || '/',
+    }));
+    if (links.length) navCols.push({ heading: cols[0].textContent.trim(), links });
+  });
+
+  return {
+    logo, taglineHTML, socials, navCols, copyright, builtHTML,
+  };
+}
+
 async function fetchFooterHTML() {
   const { hostname } = window.location;
   const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
@@ -87,9 +127,21 @@ export default async function decorate(block) {
   try {
     const html = await fetchFooterHTML();
     const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    // da.live may return raw <table> OR EDS block-div format <div class="footer">
     const table = doc.querySelector('table');
-    if (!table) throw new Error('no <table> in /footer.plain.html — check da.live page structure');
-    render(block, parseTable(table));
+    if (table) {
+      render(block, parseTable(table));
+      return;
+    }
+
+    const divBlock = doc.querySelector('.footer') || doc.querySelector('body > div');
+    if (divBlock) {
+      render(block, parseDiv(divBlock));
+      return;
+    }
+
+    throw new Error('no parseable content in /footer.plain.html — check da.live page structure');
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn('Footer: failed to load —', e.message);

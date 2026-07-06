@@ -378,6 +378,7 @@ export default function decorate(block) {
       slides.forEach((_, i) => {
         const dot = document.createElement('button');
         dot.className = 'carousel-dot';
+        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
         if (i === 0) dot.classList.add('active');
         dot.addEventListener('click', () => showSlide(i));
         dotsContainer.append(dot);

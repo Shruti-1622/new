@@ -49,8 +49,8 @@ export function initApplyModal({ getTeams, onSuccess, onStaticSave }) {
   }
 
   function openApply(teamId, btn) {
-    const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
-    if (!email) { alert('Please log in to apply.'); return; }
+    const email = (localStorage.getItem('currentUserEmail') || 'test@hackhub.dev').trim().toLowerCase();
+    // TODO: restore auth gate — if (!email) { alert('Please log in to apply.'); return; }
 
     const TEAMS = getTeams();
     const t = TEAMS.find((x) => String(x.id) === String(teamId));

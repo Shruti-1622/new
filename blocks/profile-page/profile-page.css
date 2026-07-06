@@ -1,0 +1,1579 @@
+/* ── Page-level overrides ────────────────────────────────────────────────────── */
+body.profile-page main>.section {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.profile-page main>.section>div {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ── Block root ──────────────────────────────────────────────────────────────── */
+.profile-page {
+  display: block;
+  width: 100%;
+  background: #0b0b0d;
+  min-height: 100vh;
+}
+
+.profile-page .pp-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 32px 100px;
+}
+
+/* ── Profile card ────────────────────────────────────────────────────────────── */
+.profile-page .pp-profile-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 18px;
+  transition: border-color 0.2s;
+}
+
+.profile-page .pp-profile-card:hover {
+  border-color: rgba(201, 162, 39, 0.2);
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────────────────── */
+.profile-page .pp-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  border: 2px solid rgba(201, 162, 39, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-avatar-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+  border-radius: 50%;
+}
+
+.profile-page .pp-avatar-img-sm {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+  border-radius: 50%;
+}
+
+.profile-page .pp-avatar-initials {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #c9a227;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1;
+  user-select: none;
+}
+
+.profile-page .pp-avatar-sm {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-avatar-sm .pp-avatar-initials {
+  font-size: 1rem;
+}
+
+/* ── Profile info ────────────────────────────────────────────────────────────── */
+.profile-page .pp-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-page .pp-name {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px !important;
+  line-height: 1.2;
+}
+
+.profile-page .pp-crown {
+  font-style: normal;
+}
+
+.profile-page .pp-role {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  color: #e0b64a;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.profile-page .pp-bio {
+  font-size: 15px;
+  color: #d8d8d8;
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.65;
+}
+
+.profile-page .pp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.profile-page .pp-meta span,
+.profile-page .pp-meta a {
+  font-size: 14px;
+  color: #b8b8b8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.profile-page .pp-meta a {
+  color: #e0b64a;
+  font-weight: 600;
+}
+
+.profile-page .pp-meta a:hover {
+  color: #f0c040;
+}
+
+.profile-page .pp-skills-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.profile-page .pp-skill-chip {
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.profile-page .pp-membership-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-page .pp-badge-member {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.profile-page .pp-badge-free {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.profile-page .pp-badge-premium {
+  background: rgba(201, 162, 39, 0.12);
+  color: #c9a227;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.profile-page .pp-upgrade-btn {
+  background: transparent;
+  border: 1px solid #c9a227;
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.profile-page .pp-upgrade-btn:hover {
+  background: #c9a227;
+  color: #000;
+}
+
+/* ── Edit button ─────────────────────────────────────────────────────────────── */
+.profile-page .pp-edit-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.profile-page .pp-edit-btn:hover {
+  border-color: #c9a227;
+  color: #c9a227;
+}
+
+/* ── Edit modal ──────────────────────────────────────────────────────────────── */
+.profile-page .pp-edit-modal {
+  display: none;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  animation: pp-slide-down 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.profile-page .pp-edit-modal.open {
+  display: block;
+}
+
+@keyframes pp-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-page .pp-edit-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.profile-page .pp-edit-eyebrow {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.profile-page .pp-edit-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.profile-page .pp-edit-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profile-page .pp-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.profile-page .pp-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-page .pp-edit-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-page .pp-edit-hint {
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.profile-page .pp-edit-input {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff !important;
+  font-size: 13px;
+  padding: 10px 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.profile-page .pp-edit-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.profile-page .pp-edit-input:focus {
+  border-color: rgba(201, 162, 39, 0.6);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+}
+
+.profile-page .pp-edit-textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.55;
+}
+
+.profile-page .pp-avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-page .pp-upload-btn {
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 9px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-page .pp-upload-btn:hover {
+  background: rgba(201, 162, 39, 0.18);
+}
+
+.profile-page .pp-upload-hint {
+  font-size: 11px;
+  color: #fff;
+  margin-top: 5px;
+}
+
+.profile-page .pp-skills-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-page .pp-add-skill-btn {
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 9px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.profile-page .pp-add-skill-btn:hover {
+  background: rgba(201, 162, 39, 0.18);
+}
+
+.profile-page .pp-edit-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 10px;
+  margin-top: 6px;
+}
+
+.profile-page .pp-edit-skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(201, 162, 39, 0.08);
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px 4px 10px;
+  border-radius: 5px;
+  animation: pp-tag-pop 0.15s ease both;
+}
+
+@keyframes pp-tag-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.profile-page .pp-edit-skill-tag button {
+  background: none;
+  border: none;
+  color: rgba(201, 162, 39, 0.45);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.profile-page .pp-edit-skill-tag button:hover {
+  color: #c9a227;
+}
+
+.profile-page .pp-edit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px 20px;
+  border-top: 1px solid #1e1e1e;
+}
+
+.profile-page .pp-cancel-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.profile-page .pp-cancel-btn:hover {
+  border-color: #555;
+  color: #fff;
+}
+
+.profile-page .pp-save-btn {
+  background: #c9a227;
+  color: #000;
+  border: none;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.profile-page .pp-save-btn:hover {
+  background: #f0c040;
+  transform: translateY(-1px);
+}
+
+/* ── Stats grid ──────────────────────────────────────────────────────────────── */
+.profile-page .pp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.profile-page .pp-stat-card {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color 0.2s;
+}
+
+.profile-page .pp-stat-card:hover {
+  border-color: rgba(201, 162, 39, 0.3);
+}
+
+.profile-page .pp-stat-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.profile-page .pp-stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.profile-page .pp-stat-sub {
+  font-size: 12px;
+  color: #fff;
+  margin-top: 5px;
+}
+
+.profile-page .pp-green {
+  color: #3fc980 !important;
+}
+
+.profile-page .pp-gold {
+  color: #c9a227 !important;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────────── */
+.profile-page .pp-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #1e1e1e;
+  padding-bottom: 2px;
+  flex-wrap: wrap;
+}
+
+.profile-page .pp-tab-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.profile-page .pp-tab-btn:hover {
+  color: #fff;
+}
+
+.profile-page .pp-tab-btn.active {
+  color: #c9a227;
+}
+
+.profile-page .pp-tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #c9a227;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.profile-page .pp-tab-btn.active::after {
+  transform: scaleX(1);
+}
+
+/* ── Tab panels ──────────────────────────────────────────────────────────────── */
+.profile-page .pp-tab-content {
+  display: block;
+}
+
+.profile-page .pp-panel {
+  display: none;
+}
+
+.profile-page .pp-panel.active {
+  display: block;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────────── */
+.profile-page .pp-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.8;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 12px;
+}
+
+.profile-page .pp-empty svg {
+  display: block;
+  margin: 0 auto 10px;
+  opacity: 0.45;
+  color: #fff;
+}
+
+.profile-page .pp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 22px;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: #c9a227;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 50px;
+  transition: background 0.2s;
+}
+
+.profile-page .pp-link-btn:hover {
+  background: rgba(201, 162, 39, 0.18);
+  text-decoration: none;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────────────────────── */
+.profile-page .pp-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0;
+}
+
+.profile-page .pp-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(201, 162, 39, 0.15);
+  border-top-color: #c9a227;
+  border-radius: 50%;
+  animation: pp-spin 0.8s linear infinite;
+}
+
+@keyframes pp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Accordion items ─────────────────────────────────────────────────────────── */
+.profile-page .pp-accordion-item {
+  margin-bottom: 8px;
+}
+
+.profile-page .pp-team-btn {
+  width: 100%;
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.profile-page .pp-team-btn:hover {
+  border-color: rgba(201, 162, 39, 0.35);
+  background: rgba(201, 162, 39, 0.03);
+}
+
+.profile-page .pp-team-btn.active {
+  border-color: rgba(201, 162, 39, 0.5);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: rgba(201, 162, 39, 0.05);
+}
+
+.profile-page .pp-team-btn-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-page .pp-t-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-page .pp-t-sub {
+  font-size: 12px;
+  color: #fff;
+}
+
+.profile-page .pp-team-btn-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.profile-page .pp-chevron {
+  font-size: 10px;
+  color: #444;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.profile-page .pp-team-btn.active .pp-chevron {
+  transform: rotate(180deg);
+  color: #c9a227;
+}
+
+/* ── Inline detail ───────────────────────────────────────────────────────────── */
+.profile-page .pp-inline-detail {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 20px 22px 24px;
+  margin-bottom: 8px;
+  animation: pp-slide-down 0.2s ease both;
+}
+
+.profile-page .pp-detail-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.profile-page .pp-detail-hackathon {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #fff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.profile-page .pp-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.profile-page .pp-detail-item {
+  background: #161616;
+  border: 1px solid #1e1e1e;
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+
+.profile-page .pp-detail-key {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.profile-page .pp-detail-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.profile-page .pp-detail-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.profile-page .pp-detail-desc {
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.65;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 7px;
+  border: 1px solid #1e1e1e;
+}
+
+.profile-page .pp-tech-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.profile-page .pp-tech-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #2a2a2a;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.profile-page .pp-my-app {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+
+.profile-page .pp-my-app a {
+  color: #c9a227;
+  word-break: break-all;
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────────────── */
+.profile-page .pp-badge {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-b-gold {
+  background: #1e1700;
+  color: #c9a227;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.profile-page .pp-b-green {
+  background: #0a1e12;
+  color: #3fc980;
+  border: 1px solid rgba(63, 201, 128, 0.3);
+}
+
+.profile-page .pp-b-red {
+  background: #1e0a0a;
+  color: #e05050;
+  border: 1px solid rgba(224, 80, 80, 0.3);
+}
+
+/* ── Withdraw button ─────────────────────────────────────────────────────────── */
+.profile-page .pp-unapply-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: rgba(224, 80, 80, 0.07);
+  border: 1px solid rgba(224, 80, 80, 0.25);
+  color: #e05050;
+  border-radius: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.profile-page .pp-unapply-btn:hover {
+  background: rgba(224, 80, 80, 0.14);
+  border-color: rgba(224, 80, 80, 0.45);
+  transform: translateY(-1px);
+}
+
+/* ── Applicant rows ──────────────────────────────────────────────────────────── */
+.profile-page .pp-applicants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-page .pp-applicant-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.profile-page .pp-applicant-row:last-child {
+  border-bottom: none;
+}
+
+.profile-page .pp-app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-page .pp-app-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-page .pp-app-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c9a227;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.profile-page .pp-app-av-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+.profile-page .pp-app-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.profile-page .pp-app-role {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.profile-page .pp-app-detail {
+  font-size: 12px;
+  color: #fff;
+  line-height: 1.7;
+  margin-top: 6px;
+  padding-left: 44px;
+}
+
+.profile-page .pp-app-detail a {
+  color: #c9a227;
+  word-break: break-all;
+}
+
+.profile-page .pp-action-btns {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-btn-approve {
+  background: rgba(63, 201, 128, 0.08);
+  color: #3fc980;
+  border: 1px solid rgba(63, 201, 128, 0.25);
+  padding: 5px 13px;
+  border-radius: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.profile-page .pp-btn-approve:hover {
+  background: rgba(63, 201, 128, 0.16);
+}
+
+.profile-page .pp-btn-reject {
+  background: rgba(224, 80, 80, 0.08);
+  color: #e05050;
+  border: 1px solid rgba(224, 80, 80, 0.25);
+  padding: 5px 13px;
+  border-radius: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.profile-page .pp-btn-reject:hover {
+  background: rgba(224, 80, 80, 0.16);
+}
+
+.profile-page .pp-decided {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-decided-yes {
+  color: #3fc980;
+}
+
+.profile-page .pp-decided-no {
+  color: #e05050;
+}
+
+.profile-page .pp-no-apps {
+  font-size: 13px;
+  color: #fff;
+  padding: 12px 0;
+}
+
+/* ── Registered hackathon cards ──────────────────────────────────────────────── */
+.profile-page .pp-reg-card {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-page .pp-reg-card:hover {
+  border-color: rgba(201, 162, 39, 0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page .pp-reg-card-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.profile-page .pp-reg-logo {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.profile-page .pp-reg-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.profile-page .pp-reg-meta {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-page .pp-reg-card-body {
+  padding: 18px 20px;
+}
+
+.profile-page .pp-reg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.profile-page .pp-reg-grid-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #1e1e1e;
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+
+.profile-page .pp-reg-grid-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+
+.profile-page .pp-reg-grid-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.profile-page .pp-reg-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.profile-page .pp-reg-status-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-page .pp-reg-team-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── Next-step boxes ─────────────────────────────────────────────────────────── */
+.profile-page .pp-next-step-box {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-left: 3px solid #c9a227;
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.profile-page .pp-ns-success {
+  border-left-color: #3fc980;
+}
+
+.profile-page .pp-ns-warning {
+  border-left-color: #c9a227;
+}
+
+.profile-page .pp-ns-info {
+  border-left-color: #4a9edd;
+}
+
+.profile-page .pp-ns-error {
+  border-left-color: #e05050;
+}
+
+.profile-page .pp-ns-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-page .pp-ns-desc {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #fff;
+  margin: 0;
+}
+
+.profile-page .pp-ns-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.profile-page .pp-ns-btn,
+.profile-page .pp-ns-btn-link {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  background: #c9a227;
+  color: #000;
+}
+
+.profile-page .pp-ns-btn:hover,
+.profile-page .pp-ns-btn-link:hover {
+  background: #f0c040;
+  box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+  text-decoration: none;
+}
+
+.profile-page .pp-ns-btn.pf-btn-secondary,
+.profile-page .pp-ns-btn-link.pf-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.profile-page .pp-ns-btn.pf-btn-secondary:hover,
+.profile-page .pp-ns-btn-link.pf-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ── Confirm overlay ─────────────────────────────────────────────────────────── */
+.profile-page .pp-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-page .pp-confirm-overlay.open {
+  display: flex;
+}
+
+.profile-page .pp-confirm-box {
+  background: linear-gradient(165deg, #1a1a20 0%, #141418 100%);
+  border: 1px solid rgba(201, 162, 39, 0.15);
+  border-radius: 20px;
+  max-width: 420px;
+  width: 92%;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(201, 162, 39, 0.06);
+  animation: pp-confirm-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pp-confirm-in {
+  from {
+    transform: scale(0.92) translateY(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.profile-page .pp-confirm-accent {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #c9a227 30%, #f0c040 50%, #c9a227 70%, transparent);
+}
+
+.profile-page .pp-confirm-content {
+  padding: 32px 28px 28px;
+  text-align: center;
+}
+
+.profile-page .pp-confirm-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: #c9a227;
+}
+
+.profile-page .pp-confirm-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px !important;
+  letter-spacing: -0.01em;
+}
+
+.profile-page .pp-confirm-msg {
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.6;
+  margin: 0 0 24px !important;
+}
+
+.profile-page .pp-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-page .pp-confirm-yes {
+  width: 100%;
+  background: #c9a227;
+  border: 1px solid #c9a227;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-page .pp-confirm-yes:hover {
+  background: #f0c040;
+  border-color: #f0c040;
+  box-shadow: 0 8px 24px rgba(201, 162, 39, 0.25);
+  transform: translateY(-1px);
+}
+
+.profile-page .pp-confirm-cancel {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-page .pp-confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .profile-page .pp-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-page .pp-detail-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-page .pp-main {
+    padding: 20px 16px 60px;
+  }
+
+  .profile-page .pp-profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .profile-page .pp-edit-btn {
+    position: static;
+    margin-top: 4px;
+  }
+
+  .profile-page .pp-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-page .pp-edit-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-page .pp-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-page .pp-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-page .pp-avatar-initials {
+    font-size: 1.4rem;
+  }
+
+  .profile-page .pp-tabs {
+    gap: 0;
+  }
+
+  .profile-page .pp-tab-btn {
+    font-size: 12px;
+    padding: 10px 10px;
+  }
+}
+
+/* ── Completed Teams: next-action buttons ─────────────────────────────────────── */
+.profile-page .pp-ct-next-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.profile-page .pp-ct-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.profile-page .pp-ct-btn-primary {
+  background: #c9a227;
+  color: #000;
+}
+
+.profile-page .pp-ct-btn-primary:hover {
+  background: #f0c040;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.3);
+}
+
+.profile-page .pp-ct-btn-secondary {
+  background: rgba(201, 162, 39, 0.08);
+  color: #c9a227;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.profile-page .pp-ct-btn-secondary:hover {
+  background: rgba(201, 162, 39, 0.16);
+}
+
+.profile-page .pp-ct-btn-danger {
+  background: rgba(224, 80, 80, 0.08);
+  color: #e05050;
+  border: 1px solid rgba(224, 80, 80, 0.28);
+}
+
+.profile-page .pp-ct-btn-danger:hover {
+  background: rgba(224, 80, 80, 0.16);
+}
+
+/* ── Completed Teams: leader actions row ──────────────────────────────────────── */
+.profile-page .pp-ct-leader-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid #1e1e1e;
+}
+
+/* ── Completed Teams: comms placeholder ───────────────────────────────────────── */
+.profile-page .pp-ct-comms {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+}
+
+/* ── Completed Teams: member email ────────────────────────────────────────────── */
+.profile-page .pp-ct-member-email {
+  font-size: 13px;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+/* ── Completed Teams: invitation banner ───────────────────────────────────────── */
+.profile-page .pp-ct-invite-banner {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(63, 201, 128, 0.06);
+  border: 1px solid rgba(63, 201, 128, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #3fc980;
+}

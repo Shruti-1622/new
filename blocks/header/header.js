@@ -80,6 +80,97 @@ function buildNav() {
     </nav>`;
 }
 
+// ── Notification helpers ──────────────────────────────────────────────────────
+function getEmail() {
+  return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
+}
+
+function readNotifs() {
+  try { return JSON.parse(localStorage.getItem('hk_notifications') || '[]'); } catch { return []; }
+}
+
+function saveNotifs(notifs) {
+  try { localStorage.setItem('hk_notifications', JSON.stringify(notifs)); } catch { /* */ }
+}
+
+function relativeTime(ts) {
+  const diff = Date.now() - (ts || 0);
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
+
+const NOTIF_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+
+function renderNotifications() {
+  const email = getEmail();
+  const badge = document.getElementById('auth-notif-badge');
+  const list = document.getElementById('auth-notif-list');
+  if (!badge && !list) return;
+
+  const all = readNotifs();
+  // Support both recipientEmail (delayed.js) and userEmail (auth.js legacy)
+  const mine = all
+    .filter((n) => (n.recipientEmail || n.userEmail || '') === email)
+    .sort((a, b) => (b.ts || new Date(b.timestamp).getTime() || 0) - (a.ts || new Date(a.timestamp).getTime() || 0));
+
+  const unread = mine.filter((n) => !n.read).length;
+
+  // Update badge
+  if (badge) {
+    if (unread > 0) {
+      badge.textContent = unread > 9 ? '9+' : String(unread);
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // Update list
+  if (!list) return;
+  if (mine.length === 0) {
+    list.innerHTML = `<div style="padding:24px 16px;text-align:center;">
+      <div style="margin-bottom:8px;opacity:0.4;">${NOTIF_ICON}</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#71717a;">No notifications yet.</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = mine.map((n) => {
+    const ts = n.ts || (n.timestamp ? new Date(n.timestamp).getTime() : 0);
+    const unreadStyle = n.read
+      ? 'background:transparent;'
+      : 'background:rgba(201,168,76,0.07);border-left:3px solid #c9a84c;';
+    return `<div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);${unreadStyle}cursor:default;transition:background 0.15s;" data-notif-id="${n.id || ''}">
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <span style="flex-shrink:0;margin-top:2px;opacity:0.7;">${NOTIF_ICON}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:${n.read ? '500' : '700'};color:${n.read ? '#a1a1aa' : '#fff'};margin-bottom:3px;">${n.title || ''}</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#71717a;line-height:1.45;">${n.message || ''}</div>
+          <div style="font-size:10px;color:#52525b;margin-top:5px;font-family:'DM Mono',monospace;">${relativeTime(ts)}</div>
+        </div>
+        ${!n.read ? '<div style="width:7px;height:7px;border-radius:50%;background:#c9a84c;flex-shrink:0;margin-top:4px;"></div>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function markNotifsRead() {
+  const email = getEmail();
+  if (!email) return;
+  const all = readNotifs();
+  let changed = false;
+  all.forEach((n) => {
+    if ((n.recipientEmail || n.userEmail || '') === email && !n.read) {
+      n.read = true;
+      changed = true;
+    }
+  });
+  if (changed) { saveNotifs(all); renderNotifications(); }
+}
+
+// ── Auth state ────────────────────────────────────────────────────────────────
 function updateAuthState(nav) {
   const signupBtn = nav.querySelector('#auth-signup-btn');
   const notifWrap = nav.querySelector('#auth-notification-wrap');
@@ -117,13 +208,21 @@ function wireEvents(nav) {
 
   notifBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
-    const open = notifDropdown.style.display === 'block';
-    notifDropdown.style.display = open ? 'none' : 'block';
+    const isOpen = notifDropdown.style.display === 'block';
+    if (isOpen) {
+      notifDropdown.style.display = 'none';
+    } else {
+      // Render fresh content then open
+      renderNotifications();
+      notifDropdown.style.display = 'block';
+      // Mark as read after a short delay so unread highlight is visible briefly
+      setTimeout(markNotifsRead, 800);
+    }
     if (authDropdown) authDropdown.style.display = 'none';
   });
 
   logoutBtn?.addEventListener('click', () => {
-    ['isLoggedIn', 'currentUserEmail', 'hk_profile', 'hk_notifications'].forEach((k) => localStorage.removeItem(k));
+    ['isLoggedIn', 'currentUserEmail', 'hk_profile', 'hk_notifications', 'hackhub_user'].forEach((k) => localStorage.removeItem(k));
     if (window.location.pathname.includes('/profile')) {
       window.location.replace('/');
     } else {
@@ -133,14 +232,26 @@ function wireEvents(nav) {
 
   signupBtn?.addEventListener('click', (e) => {
     e.preventDefault();
-    window.location.href = `/signup?mode=signup&redirect=${encodeURIComponent(window.location.href)}`;
+    if (window.Auth?.showSignUp) { window.Auth.showSignUp(); return; }
+    window.location.href = '/auth-form';
   });
 
   hamburger?.addEventListener('click', () => navLinks?.classList.toggle('open'));
 
-  document.addEventListener('click', () => {
-    if (authDropdown) authDropdown.style.display = 'none';
-    if (notifDropdown) notifDropdown.style.display = 'none';
+  document.addEventListener('click', (e) => {
+    const notifWrap = nav.querySelector('#auth-notification-wrap');
+    if (notifWrap && !notifWrap.contains(e.target)) {
+      if (notifDropdown) notifDropdown.style.display = 'none';
+    }
+    const profileWrap = nav.querySelector('#auth-profile-wrap');
+    if (profileWrap && !profileWrap.contains(e.target)) {
+      if (authDropdown) authDropdown.style.display = 'none';
+    }
+  });
+
+  // Keep badge in sync with localStorage changes from other tabs/blocks
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'hk_notifications') renderNotifications();
   });
 }
 
@@ -150,6 +261,21 @@ export default function decorate(block) {
   updateAuthState(nav);
   wireEvents(nav);
 
-  // If auth.js ran from a page template, re-sync its nav state now that elements exist
-  if (window.Auth?.updateNav) window.Auth.updateNav();
+  // Initial render of notification badge
+  if (isLoggedIn()) renderNotifications();
+
+  // Expose renderNotifications globally so delayed.js window.Auth.notify()
+  // and any other block (apply-modal, profile-page, etc.) can trigger a live update.
+  const _existingAuth = window.Auth || {};
+  window.Auth = {
+    ..._existingAuth,
+    renderNotifications,
+    updateNav() {
+      updateAuthState(nav);
+      if (isLoggedIn()) renderNotifications();
+    },
+  };
+
+  // If auth.js (page-template) already ran, keep its API but patch renderNotifications in
+  if (_existingAuth.updateNav) _existingAuth.updateNav();
 }
