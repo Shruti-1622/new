@@ -250,8 +250,118 @@ function decorateMoments(block) {
   block.append(grid);
 }
 
+// ── FEATURED HACKATHONS VARIANT ────────────────────────────────────────────────
+// Each row = one slug pointing to a /hackathons/[slug] da.live page — same data
+// source as the hackathon-cards carousel, so cards always match the real event
+// and clicking one opens the actual detail page. Last row with a link = "View
+// All" CTA (same convention as hackathon-cards).
+function parseFeaturedCard(html, slug) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const data = {};
+  doc.querySelectorAll('div').forEach((div) => {
+    const kids = [...div.children];
+    if (kids.length !== 2) return;
+    const key = kids[0]?.textContent.trim().toLowerCase();
+    if (['title', 'image', 'city', 'tagline', 'date'].includes(key)) {
+      data[key] = kids[1];
+    }
+  });
+
+  const picture = data.image?.querySelector('picture');
+  const img = picture?.querySelector('img');
+  if (img) img.removeAttribute('loading');
+
+  const dateMatch = (data.date?.textContent.trim() || '').match(/([A-Za-z]+)\s+(\d{1,2})/);
+
+  return {
+    picture,
+    month: dateMatch ? dateMatch[1].slice(0, 3).toUpperCase() : '',
+    day: dateMatch ? dateMatch[2].padStart(2, '0') : '',
+    city: data.city?.textContent.trim() || '',
+    title: data.title?.textContent.trim() || '',
+    tagline: data.tagline?.textContent.trim() || '',
+    href: `/hackathons/${slug}`,
+  };
+}
+
+async function decorateFeaturedHackathons(block) {
+  if (!document.querySelector('link[data-font="bebas-neue"], link[data-font="hc-fonts"], link[data-font="fb-fonts"], link[data-font="hof-fonts"]')) {
+    const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com';
+    const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = '';
+    const fl = document.createElement('link'); fl.rel = 'stylesheet';
+    fl.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;600&display=swap';
+    fl.dataset.font = 'fb-fonts';
+    document.head.append(pc1, pc2, fl);
+  }
+
+  let viewAllHref = '/hackathon';
+  let viewAllLabel = 'View All Events';
+  const slugs = [];
+
+  [...block.children].forEach((row) => {
+    const linkEl = row.querySelector('a');
+    if (linkEl) {
+      viewAllHref = linkEl.href;
+      viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
+      return;
+    }
+    const slug = row.textContent.trim();
+    if (slug) slugs.push(slug);
+  });
+
+  const results = await Promise.all(slugs.map(async (slug) => {
+    try {
+      const resp = await fetch(`/hackathons/${slug}.plain.html`);
+      if (!resp.ok) return null;
+      return parseFeaturedCard(await resp.text(), slug);
+    } catch { return null; }
+  }));
+
+  const ul = document.createElement('ul');
+  results.filter(Boolean).forEach((d) => {
+    const li = document.createElement('li');
+    li.style.cursor = 'pointer';
+    li.addEventListener('click', () => { window.location.href = d.href; });
+
+    if (d.picture) {
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'cards-card-image';
+      imgWrap.append(d.picture);
+      li.append(imgWrap);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'cards-card-body';
+
+    const dateBox = document.createElement('div');
+    dateBox.className = 'event-date-box';
+    dateBox.innerHTML = `<p class="event-month">${d.month}</p><p class="event-date">${d.day}</p>`;
+
+    const details = document.createElement('div');
+    details.className = 'event-details';
+    details.innerHTML = `
+      <p class="event-location">${d.city}</p>
+      <p class="event-title">${d.title}</p>
+      <p class="event-description">${d.tagline}</p>`;
+
+    body.append(dateBox, details);
+    li.append(body);
+    ul.append(li);
+  });
+
+  block.innerHTML = '';
+  block.append(ul);
+
+  const viewAllPara = document.createElement('p');
+  const viewAllLink = document.createElement('a');
+  viewAllLink.href = viewAllHref;
+  viewAllLink.innerHTML = `<strong>${viewAllLabel}</strong>`;
+  viewAllPara.append(viewAllLink);
+  block.append(viewAllPara);
+}
+
 // ── MAIN DECORATE ─────────────────────────────────────────────────────────────
-export default function decorate(block) {
+export default async function decorate(block) {
   // HOF variant — fully separate rendering path
   if (block.classList.contains('hof')) {
     decorateHof(block);
@@ -261,6 +371,12 @@ export default function decorate(block) {
   // Moments masonry variant
   if (block.classList.contains('moments')) {
     decorateMoments(block);
+    return;
+  }
+
+  // Featured hackathons — fetches real data from /hackathons/[slug] pages
+  if (block.classList.contains('featured-hackathons')) {
+    await decorateFeaturedHackathons(block);
     return;
   }
 
@@ -274,78 +390,6 @@ export default function decorate(block) {
         div.className = 'cards-card-image';
       } else {
         div.className = 'cards-card-body';
-
-        // If this is the featured-hackathons variant, structure the date box
-        if (block.classList.contains('featured-hackathons')) {
-          // Normalize if content is in a single <p> separated by <br>
-          if (div.children.length === 1 && div.children[0].tagName === 'P' && div.children[0].innerHTML.includes('<br>')) {
-            const p = div.children[0];
-            // Replace <br> with split marker, then split and create separate P tags
-            const parts = p.innerHTML.split(/<br\s*\/?>/i);
-            div.innerHTML = '';
-            parts.forEach(part => {
-              const newP = document.createElement('p');
-              newP.innerHTML = part.trim();
-              div.append(newP);
-            });
-          }
-
-          const elements = [...div.children];
-          if (elements.length >= 6) {
-            const dateBox = document.createElement('div');
-            dateBox.className = 'event-date-box';
-
-            const month = elements[0];
-            month.className = 'event-month';
-
-            const date = elements[1];
-            date.className = 'event-date';
-
-            dateBox.append(month, date);
-
-            const detailsBox = document.createElement('div');
-            detailsBox.className = 'event-details';
-
-            elements.slice(2).forEach((el, index) => {
-              // index 0 = Location, 1 = Title, 2 = Description, 3 = Link
-              if (index === 3) {
-                 el.className = 'event-link-wrapper';
-                 // Find the link whether it's an <a> tag or plain text URL
-                 const aTag = el.querySelector('a');
-                 let link = '';
-                 if (aTag) {
-                   link = aTag.href;
-                 } else {
-                   // Fallback if pasted as plain text [Register](url) or just url
-                   const text = el.textContent;
-                   const urlMatch = text.match(/https?:\/\/[^\s)]+/);
-                   if (urlMatch) link = urlMatch[0];
-                 }
-
-                 if (link) {
-                   li.style.cursor = 'pointer';
-                   li.addEventListener('click', () => {
-                     window.open(link, '_blank');
-                   });
-                 }
-                 el.style.display = 'none';
-              } else if (index === 1) {
-                 el.className = 'event-title';
-                 // Clean up markdown hashes if they were pasted as plain text
-                 el.innerHTML = el.innerHTML.replace(/^#+\s*/, '');
-              } else if (index === 0) {
-                 el.className = 'event-location';
-                 el.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; color: #c9a227;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${el.textContent}`;
-              } else if (index === 2) {
-                 el.className = 'event-description';
-              }
-              detailsBox.append(el);
-            });
-
-            div.innerHTML = '';
-            div.append(dateBox, detailsBox);
-          }
-        }
       }
     });
     ul.append(li);
