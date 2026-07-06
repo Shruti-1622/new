@@ -117,9 +117,9 @@ main > .section > .hackathon-spotlight-wrapper { max-width: 100%; padding: 0; }
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.92) 0%,
-    rgba(0, 0, 0, 0.45) 50%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0) 70%
   );
   transition: background 0.4s ease;
   z-index: 1;
@@ -128,9 +128,9 @@ main > .section > .hackathon-spotlight-wrapper { max-width: 100%; padding: 0; }
 .hackathon-spotlight .spotlight-video-card:hover .spotlight-scrim {
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.96) 0%,
-    rgba(0, 0, 0, 0.65) 50%,
-    rgba(0, 0, 0, 0.35) 100%
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.3) 40%,
+    rgba(0, 0, 0, 0.05) 70%
   );
 }
 
