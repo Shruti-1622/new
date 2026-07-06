@@ -118,6 +118,24 @@ export default function decorate(block) {
       </div>
     </div>`;
 
+  // Whole card navigates to the same detail page as the "Explore Event" link,
+  // without hijacking clicks on the link itself (or its native modifier-key behavior).
+  if (ctaLink) {
+    featuredCard.style.cursor = 'pointer';
+    featuredCard.setAttribute('role', 'link');
+    featuredCard.setAttribute('tabindex', '0');
+    featuredCard.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      window.location.href = ctaLink.href;
+    });
+    featuredCard.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('a')) {
+        e.preventDefault();
+        window.location.href = ctaLink.href;
+      }
+    });
+  }
+
   // Background: image OR video link in cell 1
   const posterImg = posterCell.querySelector('img');
   if (posterImg) posterImg.src = toWebp(posterImg.src);
@@ -165,6 +183,25 @@ export default function decorate(block) {
       <h3>${cardTitleCell ? cardTitleCell.textContent.trim() : ''}</h3>
       ${cardLink ? `<a href="${cardLink.href}" class="feat-register-btn">${cardLink.textContent.trim()}</a>` : ''}`;
     card.appendChild(overlay);
+
+    // Whole card navigates to the same detail page as its link, same pattern as
+    // the main featured card above.
+    if (cardLink) {
+      card.style.cursor = 'pointer';
+      card.setAttribute('role', 'link');
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        window.location.href = cardLink.href;
+      });
+      card.addEventListener('keydown', (e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('a')) {
+          e.preventDefault();
+          window.location.href = cardLink.href;
+        }
+      });
+    }
+
     panel.appendChild(card);
   });
 
