@@ -262,7 +262,7 @@ function parseFeaturedCard(html, slug) {
     const kids = [...div.children];
     if (kids.length !== 2) return;
     const key = kids[0]?.textContent.trim().toLowerCase();
-    if (['title', 'image', 'city', 'tagline', 'date'].includes(key)) {
+    if (['title', 'image', 'city', 'tagline', 'date', 'prize'].includes(key)) {
       data[key] = kids[1];
     }
   });
@@ -280,6 +280,7 @@ function parseFeaturedCard(html, slug) {
     city: data.city?.textContent.trim() || '',
     title: data.title?.textContent.trim() || '',
     tagline: data.tagline?.textContent.trim() || '',
+    prize: data.prize?.textContent.trim() || '',
     href: `/hackathons/${slug}`,
   };
 }
@@ -342,7 +343,8 @@ async function decorateFeaturedHackathons(block) {
     details.innerHTML = `
       <p class="event-location">${d.city}</p>
       <p class="event-title">${d.title}</p>
-      <p class="event-description">${d.tagline}</p>`;
+      <p class="event-description">${d.tagline}</p>
+      ${d.prize ? `<p class="event-prize">${d.prize}</p>` : ''}`;
 
     body.append(dateBox, details);
     li.append(body);

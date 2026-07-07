@@ -158,6 +158,15 @@
   margin: 0;
 }
 
+.cards.featured-hackathons .event-prize {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #D9A441;
+  letter-spacing: 0.03em;
+  margin: 0.6rem 0 0;
+}
+
 /* ── GALLERY CAROUSEL VARIANT ────────────────────────── */
 .cards.gallery {
   margin-top: 2.5rem;
