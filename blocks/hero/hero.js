@@ -56,7 +56,7 @@ export default async function decorate(block) {
         } else if (key.includes('desc')) {
           descText = val.textContent.trim();
         } else if (key.includes('cta') || key.includes('button') || key.includes('link')) {
-          ctaLinks = [...val.querySelectorAll('a')];
+          ctaLinks = parseCtaCell(val);
           if (!ctaLinks.length) {
             const text = val.textContent.trim();
             if (text) {
@@ -82,18 +82,7 @@ export default async function decorate(block) {
         } else if (val.querySelector('ul, ol')) {
           statsItems = parseStats([val]);
         } else if (val.querySelector('a, strong')) {
-          const links = [...val.querySelectorAll('a')];
-          if (links.length) {
-            ctaLinks = links;
-          } else {
-            const strong = val.querySelector('strong');
-            if (strong) {
-              const a = document.createElement('a');
-              a.textContent = strong.textContent.trim();
-              a.href = '#';
-              ctaLinks = [a];
-            }
-          }
+          ctaLinks = parseCtaCell(val);
         } else {
           const text = val.textContent.trim();
           if (text) textRows.push(text);
@@ -225,6 +214,27 @@ export default async function decorate(block) {
     console.error('HERO DECORATE ERROR:', error);
     block.innerHTML = `<div style="color:red;background:white;padding:10px">Hero block error: ${error.message}</div>`;
   }
+}
+
+/**
+ * Turn the CTA cell into one button per "segment", handling the common
+ * authoring slip where only some of the button text ends up hyperlinked
+ * (e.g. "Get Started, [Organise Hackathon](/organise)" typed on one line —
+ * "Get Started" stays plain/bold text with no <a>). Real <a> tags keep
+ * their href; a bare <strong> run becomes a button with no destination
+ * (href="#") so it's still visible rather than silently dropped.
+ */
+function parseCtaCell(val) {
+  const nodes = [...val.querySelectorAll('a, strong')].filter((el) => (
+    el.tagName === 'A' || !el.closest('a')
+  ));
+  return nodes.map((el) => {
+    if (el.tagName === 'A') return el;
+    const a = document.createElement('a');
+    a.textContent = el.textContent.trim().replace(/[,;]\s*$/, '');
+    a.href = '#';
+    return a;
+  });
 }
 
 /**
