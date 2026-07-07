@@ -1,12 +1,21 @@
 // organiser-workflow.js — EDS block
 // Simulates the full Organisation/Admin → Student hackathon workflow using
 // REAL page navigation (separate da.live pages), not in-page modals/tabs.
-// One block, several variants -- each variant is placed on its own page:
-//   Organiser Workflow            -> landing/pitch page ("Start Organising")
-//   Organiser Workflow (auth)     -> Sign Up / Log In page (orgs AND admins)
-//   Organiser Workflow (dashboard)-> gated dashboard (routes by account role)
+// Login/signup is NOT reinvented here -- it reuses the site's existing
+// /auth-form page and isLoggedIn/currentUserEmail session (same one every
+// other block already uses), so students keep the exact login they already
+// have. This block only decides what to show *after* that shared login,
+// based on the logged-in email:
+//   Organiser Workflow            -> landing/pitch page ("Start Organising"
+//                                     links to /auth-form, then back here)
+//   Organiser Workflow (dashboard)-> gated by the real site session; shows
+//                                     the Admin view if the email is in the
+//                                     configured admin list, otherwise the
+//                                     Organisation view (with a one-time
+//                                     "what's your company" step for a
+//                                     first-time organiser email)
 //   Organiser Workflow (student)  -> student browse + register page
-// Dynamic data (submissions/approvals/registrations/accounts) lives in
+// Dynamic data (submissions/approvals/registrations/org profiles) lives in
 // localStorage, standing in for a real backend. All copy/labels are
 // author-editable via da.live config rows (see parseConfig) — nothing
 // user-facing is hardcoded.
@@ -50,23 +59,37 @@ function setApproved(v) { lsSet('approvedHackathons', v); }
 function getRegistrations() { return lsGet('registrations', []); }
 function setRegistrations(v) { lsSet('registrations', v); }
 
-// TODO(backend): replace this whole block with real auth (hashed passwords,
-// server-side session, etc). Simulated account system for the prototype
-// only -- plaintext in localStorage. Organisers and admins share the same
-// account store, distinguished by the `role` field chosen at sign-up.
+// ── Real site session (same keys/pages every other block already uses) ──────
+function isSiteLoggedIn() { return localStorage.getItem('isLoggedIn') === 'true'; }
+function getSessionEmail() { return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase(); }
+function getSiteProfileName(email) {
+  try {
+    const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+    if (profiles[email]?.name) return profiles[email].name;
+    const single = JSON.parse(localStorage.getItem('hk_profile') || 'null');
+    return single?.name || '';
+  } catch {
+    return '';
+  }
+}
+function siteLogout() {
+  ['isLoggedIn', 'currentUserEmail', 'hk_profile', 'hk_notifications', 'hackhub_user'].forEach((k) => localStorage.removeItem(k));
+}
+
+// Organiser company profile -- keyed by the REAL site email, created lazily
+// the first time that email reaches the dashboard. Not authentication;
+// just "which company does this already-logged-in person represent".
 function getOrgAccounts() { return lsGet('hk_org_accounts', {}); }
 function saveOrgAccount(account) {
   const accounts = getOrgAccounts();
   accounts[account.email] = account;
   lsSet('hk_org_accounts', accounts);
 }
-function getOrgSessionEmail() { return lsGet('hk_org_session', null); }
-function setOrgSessionEmail(email) { lsSet('hk_org_session', email); }
-function clearOrgSession() { lsSet('hk_org_session', null); }
-function getCurrentOrgAccount() {
-  const email = getOrgSessionEmail();
-  if (!email) return null;
-  return getOrgAccounts()[email] || null;
+function getOrgAccount(email) { return getOrgAccounts()[email] || null; }
+
+function isAdminEmail(email) {
+  const list = p('admin-emails', '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  return list.includes(email);
 }
 
 function genId(prefix) {
@@ -123,7 +146,8 @@ function loadFonts() {
 
 // ── LANDING page ─────────────────────────────────────────────────────────
 function decorateLanding(block) {
-  const authHref = p('auth-href', '/organiser-login');
+  const dashboardHref = p('dashboard-href', '/organiser-dashboard');
+  const startHref = `/auth-form?mode=login&redirect=${encodeURIComponent(dashboardHref)}`;
   block.innerHTML = `
     <div class="ow-hero">
       <span class="ow-eyebrow">${esc(p('eyebrow', 'Partner With Us'))}</span>
@@ -143,136 +167,23 @@ function decorateLanding(block) {
           <p>${esc(p('usp3-desc', 'We handle the page, the applicants, and the registrations — you just review and approve.'))}</p>
         </div>
       </div>
-      <a class="ow-cta-btn" href="${esc(authHref)}">${esc(p('cta-label', 'Start Organising'))}</a>
+      <a class="ow-cta-btn" href="${esc(startHref)}">${esc(p('cta-label', 'Start Organising'))}</a>
     </div>`;
 }
 
-// ── AUTH page (Sign Up / Log In — shared by organisers and admins) ────────
-let _authTab = 'login';
-
-function decorateAuth(block) {
-  const dashboardHref = p('dashboard-href', '/organiser-dashboard');
-  block.innerHTML = `
-    <div class="ow-hero ow-auth-hero">
-      <div class="ow-card ow-login-card" id="ow-auth-card"></div>
-    </div>
-    <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
-  renderAuthCard(block, dashboardHref);
-}
-
-function renderAuthCard(block, dashboardHref) {
-  const card = block.querySelector('#ow-auth-card');
-  card.innerHTML = `
-    <div class="ow-subtabs">
-      <button type="button" class="ow-subtab ${_authTab === 'login' ? 'active' : ''}" data-authtab="login">${esc(p('login-tab-label', 'Log In'))}</button>
-      <button type="button" class="ow-subtab ${_authTab === 'signup' ? 'active' : ''}" data-authtab="signup">${esc(p('signup-tab-label', 'Sign Up'))}</button>
-    </div>
-    <div id="ow-auth-body"></div>`;
-
-  card.querySelectorAll('[data-authtab]').forEach((btn) => {
-    btn.addEventListener('click', () => { _authTab = btn.dataset.authtab; renderAuthCard(block, dashboardHref); });
-  });
-
-  const body = card.querySelector('#ow-auth-body');
-
-  if (_authTab === 'signup') {
-    body.innerHTML = `
-      <h2>${esc(p('signup-title', 'Create Your Account'))}</h2>
-      <p class="ow-hint">${esc(p('signup-hint', 'Organisers list hackathons. Admins review and approve them.'))}</p>
-      <div class="ow-field">
-        <label>${esc(p('label-role', 'I am signing up as'))}</label>
-        <select id="ow-su-role">
-          <option value="organisation">${esc(p('role-organisation', 'Organisation'))}</option>
-          <option value="admin">${esc(p('role-admin', 'Admin'))}</option>
-        </select>
-      </div>
-      <div class="ow-field">
-        <label>${esc(p('label-org-name', 'Your Name'))}</label>
-        <input type="text" id="ow-su-name" placeholder="Jane Doe">
-      </div>
-      <div class="ow-field">
-        <label>${esc(p('label-company', 'Company Name'))}</label>
-        <input type="text" id="ow-su-company" placeholder="Acme Inc.">
-      </div>
-      <div class="ow-field">
-        <label>${esc(p('label-org-email', 'Work Email'))}</label>
-        <input type="email" id="ow-su-email" placeholder="jane@company.com">
-      </div>
-      <div class="ow-field">
-        <label>${esc(p('label-org-password', 'Password'))}</label>
-        <input type="password" id="ow-su-password" placeholder="••••••••">
-      </div>
-      <button type="button" class="ow-btn-primary" id="ow-su-submit">${esc(p('signup-submit-label', 'Create Account'))}</button>`;
-
-    body.querySelector('#ow-su-submit').addEventListener('click', () => {
-      const role = body.querySelector('#ow-su-role').value;
-      const name = body.querySelector('#ow-su-name').value.trim();
-      const company = body.querySelector('#ow-su-company').value.trim();
-      const email = body.querySelector('#ow-su-email').value.trim().toLowerCase();
-      const password = body.querySelector('#ow-su-password').value;
-      if (!name || !company || !email || !password) {
-        showToast(block, p('error-required-signup', 'Please fill in every field.'));
-        return;
-      }
-      if (getOrgAccounts()[email]) {
-        showToast(block, p('error-signup-exists', 'An account with this email already exists.'));
-        return;
-      }
-      saveOrgAccount({
-        role, name, company, email, password,
-      });
-      setOrgSessionEmail(email);
-      window.location.href = dashboardHref;
-    });
-    return;
-  }
-
-  body.innerHTML = `
-    <h2>${esc(p('login-title', 'Welcome Back'))}</h2>
-    <div class="ow-field">
-      <label>${esc(p('label-org-email', 'Work Email'))}</label>
-      <input type="email" id="ow-li-email" placeholder="jane@company.com">
-    </div>
-    <div class="ow-field">
-      <label>${esc(p('label-org-password', 'Password'))}</label>
-      <input type="password" id="ow-li-password" placeholder="••••••••">
-    </div>
-    <button type="button" class="ow-btn-primary" id="ow-li-submit">${esc(p('login-submit-label', 'Log In'))}</button>`;
-
-  body.querySelector('#ow-li-submit').addEventListener('click', () => {
-    const email = body.querySelector('#ow-li-email').value.trim().toLowerCase();
-    const password = body.querySelector('#ow-li-password').value;
-    const account = getOrgAccounts()[email];
-    if (!account || account.password !== password) {
-      showToast(block, p('error-login-failed', 'Incorrect email or password.'));
-      return;
-    }
-    setOrgSessionEmail(email);
-    window.location.href = dashboardHref;
-  });
-}
-
-// ── DASHBOARD page (gated; routes to Organisation or Admin view) ──────────
+// ── DASHBOARD page (gated by the real site login; routes by email) ────────
 function decorateDashboard(block) {
-  const authHref = p('auth-href', '/organiser-login');
-  const account = getCurrentOrgAccount();
-
-  if (!account) {
-    block.innerHTML = `
-      <div class="ow-hero">
-        <div class="ow-card ow-login-card">
-          <h2>${esc(p('login-required-title', 'Please Log In'))}</h2>
-          <p class="ow-hint">${esc(p('login-required-desc', 'You need to be logged in to view your dashboard.'))}</p>
-          <a class="ow-btn-primary" href="${esc(authHref)}">${esc(p('login-required-cta', 'Go to Login'))}</a>
-        </div>
-      </div>`;
+  if (!isSiteLoggedIn()) {
+    window.location.replace(`/auth-form?mode=login&redirect=${encodeURIComponent(window.location.href)}`);
     return;
   }
+
+  const email = getSessionEmail();
 
   block.innerHTML = `
     <div class="ow-workflow-page">
       <div class="ow-panel-header">
-        <span class="ow-logged-in">${esc(p('dashboard-welcome', 'Welcome back'))}, <strong>${esc(account.name)}</strong> (${esc(account.company)})</span>
+        <span class="ow-logged-in">${esc(p('logged-in-as', 'Logged in as'))} <strong>${esc(email)}</strong></span>
         <button type="button" class="ow-link-btn" id="ow-logout">${esc(p('logout-label', 'Log Out'))}</button>
       </div>
       <div id="ow-dash-body"></div>
@@ -280,15 +191,56 @@ function decorateDashboard(block) {
     <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
 
   block.querySelector('#ow-logout').addEventListener('click', () => {
-    clearOrgSession();
-    window.location.href = authHref;
+    siteLogout();
+    window.location.href = '/';
   });
 
-  if (account.role === 'admin') {
+  if (isAdminEmail(email)) {
     renderAdminDashboard(block);
-  } else {
-    renderOrgDashboard(block, account);
+    return;
   }
+
+  const account = getOrgAccount(email);
+  if (!account) {
+    renderOrgOnboarding(block, email);
+    return;
+  }
+  renderOrgDashboard(block, account);
+}
+
+// One-time step for an email that isn't a recognised organiser yet -- we
+// already know who they are (real site login), just need their company.
+function renderOrgOnboarding(block, email) {
+  const body = block.querySelector('#ow-dash-body');
+  const name = getSiteProfileName(email);
+  body.innerHTML = `
+    <div class="ow-card ow-login-card">
+      <h2>${esc(p('onboarding-title', 'Tell Us About Your Organisation'))}</h2>
+      <p class="ow-hint">${esc(p('onboarding-hint', 'One quick step before you can start listing hackathons.'))}</p>
+      <div class="ow-field">
+        <label>${esc(p('label-org-name', 'Your Name'))}</label>
+        <input type="text" id="ow-ob-name" value="${esc(name)}" placeholder="Jane Doe">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-company', 'Company Name'))}</label>
+        <input type="text" id="ow-ob-company" placeholder="Acme Inc.">
+      </div>
+      <button type="button" class="ow-btn-primary" id="ow-ob-submit">${esc(p('onboarding-submit-label', 'Continue'))}</button>
+    </div>`;
+
+  body.querySelector('#ow-ob-submit').addEventListener('click', () => {
+    const nameVal = body.querySelector('#ow-ob-name').value.trim();
+    const company = body.querySelector('#ow-ob-company').value.trim();
+    if (!nameVal || !company) {
+      showToast(block, p('error-required-onboarding', 'Please fill in both fields.'));
+      return;
+    }
+    const account = {
+      email, name: nameVal, company,
+    };
+    saveOrgAccount(account);
+    renderOrgDashboard(block, account);
+  });
 }
 
 // ── Organisation dashboard ─────────────────────────────────────────────────
@@ -746,7 +698,6 @@ export default function decorate(block) {
   _cfg = parseConfig(block);
   loadFonts();
 
-  if (block.classList.contains('auth')) { decorateAuth(block); return; }
   if (block.classList.contains('dashboard')) { decorateDashboard(block); return; }
   if (block.classList.contains('student')) { decorateStudent(block); return; }
   decorateLanding(block);

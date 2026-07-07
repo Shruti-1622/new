@@ -94,20 +94,15 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
   text-decoration: none;
 }
 
-/* ── Auth page (Sign Up / Log In, standalone page) ────────────────────── */
-.organiser-workflow .ow-auth-hero {
-  max-width: 440px;
-  margin: 40px auto;
-}
-
-.organiser-workflow .ow-hero .ow-card {
-  text-align: left;
-}
-
 /* ── Dashboard / Student pages (standalone, no hero) ──────────────────── */
 .organiser-workflow .ow-workflow-page {
   max-width: 900px;
   margin: 0 auto;
+}
+
+.organiser-workflow .ow-workflow-page .ow-login-card {
+  max-width: 440px;
+  margin: 20px auto 0;
 }
 
 /* ── Card / fields ─────────────────────────────────────────────────────── */
