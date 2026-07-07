@@ -16,8 +16,12 @@
  *    Row 2: title text
  *    Row 3: cycling words (comma-separated)
  *    Row 4: description text
- *    Row 5: CTA link / strong text
+ *    Row 5: CTA link(s) / strong text
  *    Row 6: stats as <ul> or <br>-separated lines
+ *
+ * The CTA cell supports more than one link — the first renders as the
+ * primary button, any additional links render as secondary (outline)
+ * buttons next to it.
  */
 export default async function decorate(block) {
   try {
@@ -27,7 +31,7 @@ export default async function decorate(block) {
     let titleText = '';
     let cyclingWords = [];
     let descText = '';
-    let ctaLink = null;
+    let ctaLinks = [];
     let statsItems = [];
 
     const rows = [...block.children];
@@ -52,10 +56,15 @@ export default async function decorate(block) {
         } else if (key.includes('desc')) {
           descText = val.textContent.trim();
         } else if (key.includes('cta') || key.includes('button') || key.includes('link')) {
-          ctaLink = val.querySelector('a');
-          if (!ctaLink) {
+          ctaLinks = [...val.querySelectorAll('a')];
+          if (!ctaLinks.length) {
             const text = val.textContent.trim();
-            if (text) { ctaLink = document.createElement('a'); ctaLink.textContent = text; ctaLink.href = '#'; }
+            if (text) {
+              const a = document.createElement('a');
+              a.textContent = text;
+              a.href = '#';
+              ctaLinks = [a];
+            }
           }
         } else if (key.includes('stat')) {
           statsItems = parseStats([...cols].slice(1));
@@ -73,15 +82,16 @@ export default async function decorate(block) {
         } else if (val.querySelector('ul, ol')) {
           statsItems = parseStats([val]);
         } else if (val.querySelector('a, strong')) {
-          const a = val.querySelector('a');
-          if (a) {
-            ctaLink = a;
+          const links = [...val.querySelectorAll('a')];
+          if (links.length) {
+            ctaLinks = links;
           } else {
             const strong = val.querySelector('strong');
             if (strong) {
-              ctaLink = document.createElement('a');
-              ctaLink.textContent = strong.textContent.trim();
-              ctaLink.href = '#';
+              const a = document.createElement('a');
+              a.textContent = strong.textContent.trim();
+              a.href = '#';
+              ctaLinks = [a];
             }
           }
         } else {
@@ -130,11 +140,13 @@ export default async function decorate(block) {
       content.appendChild(Object.assign(document.createElement('p'), { className: 'hero-desc', textContent: descText }));
     }
 
-    if (ctaLink) {
+    if (ctaLinks.length) {
       const actions = document.createElement('div');
       actions.className = 'hero-actions';
-      ctaLink.className = 'btn-primary btn-large';
-      actions.appendChild(ctaLink);
+      ctaLinks.forEach((a, i) => {
+        a.className = i === 0 ? 'btn-primary btn-large' : 'btn-secondary btn-large';
+        actions.appendChild(a);
+      });
       content.appendChild(actions);
     }
 
