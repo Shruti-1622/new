@@ -225,25 +225,73 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
 
 .organiser-workflow .ow-logged-in strong { color: #fff; }
 
-/* ── Admin: pending rows ───────────────────────────────────────────────── */
-.organiser-workflow .ow-pending-row,
-.organiser-workflow .ow-approved-row {
+/* ── Admin: organisation request cards ────────────────────────────────── */
+.organiser-workflow .ow-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.organiser-workflow .ow-request-card {
+  background: #111117;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 16px;
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+
+.organiser-workflow .ow-request-card:hover { border-color: rgb(255 255 255 / 16%); }
+
+.organiser-workflow .ow-request-card-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgb(255 255 255 / 6%);
+  margin-bottom: 14px;
 }
 
-.organiser-workflow .ow-pending-row:last-child,
-.organiser-workflow .ow-approved-row:last-child { border-bottom: none; }
+.organiser-workflow .ow-request-title { font-weight: 700; color: #fff; font-size: 1.08rem; margin-bottom: 4px; }
+.organiser-workflow .ow-request-company { font-size: 0.82rem; color: #d9a441; font-family: 'DM Mono', monospace; }
 
-.organiser-workflow .ow-pending-name { font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 4px; }
-.organiser-workflow .ow-pending-meta { font-size: 0.78rem; color: #d9a441; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
-.organiser-workflow .ow-pending-desc { font-size: 0.85rem; color: #a1a1aa; max-width: 480px; }
+.organiser-workflow .ow-request-desc {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
 
-.organiser-workflow .ow-pending-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.organiser-workflow .ow-request-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid rgb(255 255 255 / 6%);
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+  margin-bottom: 18px;
+}
+
+.organiser-workflow .ow-info-item { display: flex; flex-direction: column; gap: 4px; }
+
+.organiser-workflow .ow-info-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.organiser-workflow .ow-info-value {
+  font-size: 0.88rem;
+  color: #e4e4e7;
+  overflow-wrap: anywhere;
+}
+
+.organiser-workflow .ow-request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
 
 .organiser-workflow .ow-btn-approve {
   background: rgb(63 201 128 / 12%);
@@ -633,30 +681,97 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
 
 /* ── Admin dashboard: approval next-steps banner ──────────────────────── */
 .organiser-workflow .ow-next-steps-banner {
-  background: linear-gradient(135deg, rgb(63 201 128 / 10%) 0%, #111117 100%);
-  border: 1px solid rgb(63 201 128 / 30%);
+  position: relative;
+  display: flex;
+  gap: 18px;
+  background: linear-gradient(135deg, rgb(63 201 128 / 8%) 0%, #111117 60%);
+  border: 1px solid rgb(63 201 128 / 25%);
   border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 20px;
+  padding: 24px 26px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 25%);
+  animation: ow-banner-in 0.3s ease;
 }
 
-.organiser-workflow .ow-next-steps-head {
+@keyframes ow-banner-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.organiser-workflow .ow-next-steps-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgb(63 201 128 / 15%);
+  border: 1px solid rgb(63 201 128 / 40%);
+  color: #3fc980;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
+  justify-content: center;
 }
 
-.organiser-workflow .ow-next-steps-head strong { color: #fff; font-size: 0.98rem; }
+.organiser-workflow .ow-next-steps-content { flex: 1; min-width: 0; }
 
-.organiser-workflow .ow-next-steps-banner ul {
-  margin: 0;
-  padding-left: 20px;
+.organiser-workflow .ow-next-steps-content strong {
+  display: block;
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.organiser-workflow .ow-next-steps-content p {
   color: #a1a1aa;
-  font-size: 0.85rem;
-  line-height: 1.8;
+  font-size: 0.84rem;
+  margin: 0 0 14px;
 }
+
+.organiser-workflow .ow-next-steps-content ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.organiser-workflow .ow-next-steps-content li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #e4e4e7;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.organiser-workflow .ow-step-check {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: rgb(63 201 128 / 15%);
+  color: #3fc980;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.organiser-workflow .ow-next-steps-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #71717a;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.organiser-workflow .ow-next-steps-close:hover { color: #fff; }
 
 /* ── Admin dashboard: registrations detail modal ──────────────────────── */
 .organiser-workflow .ow-modal-overlay {

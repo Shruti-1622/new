@@ -499,6 +499,9 @@ function renderTabOverview(content) {
     ${!_legacyLoaded && p('legacy-hackathon-slugs', '') ? `<p class="ow-sync-note">${esc(p('syncing-label', 'Syncing live site data…'))}</p>` : ''}`;
 }
 
+const CHECK_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const BIG_CHECK_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
 // ── Tab 2: Organisation Requests ────────────────────────────────────────────
 function renderTabRequests(block, content) {
   const pending = getPending();
@@ -507,21 +510,23 @@ function renderTabRequests(block, content) {
       <h1 class="ow-content-title">${esc(p('tab-requests', 'Organisation Requests'))}</h1>
     </div>
     <div id="ow-requests-banner"></div>
-    <div class="ow-card" id="ow-requests-body"></div>`;
+    <div id="ow-requests-body" class="ow-requests-list"></div>`;
 
   const bannerWrap = content.querySelector('#ow-requests-banner');
   if (_justApproved) {
     bannerWrap.innerHTML = `
       <div class="ow-next-steps-banner">
-        <div class="ow-next-steps-head">
-          <strong>${esc(tpl(p('next-steps-title', 'Approved — Next Steps for {company}'), _justApproved))}</strong>
-          <button type="button" class="ow-link-btn" id="ow-next-steps-dismiss">${esc(p('dismiss-label', 'Dismiss'))}</button>
+        <button type="button" class="ow-next-steps-close" id="ow-next-steps-dismiss" aria-label="${esc(p('dismiss-label', 'Dismiss'))}">&times;</button>
+        <div class="ow-next-steps-icon">${BIG_CHECK_ICON}</div>
+        <div class="ow-next-steps-content">
+          <strong>${esc(tpl(p('next-steps-title', '{company} Approved'), _justApproved))}</strong>
+          <p>${esc(tpl(p('next-steps-subtitle', 'Here’s what happens next for {hackathon}:'), _justApproved))}</p>
+          <ul>
+            <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(tpl(p('next-step-1', 'We will reach out to {company} within 24 hours.'), _justApproved))}</li>
+            <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(tpl(p('next-step-2', 'We will manage {hackathon} and its registrations on their behalf.'), _justApproved))}</li>
+            <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(tpl(p('next-step-3', 'We will promote {hackathon} across our social channels.'), _justApproved))}</li>
+          </ul>
         </div>
-        <ul>
-          <li>${esc(tpl(p('next-step-1', 'We will reach out to {company} within 24 hours.'), _justApproved))}</li>
-          <li>${esc(tpl(p('next-step-2', 'We will manage {hackathon} and its registrations on their behalf.'), _justApproved))}</li>
-          <li>${esc(tpl(p('next-step-3', 'We will promote {hackathon} across our social channels.'), _justApproved))}</li>
-        </ul>
       </div>`;
     bannerWrap.querySelector('#ow-next-steps-dismiss').addEventListener('click', () => {
       _justApproved = null;
@@ -531,25 +536,49 @@ function renderTabRequests(block, content) {
 
   const body = content.querySelector('#ow-requests-body');
   if (!pending.length) {
-    body.innerHTML = `<div class="ow-empty">${esc(p('empty-pending', 'No pending organisation requests.'))}</div>`;
+    body.innerHTML = `<div class="ow-card"><div class="ow-empty">${esc(p('empty-pending', 'No pending organisation requests.'))}</div></div>`;
     return;
   }
 
   body.innerHTML = pending.map((h) => `
-    <div class="ow-pending-row" data-id="${esc(h.id)}">
-      <div class="ow-pending-info">
-        <div class="ow-pending-name">${esc(h.hackathonName)}</div>
-        <div class="ow-pending-meta">
-          ${esc(p('label-company', 'Company'))}: ${esc(h.company)} ·
-          ${esc(p('label-deadline', 'Deadline'))}: ${esc(h.deadline)} ·
-          ${esc(p('submitted-label', 'Submitted'))}: ${new Date(h.submittedAt).toLocaleDateString()} ·
-          <span class="ow-status-badge ow-status-pending">${esc(p('status-pending-label', 'Pending Approval'))}</span>
+    <div class="ow-request-card" data-id="${esc(h.id)}">
+      <div class="ow-request-card-head">
+        <div>
+          <div class="ow-request-title">${esc(h.hackathonName)}</div>
+          <div class="ow-request-company">${esc(h.company)}</div>
         </div>
-        <div class="ow-pending-desc">${esc(h.description)}</div>
+        <span class="ow-status-badge ow-status-pending">${esc(p('status-pending-label', 'Pending Approval'))}</span>
       </div>
-      <div class="ow-pending-actions">
-        <button type="button" class="ow-btn-approve" data-id="${esc(h.id)}">${esc(p('approve-label', 'Approve'))}</button>
+      ${h.description ? `<p class="ow-request-desc">${esc(h.description)}</p>` : ''}
+      <div class="ow-request-info-grid">
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('label-contact', 'Contact Person'))}</span>
+          <span class="ow-info-value">${esc(h.contactPerson) || '—'}</span>
+        </div>
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('label-contact-email', 'Contact Email'))}</span>
+          <span class="ow-info-value">${esc(h.contactEmail) || '—'}</span>
+        </div>
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('label-deadline', 'Registration Deadline'))}</span>
+          <span class="ow-info-value">${esc(h.deadline) || '—'}</span>
+        </div>
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('label-team-size', 'Team Size'))}</span>
+          <span class="ow-info-value">${esc(h.teamSize) || '—'}</span>
+        </div>
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('label-prize', 'Prize Pool'))}</span>
+          <span class="ow-info-value">${esc(h.prize) || '—'}</span>
+        </div>
+        <div class="ow-info-item">
+          <span class="ow-info-label">${esc(p('submitted-label', 'Submitted'))}</span>
+          <span class="ow-info-value">${new Date(h.submittedAt).toLocaleDateString()}</span>
+        </div>
+      </div>
+      <div class="ow-request-actions">
         <button type="button" class="ow-btn-reject" data-id="${esc(h.id)}">${esc(p('reject-label', 'Reject'))}</button>
+        <button type="button" class="ow-btn-approve" data-id="${esc(h.id)}">${esc(p('approve-label', 'Approve'))}</button>
       </div>
     </div>`).join('');
 
