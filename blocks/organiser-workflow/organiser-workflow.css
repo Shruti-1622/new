@@ -1,0 +1,453 @@
+/* ── EDS section overrides ──────────────────────────────────────────────── */
+main > .section:has(.organiser-workflow-wrapper) { margin: 0 !important; }
+main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
+
+.organiser-workflow {
+  background: #0a0a0a;
+  color: #e4e4e7;
+  font-family: 'DM Sans', sans-serif;
+  padding: 60px 5% 100px;
+}
+
+/* ── Hero / pitch ──────────────────────────────────────────────────────── */
+.organiser-workflow .ow-hero {
+  max-width: 900px;
+  margin: 0 auto 50px;
+  text-align: center;
+}
+
+.organiser-workflow .ow-eyebrow {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #d9a441;
+  margin-bottom: 14px;
+}
+
+.organiser-workflow .ow-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 5vw, 56px);
+  letter-spacing: 1px;
+  color: #fff;
+  line-height: 1.05;
+  margin: 0 0 18px;
+}
+
+.organiser-workflow .ow-story {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #a1a1aa;
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+
+.organiser-workflow .ow-usp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.organiser-workflow .ow-usp-card {
+  background: linear-gradient(135deg, rgba(217, 164, 65, 0.1) 0%, #16171f 100%);
+  border: 1px solid rgba(217, 164, 65, 0.2);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.organiser-workflow .ow-usp-card h3 {
+  font-size: 1.02rem;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.organiser-workflow .ow-usp-card p {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.organiser-workflow .ow-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #d9a441;
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 34px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.organiser-workflow .ow-cta-btn:hover {
+  background: #f0c674;
+  transform: translateY(-1px);
+}
+
+/* ── Workflow shell ────────────────────────────────────────────────────── */
+.organiser-workflow .ow-workflow {
+  max-width: 900px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 40px;
+}
+
+.organiser-workflow .ow-role-switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.organiser-workflow .ow-role-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.organiser-workflow .ow-role-btn:hover { border-color: rgba(217, 164, 65, 0.4); color: #e4e4e7; }
+
+.organiser-workflow .ow-role-btn.active {
+  background: rgba(217, 164, 65, 0.15);
+  border-color: #d9a441;
+  color: #d9a441;
+}
+
+/* ── Card / fields ─────────────────────────────────────────────────────── */
+.organiser-workflow .ow-card {
+  background: #111117;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.organiser-workflow .ow-card h2 {
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.organiser-workflow .ow-hint {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  margin: 0 0 20px;
+}
+
+.organiser-workflow .ow-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 600px) {
+  .organiser-workflow .ow-field-row { grid-template-columns: 1fr; }
+}
+
+.organiser-workflow .ow-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.organiser-workflow .ow-field label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.organiser-workflow .ow-field input,
+.organiser-workflow .ow-field textarea,
+.organiser-workflow .ow-field select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.organiser-workflow .ow-field input:focus,
+.organiser-workflow .ow-field textarea:focus {
+  border-color: rgba(217, 164, 65, 0.6);
+}
+
+.organiser-workflow .ow-btn-primary {
+  background: #d9a441;
+  color: #0a0a0a;
+  border: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 11px 26px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.organiser-workflow .ow-btn-primary:hover { background: #f0c674; }
+
+.organiser-workflow .ow-btn-secondary {
+  background: rgba(217, 164, 65, 0.1);
+  border: 1px solid rgba(217, 164, 65, 0.35);
+  color: #d9a441;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.organiser-workflow .ow-link-btn {
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.organiser-workflow .ow-link-btn:hover { color: #d9a441; }
+
+.organiser-workflow .ow-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.organiser-workflow .ow-logged-in {
+  font-size: 0.82rem;
+  color: #a1a1aa;
+}
+
+.organiser-workflow .ow-logged-in strong { color: #fff; }
+
+/* ── Admin: subtabs, pending rows ─────────────────────────────────────── */
+.organiser-workflow .ow-subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.organiser-workflow .ow-subtab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 4px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.organiser-workflow .ow-subtab.active { color: #fff; border-bottom-color: #d9a441; }
+
+.organiser-workflow .ow-pending-row,
+.organiser-workflow .ow-approved-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.organiser-workflow .ow-pending-row:last-child,
+.organiser-workflow .ow-approved-row:last-child { border-bottom: none; }
+
+.organiser-workflow .ow-pending-name { font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 4px; }
+.organiser-workflow .ow-pending-meta { font-size: 0.78rem; color: #d9a441; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+.organiser-workflow .ow-pending-desc { font-size: 0.85rem; color: #a1a1aa; max-width: 480px; }
+
+.organiser-workflow .ow-pending-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.organiser-workflow .ow-btn-approve {
+  background: rgba(63, 201, 128, 0.12);
+  border: 1px solid rgba(63, 201, 128, 0.4);
+  color: #3fc980;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.organiser-workflow .ow-btn-reject {
+  background: rgba(224, 80, 80, 0.1);
+  border: 1px solid rgba(224, 80, 80, 0.35);
+  color: #e05050;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.organiser-workflow .ow-empty {
+  text-align: center;
+  color: #71717a;
+  font-size: 0.9rem;
+  padding: 40px 0;
+}
+
+/* ── Registrations table ──────────────────────────────────────────────── */
+.organiser-workflow .ow-reg-title { font-size: 1.1rem; color: #fff; margin: 0; }
+
+.organiser-workflow .ow-reg-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.organiser-workflow .ow-reg-toolbar input,
+.organiser-workflow .ow-reg-toolbar select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+}
+
+.organiser-workflow .ow-reg-table-wrap { overflow-x: auto; }
+
+.organiser-workflow .ow-reg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.organiser-workflow .ow-reg-table th {
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.organiser-workflow .ow-reg-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e4e4e7;
+}
+
+.organiser-workflow .ow-reg-table a { color: #d9a441; }
+
+/* ── Student grid ──────────────────────────────────────────────────────── */
+.organiser-workflow .ow-student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.organiser-workflow .ow-student-card {
+  background: #111117;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.organiser-workflow .ow-student-banner {
+  height: 130px;
+  background-size: cover;
+  background-position: center;
+  background-color: #1c1c24;
+}
+
+.organiser-workflow .ow-student-banner-empty {
+  background: linear-gradient(135deg, rgba(217, 164, 65, 0.15), #1c1c24);
+}
+
+.organiser-workflow .ow-student-card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+
+.organiser-workflow .ow-student-company {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #d9a441;
+  margin-bottom: 4px;
+}
+
+.organiser-workflow .ow-student-card-body h3 { font-size: 1.05rem; color: #fff; margin: 0 0 8px; }
+.organiser-workflow .ow-student-card-body p { font-size: 0.82rem; color: #a1a1aa; line-height: 1.5; margin: 0 0 14px; flex: 1; }
+
+.organiser-workflow .ow-student-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  color: #a1a1aa;
+  margin-bottom: 14px;
+}
+
+.organiser-workflow .ow-student-meta span {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 9px;
+  border-radius: 4px;
+}
+
+.organiser-workflow .ow-student-register-btn { width: 100%; }
+
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+.organiser-workflow .ow-toast-wrap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.organiser-workflow .ow-toast {
+  background: #1c1c24;
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: ow-toast-in 0.25s ease;
+}
+
+.organiser-workflow .ow-toast-out { opacity: 0; transform: translateX(20px); transition: all 0.3s; }
+
+@keyframes ow-toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
