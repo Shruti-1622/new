@@ -1,24 +1,23 @@
 // organiser-workflow.js — EDS block
-// Simulates the full Organisation/Admin → Student hackathon workflow using
-// REAL page navigation (separate da.live pages), not in-page modals/tabs.
-// Login/signup is NOT reinvented here -- it reuses the site's existing
-// /auth-form page and isLoggedIn/currentUserEmail session (same one every
-// other block already uses), so students keep the exact login they already
-// have. This block only decides what to show *after* that shared login,
-// based on the logged-in email:
-//   Organiser Workflow            -> landing/pitch page ("Start Organising"
-//                                     links to /auth-form, then back here)
-//   Organiser Workflow (dashboard)-> gated by the real site session; shows
-//                                     the Admin view if the email is in the
-//                                     configured admin list, otherwise the
-//                                     Organisation view (with a one-time
-//                                     "what's your company" step for a
-//                                     first-time organiser email)
+// Simulates the HackHub organisation → admin → student workflow.
+// Model: organisations only ever fill a form (no account, no dashboard for
+// them) -- HackHub's admin team manages everything on their behalf from a
+// single Admin Dashboard. Login/signup is NOT reinvented -- Admins use the
+// site's existing /auth-form page and isLoggedIn/currentUserEmail session
+// (same one every other block already uses); whether a logged-in email is
+// an admin is decided purely by checking it against a da.live-configured
+// list, nothing hardcoded.
+//   Organiser Workflow            -> landing/pitch page with the hackathon
+//                                     submission form built right in (no
+//                                     login required to submit a request)
+//   Organiser Workflow (dashboard)-> gated to admins only; six-tab sidebar:
+//                                     Dashboard, Organisation Requests,
+//                                     Hackathons, Registrations, Export,
+//                                     Settings
 //   Organiser Workflow (student)  -> student browse + register page
-// Dynamic data (submissions/approvals/registrations/org profiles) lives in
-// localStorage, standing in for a real backend. All copy/labels are
-// author-editable via da.live config rows (see parseConfig) — nothing
-// user-facing is hardcoded.
+// Dynamic data (submissions/approvals/registrations) lives in localStorage,
+// standing in for a real backend. All copy/labels are author-editable via
+// da.live config rows (see parseConfig) — nothing user-facing is hardcoded.
 
 // ── da.live config ──────────────────────────────────────────────────────────
 function parseConfig(block) {
@@ -62,31 +61,9 @@ function setRegistrations(v) { lsSet('registrations', v); }
 // ── Real site session (same keys/pages every other block already uses) ──────
 function isSiteLoggedIn() { return localStorage.getItem('isLoggedIn') === 'true'; }
 function getSessionEmail() { return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase(); }
-function getSiteProfileName(email) {
-  try {
-    const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
-    if (profiles[email]?.name) return profiles[email].name;
-    const single = JSON.parse(localStorage.getItem('hk_profile') || 'null');
-    return single?.name || '';
-  } catch {
-    return '';
-  }
-}
 function siteLogout() {
   ['isLoggedIn', 'currentUserEmail', 'hk_profile', 'hk_notifications', 'hackhub_user'].forEach((k) => localStorage.removeItem(k));
 }
-
-// Organiser company profile -- keyed by the REAL site email, created lazily
-// the first time that email reaches the dashboard. Not authentication;
-// just "which company does this already-logged-in person represent".
-function getOrgAccounts() { return lsGet('hk_org_accounts', {}); }
-function saveOrgAccount(account) {
-  const accounts = getOrgAccounts();
-  accounts[account.email] = account;
-  lsSet('hk_org_accounts', accounts);
-}
-function getOrgAccount(email) { return getOrgAccounts()[email] || null; }
-
 function isAdminEmail(email) {
   const list = p('admin-emails', '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
   return list.includes(email);
@@ -144,10 +121,8 @@ function loadFonts() {
   document.head.append(pc1, pc2, fl);
 }
 
-// ── LANDING page ─────────────────────────────────────────────────────────
+// ── LANDING page: pitch + submission form + thank-you ──────────────────────
 function decorateLanding(block) {
-  const dashboardHref = p('dashboard-href', '/organiser-dashboard');
-  const startHref = `/auth-form?mode=login&redirect=${encodeURIComponent(dashboardHref)}`;
   block.innerHTML = `
     <div class="ow-hero">
       <span class="ow-eyebrow">${esc(p('eyebrow', 'Partner With Us'))}</span>
@@ -167,145 +142,68 @@ function decorateLanding(block) {
           <p>${esc(p('usp3-desc', 'We handle the page, the applicants, and the registrations — you just review and approve.'))}</p>
         </div>
       </div>
-      <a class="ow-cta-btn" href="${esc(startHref)}">${esc(p('cta-label', 'Start Organising'))}</a>
-    </div>`;
-}
-
-// ── DASHBOARD page (gated by the real site login; routes by email) ────────
-function decorateDashboard(block) {
-  if (!isSiteLoggedIn()) {
-    window.location.replace(`/auth-form?mode=login&redirect=${encodeURIComponent(window.location.href)}`);
-    return;
-  }
-
-  const email = getSessionEmail();
-
-  block.innerHTML = `
-    <div class="ow-workflow-page">
-      <div class="ow-panel-header">
-        <span class="ow-logged-in">${esc(p('logged-in-as', 'Logged in as'))} <strong>${esc(email)}</strong></span>
-        <button type="button" class="ow-link-btn" id="ow-logout">${esc(p('logout-label', 'Log Out'))}</button>
-      </div>
-      <div id="ow-dash-body"></div>
+      <a class="ow-cta-btn" href="#ow-submit-section">${esc(p('cta-label', 'Start Organising'))}</a>
+    </div>
+    <div class="ow-hero" id="ow-submit-section">
+      <div class="ow-card" id="ow-submit-card"></div>
     </div>
     <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
 
-  block.querySelector('#ow-logout').addEventListener('click', () => {
-    siteLogout();
-    window.location.href = '/';
-  });
-
-  if (isAdminEmail(email)) {
-    renderAdminDashboard(block);
-    return;
-  }
-
-  const account = getOrgAccount(email);
-  if (!account) {
-    renderOrgOnboarding(block, email);
-    return;
-  }
-  renderOrgDashboard(block, account);
+  renderSubmissionForm(block);
 }
 
-// One-time step for an email that isn't a recognised organiser yet -- we
-// already know who they are (real site login), just need their company.
-function renderOrgOnboarding(block, email) {
-  const body = block.querySelector('#ow-dash-body');
-  const name = getSiteProfileName(email);
-  body.innerHTML = `
-    <div class="ow-card ow-login-card">
-      <h2>${esc(p('onboarding-title', 'Tell Us About Your Organisation'))}</h2>
-      <p class="ow-hint">${esc(p('onboarding-hint', 'One quick step before you can start listing hackathons.'))}</p>
-      <div class="ow-field">
-        <label>${esc(p('label-org-name', 'Your Name'))}</label>
-        <input type="text" id="ow-ob-name" value="${esc(name)}" placeholder="Jane Doe">
-      </div>
+function renderSubmissionForm(block) {
+  const card = block.querySelector('#ow-submit-card');
+  card.innerHTML = `
+    <h2>${esc(p('form-title', 'Submit Your Hackathon'))}</h2>
+    <div class="ow-field-row">
       <div class="ow-field">
         <label>${esc(p('label-company', 'Company Name'))}</label>
-        <input type="text" id="ow-ob-company" placeholder="Acme Inc.">
-      </div>
-      <button type="button" class="ow-btn-primary" id="ow-ob-submit">${esc(p('onboarding-submit-label', 'Continue'))}</button>
-    </div>`;
-
-  body.querySelector('#ow-ob-submit').addEventListener('click', () => {
-    const nameVal = body.querySelector('#ow-ob-name').value.trim();
-    const company = body.querySelector('#ow-ob-company').value.trim();
-    if (!nameVal || !company) {
-      showToast(block, p('error-required-onboarding', 'Please fill in both fields.'));
-      return;
-    }
-    const account = {
-      email, name: nameVal, company,
-    };
-    saveOrgAccount(account);
-    renderOrgDashboard(block, account);
-  });
-}
-
-// ── Organisation dashboard ─────────────────────────────────────────────────
-let _orgShowCreateForm = false;
-
-function renderCreateHackathonForm(block, account) {
-  const body = block.querySelector('#ow-dash-body');
-  body.innerHTML = `
-    <div class="ow-card">
-      <button type="button" class="ow-link-btn" id="ow-cancel-create">&larr; ${esc(p('back-to-dashboard-label', 'Back to Dashboard'))}</button>
-      <h2>${esc(p('form-title', 'Create New Hackathon'))}</h2>
-      <div class="ow-field-row">
-        <div class="ow-field">
-          <label>${esc(p('label-company', 'Company Name'))}</label>
-          <input type="text" id="ow-f-company" value="${esc(account.company)}">
-        </div>
-        <div class="ow-field">
-          <label>${esc(p('label-contact', 'Contact Person'))}</label>
-          <input type="text" id="ow-f-contact" value="${esc(account.name)}">
-        </div>
-      </div>
-      <div class="ow-field-row">
-        <div class="ow-field">
-          <label>${esc(p('label-contact-email', 'Contact Email'))}</label>
-          <input type="email" id="ow-f-contact-email" value="${esc(account.email)}">
-        </div>
-        <div class="ow-field">
-          <label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label>
-          <input type="text" id="ow-f-hack-name" placeholder="InnovateTech 2026">
-        </div>
+        <input type="text" id="ow-f-company" placeholder="Acme Inc.">
       </div>
       <div class="ow-field">
-        <label>${esc(p('label-description', 'Description'))}</label>
-        <textarea id="ow-f-description" rows="3" placeholder="Themes, goals, what makes your hackathon worth joining…"></textarea>
+        <label>${esc(p('label-contact', 'Contact Person'))}</label>
+        <input type="text" id="ow-f-contact" placeholder="Jane Doe">
       </div>
-      <div class="ow-field-row">
-        <div class="ow-field">
-          <label>${esc(p('label-deadline', 'Registration Deadline'))}</label>
-          <input type="date" id="ow-f-deadline">
-        </div>
-        <div class="ow-field">
-          <label>${esc(p('label-team-size', 'Team Size'))}</label>
-          <input type="text" id="ow-f-team-size" placeholder="2-4">
-        </div>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-contact-email', 'Contact Email'))}</label>
+        <input type="email" id="ow-f-contact-email" placeholder="jane@company.com">
       </div>
-      <div class="ow-field-row">
-        <div class="ow-field">
-          <label>${esc(p('label-prize', 'Prize Pool'))}</label>
-          <input type="text" id="ow-f-prize" placeholder="₹5,00,000">
-        </div>
-        <div class="ow-field">
-          <label>${esc(p('label-banner', 'Banner Image'))}</label>
-          <input type="file" id="ow-f-banner" accept="image/*">
-        </div>
+      <div class="ow-field">
+        <label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label>
+        <input type="text" id="ow-f-hack-name" placeholder="InnovateTech 2026">
       </div>
-      <button type="button" class="ow-btn-primary" id="ow-org-submit">${esc(p('submit-label', 'Submit for Review'))}</button>
-    </div>`;
-
-  body.querySelector('#ow-cancel-create').addEventListener('click', () => {
-    _orgShowCreateForm = false;
-    renderOrgDashboard(block, account);
-  });
+    </div>
+    <div class="ow-field">
+      <label>${esc(p('label-description', 'Description'))}</label>
+      <textarea id="ow-f-description" rows="3" placeholder="Themes, goals, what makes your hackathon worth joining…"></textarea>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-deadline', 'Registration Deadline'))}</label>
+        <input type="date" id="ow-f-deadline">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-team-size', 'Team Size'))}</label>
+        <input type="text" id="ow-f-team-size" placeholder="2-4">
+      </div>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-prize', 'Prize Pool'))}</label>
+        <input type="text" id="ow-f-prize" placeholder="₹5,00,000">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-banner', 'Banner Image'))}</label>
+        <input type="file" id="ow-f-banner" accept="image/*">
+      </div>
+    </div>
+    <button type="button" class="ow-btn-primary" id="ow-org-submit">${esc(p('submit-label', 'Submit for Review'))}</button>`;
 
   let bannerDataUrl = '';
-  const bannerInput = body.querySelector('#ow-f-banner');
+  const bannerInput = card.querySelector('#ow-f-banner');
   bannerInput.addEventListener('change', () => {
     const file = bannerInput.files[0];
     if (!file) return;
@@ -315,25 +213,24 @@ function renderCreateHackathonForm(block, account) {
     reader.readAsDataURL(file);
   });
 
-  body.querySelector('#ow-org-submit').addEventListener('click', () => {
-    const company = body.querySelector('#ow-f-company').value.trim();
-    const contact = body.querySelector('#ow-f-contact').value.trim();
-    const contactEmail = body.querySelector('#ow-f-contact-email').value.trim();
-    const hackName = body.querySelector('#ow-f-hack-name').value.trim();
-    const description = body.querySelector('#ow-f-description').value.trim();
-    const deadline = body.querySelector('#ow-f-deadline').value;
-    const teamSize = body.querySelector('#ow-f-team-size').value.trim();
-    const prize = body.querySelector('#ow-f-prize').value.trim();
+  card.querySelector('#ow-org-submit').addEventListener('click', () => {
+    const company = card.querySelector('#ow-f-company').value.trim();
+    const contact = card.querySelector('#ow-f-contact').value.trim();
+    const contactEmail = card.querySelector('#ow-f-contact-email').value.trim();
+    const hackName = card.querySelector('#ow-f-hack-name').value.trim();
+    const description = card.querySelector('#ow-f-description').value.trim();
+    const deadline = card.querySelector('#ow-f-deadline').value;
+    const teamSize = card.querySelector('#ow-f-team-size').value.trim();
+    const prize = card.querySelector('#ow-f-prize').value.trim();
 
-    if (!company || !hackName || !deadline) {
-      showToast(block, p('error-required', 'Please fill in Company Name, Hackathon Name, and Deadline.'));
+    if (!company || !contactEmail || !hackName || !deadline) {
+      showToast(block, p('error-required', 'Please fill in Company Name, Contact Email, Hackathon Name, and Deadline.'));
       return;
     }
 
     const pending = getPending();
     pending.push({
       id: genId('hack'),
-      organiserEmail: account.email,
       company,
       contactPerson: contact,
       contactEmail,
@@ -348,231 +245,306 @@ function renderCreateHackathonForm(block, account) {
     });
     setPending(pending);
 
-    showToast(block, p('success-message', 'Your hackathon has been submitted for review.'));
-    _orgShowCreateForm = false;
-    renderOrgDashboard(block, account);
+    renderSubmissionSuccess(block);
   });
 }
 
-function renderOrgDashboard(block, account) {
-  if (_orgShowCreateForm) {
-    renderCreateHackathonForm(block, account);
+function renderSubmissionSuccess(block) {
+  const card = block.querySelector('#ow-submit-card');
+  const socialLinks = [
+    { key: 'social-instagram', label: 'Instagram' },
+    { key: 'social-linkedin', label: 'LinkedIn' },
+    { key: 'social-twitter', label: 'Twitter / X' },
+  ].filter((s) => p(s.key, ''));
+
+  card.innerHTML = `
+    <h2>${esc(p('success-title', "You're All Set!"))}</h2>
+    <p class="ow-hint">${esc(p('success-message', "Thanks for submitting your hackathon. Our team will review it and reach out to you shortly — we'll help set everything up and manage the hackathon on your behalf, so you don't have to worry about a thing."))}</p>
+    ${socialLinks.length ? `
+    <div class="ow-social-row">
+      <span class="ow-social-label">${esc(p('social-follow-label', 'Follow us for updates'))}</span>
+      <div class="ow-social-links">
+        ${socialLinks.map((s) => `<a href="${esc(p(s.key, ''))}" target="_blank" rel="noopener">${esc(s.label)}</a>`).join('')}
+      </div>
+    </div>` : ''}`;
+}
+
+// ── DASHBOARD page (admins only) ────────────────────────────────────────────
+let _adminTab = 'overview';
+
+function decorateDashboard(block) {
+  if (!isSiteLoggedIn()) {
+    window.location.replace(`/auth-form?mode=login&redirect=${encodeURIComponent(window.location.href)}`);
     return;
   }
 
-  const body = block.querySelector('#ow-dash-body');
-  const myPending = getPending().filter((h) => h.organiserEmail === account.email);
-  const myApproved = getApproved().filter((h) => h.organiserEmail === account.email);
-  const myHackathons = [...myPending, ...myApproved];
+  const email = getSessionEmail();
+
+  if (!isAdminEmail(email)) {
+    block.innerHTML = `
+      <div class="ow-hero">
+        <div class="ow-card ow-login-card">
+          <h2>${esc(p('restricted-title', 'Admins Only'))}</h2>
+          <p class="ow-hint">${esc(p('restricted-desc', 'This dashboard is only available to HackHub admins.'))}</p>
+          <a class="ow-btn-primary" href="/">${esc(p('restricted-cta', 'Back to Home'))}</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  block.innerHTML = `
+    <div class="ow-admin-shell">
+      <nav class="ow-sidebar">
+        <div class="ow-sidebar-brand">${esc(p('admin-brand', 'HackHub Admin'))}</div>
+        <button type="button" class="ow-sidebar-link active" data-tab="overview">${esc(p('tab-dashboard', 'Dashboard'))}</button>
+        <button type="button" class="ow-sidebar-link" data-tab="requests">${esc(p('tab-requests', 'Organisation Requests'))}</button>
+        <button type="button" class="ow-sidebar-link" data-tab="hackathons">${esc(p('tab-hackathons', 'Hackathons'))}</button>
+        <button type="button" class="ow-sidebar-link" data-tab="registrations">${esc(p('tab-registrations', 'Registrations'))}</button>
+        <button type="button" class="ow-sidebar-link" data-tab="export">${esc(p('tab-export', 'Export'))}</button>
+        <button type="button" class="ow-sidebar-link" data-tab="settings">${esc(p('tab-settings', 'Settings'))}</button>
+        <button type="button" class="ow-sidebar-logout" id="ow-logout">${esc(p('logout-label', 'Log Out'))}</button>
+      </nav>
+      <main class="ow-admin-content" id="ow-admin-content"></main>
+    </div>
+    <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
+
+  block.querySelector('#ow-logout').addEventListener('click', () => {
+    siteLogout();
+    window.location.href = '/';
+  });
+
+  block.querySelectorAll('.ow-sidebar-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      block.querySelectorAll('.ow-sidebar-link').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      _adminTab = btn.dataset.tab;
+      renderAdminTab(block, email);
+    });
+  });
+
+  renderAdminTab(block, email);
+}
+
+function renderAdminTab(block, email) {
+  const content = block.querySelector('#ow-admin-content');
+  if (_adminTab === 'overview') { renderTabOverview(content); return; }
+  if (_adminTab === 'requests') { renderTabRequests(block, content); return; }
+  if (_adminTab === 'hackathons') { renderTabHackathons(content); return; }
+  if (_adminTab === 'registrations') { renderTabRegistrations(block, content); return; }
+  if (_adminTab === 'export') { renderTabExport(block, content); return; }
+  if (_adminTab === 'settings') { renderTabSettings(content, email); }
+}
+
+// ── Tab 1: Dashboard overview ───────────────────────────────────────────────
+function renderTabOverview(content) {
+  const pending = getPending();
+  const approved = getApproved();
+  const regs = getRegistrations();
+  const partners = new Set(approved.map((h) => h.company)).size;
+
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-dashboard', 'Dashboard'))}</h1>
+    <div class="ow-stats-grid">
+      <div class="ow-stat-card">
+        <div class="ow-stat-label">${esc(p('stat-pending-label', 'Pending Organisation Requests'))}</div>
+        <div class="ow-stat-value">${pending.length}</div>
+      </div>
+      <div class="ow-stat-card">
+        <div class="ow-stat-label">${esc(p('stat-live-label', 'Live Hackathons'))}</div>
+        <div class="ow-stat-value">${approved.length}</div>
+      </div>
+      <div class="ow-stat-card">
+        <div class="ow-stat-label">${esc(p('stat-regs-label', 'Total Student Registrations'))}</div>
+        <div class="ow-stat-value">${regs.length}</div>
+      </div>
+      <div class="ow-stat-card">
+        <div class="ow-stat-label">${esc(p('stat-partners-label', 'Partner Organisations'))}</div>
+        <div class="ow-stat-value">${partners}</div>
+      </div>
+    </div>`;
+}
+
+// ── Tab 2: Organisation Requests ────────────────────────────────────────────
+function renderTabRequests(block, content) {
+  const pending = getPending();
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-requests', 'Organisation Requests'))}</h1>
+    <div class="ow-card" id="ow-requests-body"></div>`;
+
+  const body = content.querySelector('#ow-requests-body');
+  if (!pending.length) {
+    body.innerHTML = `<div class="ow-empty">${esc(p('empty-pending', 'No pending organisation requests.'))}</div>`;
+    return;
+  }
+
+  body.innerHTML = pending.map((h) => `
+    <div class="ow-pending-row" data-id="${esc(h.id)}">
+      <div class="ow-pending-info">
+        <div class="ow-pending-name">${esc(h.hackathonName)}</div>
+        <div class="ow-pending-meta">
+          ${esc(p('label-company', 'Company'))}: ${esc(h.company)} ·
+          ${esc(p('label-deadline', 'Deadline'))}: ${esc(h.deadline)} ·
+          ${esc(p('submitted-label', 'Submitted'))}: ${new Date(h.submittedAt).toLocaleDateString()} ·
+          <span class="ow-status-badge ow-status-pending">${esc(p('status-pending-label', 'Pending Approval'))}</span>
+        </div>
+        <div class="ow-pending-desc">${esc(h.description)}</div>
+      </div>
+      <div class="ow-pending-actions">
+        <button type="button" class="ow-btn-approve" data-id="${esc(h.id)}">${esc(p('approve-label', 'Approve'))}</button>
+        <button type="button" class="ow-btn-reject" data-id="${esc(h.id)}">${esc(p('reject-label', 'Reject'))}</button>
+      </div>
+    </div>`).join('');
+
+  body.querySelectorAll('.ow-btn-approve').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const list = getPending();
+      const idx = list.findIndex((h) => h.id === id);
+      if (idx === -1) return;
+      const [item] = list.splice(idx, 1);
+      item.status = 'Approved';
+      const app = getApproved();
+      app.push(item);
+      setApproved(app);
+      setPending(list);
+      showToast(block, p('approved-message', 'Hackathon approved and is now live.'));
+      renderTabRequests(block, content);
+    });
+  });
+  body.querySelectorAll('.ow-btn-reject').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      setPending(getPending().filter((h) => h.id !== id));
+      showToast(block, p('rejected-message', 'Hackathon rejected.'));
+      renderTabRequests(block, content);
+    });
+  });
+}
+
+// ── Tab 3: Hackathons ────────────────────────────────────────────────────────
+function renderTabHackathons(content) {
+  const approved = getApproved();
   const regs = getRegistrations();
 
-  body.innerHTML = `
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-hackathons', 'Hackathons'))}</h1>
     <div class="ow-card">
-      <div class="ow-panel-header">
-        <h2>${esc(p('my-hackathons-title', 'My Hackathons'))}</h2>
-        <button type="button" class="ow-btn-primary" id="ow-open-create">${esc(p('create-hackathon-btn', '+ Create New Hackathon'))}</button>
+      ${!approved.length ? `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>` : `
+      <div class="ow-reg-table-wrap">
+        <table class="ow-reg-table">
+          <thead><tr>
+            <th>${esc(p('label-hackathon-name', 'Hackathon Name'))}</th>
+            <th>${esc(p('label-company', 'Organisation'))}</th>
+            <th>${esc(p('reg-count-label', 'Registration Count'))}</th>
+            <th>${esc(p('status-label', 'Status'))}</th>
+          </tr></thead>
+          <tbody>
+            ${approved.map((h) => `<tr>
+              <td>${esc(h.hackathonName)}</td>
+              <td>${esc(h.company)}</td>
+              <td>${regs.filter((r) => r.hackathonId === h.id).length}</td>
+              <td><span class="ow-status-badge ow-status-approved">${esc(p('status-live-label', 'Live'))}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`}
+    </div>`;
+}
+
+// ── Tab 4: Registrations (all, filterable by hackathon) ───────────────────
+let _regFilterId = 'all';
+
+function renderTabRegistrations(block, content) {
+  const approved = getApproved();
+  const allRegs = getRegistrations();
+  const filtered = _regFilterId === 'all' ? allRegs : allRegs.filter((r) => r.hackathonId === _regFilterId);
+  const hackName = (id) => approved.find((h) => h.id === id)?.hackathonName || '—';
+
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-registrations', 'Registrations'))}</h1>
+    <div class="ow-card">
+      <div class="ow-reg-toolbar">
+        <select id="ow-reg-filter">
+          <option value="all">${esc(p('filter-all-hackathons', 'All Hackathons'))}</option>
+          ${approved.map((h) => `<option value="${esc(h.id)}" ${h.id === _regFilterId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
+        </select>
       </div>
-      ${!myHackathons.length ? `<div class="ow-empty">${esc(p('empty-my-hackathons', "You haven't created any hackathons yet."))}</div>` : `
-      <div class="ow-my-hack-list">
-        ${myHackathons.map((h) => {
-          const isApproved = h.status === 'Approved';
-          const count = isApproved ? regs.filter((r) => r.hackathonId === h.id).length : 0;
-          return `
-          <div class="ow-pending-row">
-            <div class="ow-pending-info">
-              <div class="ow-pending-name">${esc(h.hackathonName)}</div>
-              <div class="ow-pending-meta">
-                <span class="ow-status-badge ${isApproved ? 'ow-status-approved' : 'ow-status-pending'}">${isApproved ? esc(p('status-approved-label', 'Approved')) : esc(p('status-pending-label', 'Pending Approval'))}</span>
-              </div>
-            </div>
-            ${isApproved ? `<div class="ow-reg-count"><strong>${count}</strong> ${esc(p('registered-count-label', 'students registered'))}</div>` : ''}
-          </div>`;
-        }).join('')}
+      ${!filtered.length ? `<div class="ow-empty">${esc(p('empty-registrations', 'No registrations yet.'))}</div>` : `
+      <div class="ow-reg-table-wrap">
+        <table class="ow-reg-table">
+          <thead><tr>
+            <th>${esc(p('label-student-name', 'Student Name'))}</th>
+            <th>${esc(p('label-college', 'College'))}</th>
+            <th>${esc(p('label-skills', 'Skills'))}</th>
+            ${_regFilterId === 'all' ? `<th>${esc(p('label-hackathon-name', 'Hackathon'))}</th>` : ''}
+            <th>${esc(p('registered-on-label', 'Registration Date'))}</th>
+          </tr></thead>
+          <tbody>
+            ${filtered.map((r) => `<tr>
+              <td>${esc(r.studentName)}</td>
+              <td>${esc(r.college)}</td>
+              <td>${esc(r.skills)}</td>
+              ${_regFilterId === 'all' ? `<td>${esc(hackName(r.hackathonId))}</td>` : ''}
+              <td>${new Date(r.registrationDate).toLocaleDateString()}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
       </div>`}
     </div>`;
 
-  body.querySelector('#ow-open-create').addEventListener('click', () => {
-    _orgShowCreateForm = true;
-    renderOrgDashboard(block, account);
+  content.querySelector('#ow-reg-filter').addEventListener('change', (e) => {
+    _regFilterId = e.target.value;
+    renderTabRegistrations(block, content);
   });
 }
 
-// ── Admin dashboard ─────────────────────────────────────────────────────────
-let _adminTab = 'pending';
-let _adminSelectedHackathonId = null;
-let _regSearch = '';
-let _regSort = 'newest';
+// ── Tab 5: Export ────────────────────────────────────────────────────────────
+let _exportId = '';
 
-function renderAdminDashboard(block) {
-  const body = block.querySelector('#ow-dash-body');
-  const pending = getPending();
+function renderTabExport(block, content) {
   const approved = getApproved();
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-export', 'Export'))}</h1>
+    <div class="ow-card">
+      <div class="ow-field">
+        <label>${esc(p('export-select-label', 'Select a Hackathon'))}</label>
+        <select id="ow-export-select">
+          <option value="">${esc(p('export-select-placeholder', 'Choose a hackathon…'))}</option>
+          ${approved.map((h) => `<option value="${esc(h.id)}" ${h.id === _exportId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
+        </select>
+      </div>
+      <button type="button" class="ow-btn-primary" id="ow-export-btn">${esc(p('download-csv-label', 'Download CSV'))}</button>
+    </div>`;
 
-  body.innerHTML = `
-    <div class="ow-subtabs">
-      <button type="button" class="ow-subtab ${_adminTab === 'pending' ? 'active' : ''}" data-tab="pending">
-        ${esc(p('admin-pending-tab', 'Pending Approvals'))} (${pending.length})
-      </button>
-      <button type="button" class="ow-subtab ${_adminTab === 'all' ? 'active' : ''}" data-tab="all">
-        ${esc(p('admin-all-tab', 'All Hackathons'))} (${approved.length})
-      </button>
-    </div>
-    <div class="ow-card" id="ow-admin-body"></div>`;
-
-  body.querySelectorAll('.ow-subtab').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      _adminTab = btn.dataset.tab;
-      _adminSelectedHackathonId = null;
-      renderAdminDashboard(block);
-    });
-  });
-
-  const admin = body.querySelector('#ow-admin-body');
-
-  if (_adminTab === 'pending') {
-    if (!pending.length) {
-      admin.innerHTML = `<div class="ow-empty">${esc(p('empty-pending', 'No pending hackathons.'))}</div>`;
-      return;
-    }
-    admin.innerHTML = pending.map((h) => `
-      <div class="ow-pending-row" data-id="${esc(h.id)}">
-        <div class="ow-pending-info">
-          <div class="ow-pending-name">${esc(h.hackathonName)}</div>
-          <div class="ow-pending-meta">${esc(h.company)} · ${esc(h.contactEmail)} · ${esc(p('label-deadline', 'Deadline'))}: ${esc(h.deadline)}</div>
-          <div class="ow-pending-desc">${esc(h.description)}</div>
-        </div>
-        <div class="ow-pending-actions">
-          <button type="button" class="ow-btn-approve" data-id="${esc(h.id)}">${esc(p('approve-label', 'Approve'))}</button>
-          <button type="button" class="ow-btn-reject" data-id="${esc(h.id)}">${esc(p('reject-label', 'Reject'))}</button>
-        </div>
-      </div>`).join('');
-
-    admin.querySelectorAll('.ow-btn-approve').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const list = getPending();
-        const idx = list.findIndex((h) => h.id === id);
-        if (idx === -1) return;
-        const [item] = list.splice(idx, 1);
-        item.status = 'Approved';
-        const app = getApproved();
-        app.push(item);
-        setApproved(app);
-        setPending(list);
-        showToast(block, p('approved-message', 'Hackathon approved and is now live.'));
-        renderAdminDashboard(block);
-      });
-    });
-    admin.querySelectorAll('.ow-btn-reject').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        setPending(getPending().filter((h) => h.id !== id));
-        showToast(block, p('rejected-message', 'Hackathon rejected.'));
-        renderAdminDashboard(block);
-      });
-    });
-    return;
-  }
-
-  // ── "All Hackathons" tab ──
-  if (!_adminSelectedHackathonId) {
-    if (!approved.length) {
-      admin.innerHTML = `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>`;
-      return;
-    }
-    admin.innerHTML = approved.map((h) => {
-      const count = getRegistrations().filter((r) => r.hackathonId === h.id).length;
-      return `
-      <div class="ow-approved-row">
-        <div class="ow-pending-info">
-          <div class="ow-pending-name">${esc(h.hackathonName)}</div>
-          <div class="ow-pending-meta">${esc(h.company)} · ${count} ${esc(p('registrations-label', 'registrations'))}</div>
-        </div>
-        <button type="button" class="ow-btn-secondary" data-id="${esc(h.id)}">${esc(p('view-registrations-label', 'View Registrations'))}</button>
-      </div>`;
-    }).join('');
-
-    admin.querySelectorAll('.ow-btn-secondary').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        _adminSelectedHackathonId = btn.dataset.id;
-        _regSearch = '';
-        renderAdminDashboard(block);
-      });
-    });
-    return;
-  }
-
-  // ── Registrations viewer for one hackathon ──
-  const hack = approved.find((h) => h.id === _adminSelectedHackathonId);
-  let regs = getRegistrations().filter((r) => r.hackathonId === _adminSelectedHackathonId);
-
-  if (_regSearch) {
-    const q = _regSearch.toLowerCase();
-    regs = regs.filter((r) => [r.studentName, r.college, r.skills].join(' ').toLowerCase().includes(q));
-  }
-  regs = [...regs].sort((a, b) => {
-    if (_regSort === 'name') return a.studentName.localeCompare(b.studentName);
-    if (_regSort === 'oldest') return new Date(a.registrationDate) - new Date(b.registrationDate);
-    return new Date(b.registrationDate) - new Date(a.registrationDate);
-  });
-
-  admin.innerHTML = `
-    <div class="ow-panel-header">
-      <button type="button" class="ow-link-btn" id="ow-back-to-list">&larr; ${esc(p('back-label', 'Back'))}</button>
-      <h3 class="ow-reg-title">${esc(hack?.hackathonName || '')}</h3>
-    </div>
-    <div class="ow-reg-toolbar">
-      <input type="text" id="ow-reg-search" placeholder="${esc(p('search-label', 'Search'))}…" value="${esc(_regSearch)}">
-      <select id="ow-reg-sort">
-        <option value="newest" ${_regSort === 'newest' ? 'selected' : ''}>${esc(p('sort-newest', 'Newest first'))}</option>
-        <option value="oldest" ${_regSort === 'oldest' ? 'selected' : ''}>${esc(p('sort-oldest', 'Oldest first'))}</option>
-        <option value="name" ${_regSort === 'name' ? 'selected' : ''}>${esc(p('sort-name', 'Name A-Z'))}</option>
-      </select>
-      <button type="button" class="ow-btn-secondary" id="ow-download-csv">${esc(p('download-csv-label', 'Download CSV'))}</button>
-    </div>
-    ${!regs.length ? `<div class="ow-empty">${esc(p('empty-registrations', 'No registrations yet.'))}</div>` : `
-    <div class="ow-reg-table-wrap">
-      <table class="ow-reg-table">
-        <thead><tr>
-          <th>${esc(p('label-student-name', 'Name'))}</th>
-          <th>${esc(p('label-college', 'College'))}</th>
-          <th>${esc(p('label-github', 'GitHub'))}</th>
-          <th>${esc(p('label-linkedin', 'LinkedIn'))}</th>
-          <th>${esc(p('label-skills', 'Skills'))}</th>
-          <th>${esc(p('registered-on-label', 'Registered On'))}</th>
-        </tr></thead>
-        <tbody>
-          ${regs.map((r) => `<tr>
-            <td>${esc(r.studentName)}</td>
-            <td>${esc(r.college)}</td>
-            <td>${r.github ? `<a href="${esc(r.github)}" target="_blank" rel="noopener">${esc(r.github)}</a>` : ''}</td>
-            <td>${r.linkedin ? `<a href="${esc(r.linkedin)}" target="_blank" rel="noopener">${esc(r.linkedin)}</a>` : ''}</td>
-            <td>${esc(r.skills)}</td>
-            <td>${new Date(r.registrationDate).toLocaleDateString()}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`}`;
-
-  admin.querySelector('#ow-back-to-list').addEventListener('click', () => {
-    _adminSelectedHackathonId = null;
-    renderAdminDashboard(block);
-  });
-  admin.querySelector('#ow-reg-search').addEventListener('input', (e) => {
-    _regSearch = e.target.value;
-    renderAdminDashboard(block);
-  });
-  admin.querySelector('#ow-reg-sort').addEventListener('change', (e) => {
-    _regSort = e.target.value;
-    renderAdminDashboard(block);
-  });
-  admin.querySelector('#ow-download-csv')?.addEventListener('click', () => {
+  content.querySelector('#ow-export-select').addEventListener('change', (e) => { _exportId = e.target.value; });
+  content.querySelector('#ow-export-btn').addEventListener('click', () => {
+    if (!_exportId) { showToast(block, p('error-no-hackathon-selected', 'Please select a hackathon first.')); return; }
+    const hack = approved.find((h) => h.id === _exportId);
+    const regs = getRegistrations().filter((r) => r.hackathonId === _exportId);
     downloadCSV(
       `${(hack?.hackathonName || 'registrations').replace(/\s+/g, '-')}.csv`,
       ['Name', 'College', 'Email', 'GitHub', 'LinkedIn', 'Skills', 'Registered On'],
       regs.map((r) => [r.studentName, r.college, r.email, r.github, r.linkedin, r.skills, r.registrationDate]),
     );
   });
+}
+
+// ── Tab 6: Settings ──────────────────────────────────────────────────────────
+function renderTabSettings(content, email) {
+  content.innerHTML = `
+    <h1 class="ow-content-title">${esc(p('tab-settings', 'Settings'))}</h1>
+    <div class="ow-card ow-settings-section">
+      <h3>${esc(p('settings-profile-label', 'Profile'))}</h3>
+      <p class="ow-hint">${esc(p('logged-in-as', 'Logged in as'))} <strong>${esc(email)}</strong></p>
+    </div>
+    <div class="ow-card ow-settings-section">
+      <h3>${esc(p('settings-theme-label', 'Theme'))}</h3>
+      <p class="ow-hint">${esc(p('settings-theme-value', 'Dark (default)'))}</p>
+    </div>
+    <div class="ow-card ow-settings-section">
+      <h3>${esc(p('settings-about-label', 'About'))}</h3>
+      <p class="ow-hint">${esc(p('settings-about-text', 'HackHub Admin Dashboard — review organisation requests, manage live hackathons, and track student registrations from one place.'))}</p>
+    </div>`;
 }
 
 // ── STUDENT page ─────────────────────────────────────────────────────────
