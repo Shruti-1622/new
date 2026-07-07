@@ -1,8 +1,15 @@
 // organiser-workflow.js — EDS block
-// Simulates the full Organisation → Admin → Student workflow client-side.
-// Dynamic data (submissions/approvals/registrations) lives in localStorage,
-// standing in for a real backend. All copy/labels are author-editable via
-// da.live config rows (see parseConfig) — nothing user-facing is hardcoded.
+// Simulates the full Organisation/Admin → Student hackathon workflow using
+// REAL page navigation (separate da.live pages), not in-page modals/tabs.
+// One block, several variants -- each variant is placed on its own page:
+//   Organiser Workflow            -> landing/pitch page ("Start Organising")
+//   Organiser Workflow (auth)     -> Sign Up / Log In page (orgs AND admins)
+//   Organiser Workflow (dashboard)-> gated dashboard (routes by account role)
+//   Organiser Workflow (student)  -> student browse + register page
+// Dynamic data (submissions/approvals/registrations/accounts) lives in
+// localStorage, standing in for a real backend. All copy/labels are
+// author-editable via da.live config rows (see parseConfig) — nothing
+// user-facing is hardcoded.
 
 // ── da.live config ──────────────────────────────────────────────────────────
 function parseConfig(block) {
@@ -22,8 +29,8 @@ function p(key, fallback) {
 }
 
 // ── localStorage helpers (isolated so a real backend can swap in later) ─────
-// TODO(backend): replace these three with real API calls (GET/POST) when a
-// server exists — the rest of this file only talks to these functions.
+// TODO(backend): replace these with real API calls (GET/POST) when a server
+// exists — the rest of this file only talks to these functions.
 function lsGet(key, fallback) {
   try {
     const v = localStorage.getItem(key);
@@ -43,9 +50,10 @@ function setApproved(v) { lsSet('approvedHackathons', v); }
 function getRegistrations() { return lsGet('registrations', []); }
 function setRegistrations(v) { lsSet('registrations', v); }
 
-// TODO(backend): replace this whole block with real organiser auth
-// (hashed passwords, server-side session, etc). This is a simulated
-// account system for the prototype only -- plaintext in localStorage.
+// TODO(backend): replace this whole block with real auth (hashed passwords,
+// server-side session, etc). Simulated account system for the prototype
+// only -- plaintext in localStorage. Organisers and admins share the same
+// account store, distinguished by the `role` field chosen at sign-up.
 function getOrgAccounts() { return lsGet('hk_org_accounts', {}); }
 function saveOrgAccount(account) {
   const accounts = getOrgAccounts();
@@ -104,8 +112,18 @@ function downloadCSV(filename, headerRow, rows) {
   URL.revokeObjectURL(url);
 }
 
-// ── Shell ─────────────────────────────────────────────────────────────────
-function buildShell(block) {
+function loadFonts() {
+  if (document.querySelector('link[data-font="ow-fonts"], link[data-font="hc-fonts"], link[data-font="bebas-neue"], link[data-font="fb-fonts"], link[data-font="hof-fonts"]')) return;
+  const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com';
+  const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = '';
+  const fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.dataset.font = 'ow-fonts';
+  fl.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap';
+  document.head.append(pc1, pc2, fl);
+}
+
+// ── LANDING page ─────────────────────────────────────────────────────────
+function decorateLanding(block) {
+  const authHref = p('auth-href', '/organiser-login');
   block.innerHTML = `
     <div class="ow-hero">
       <span class="ow-eyebrow">${esc(p('eyebrow', 'Partner With Us'))}</span>
@@ -125,47 +143,49 @@ function buildShell(block) {
           <p>${esc(p('usp3-desc', 'We handle the page, the applicants, and the registrations — you just review and approve.'))}</p>
         </div>
       </div>
-      <button type="button" class="ow-cta-btn" id="ow-start-btn">${esc(p('cta-label', 'Start Organising'))}</button>
-    </div>
-
-    <div class="ow-workflow" id="ow-workflow" hidden>
-      <div class="ow-role-switch" id="ow-role-switch" role="tablist">
-        <button type="button" class="ow-role-btn active" data-role="organisation">${esc(p('role-organisation', 'Organisation'))}</button>
-        <button type="button" class="ow-role-btn" data-role="admin">${esc(p('role-admin', 'Admin'))}</button>
-        <button type="button" class="ow-role-btn" data-role="student">${esc(p('role-student', 'Student'))}</button>
-      </div>
-
-      <div class="ow-panel" id="ow-panel-organisation"></div>
-      <div class="ow-panel" id="ow-panel-admin" hidden></div>
-      <div class="ow-panel" id="ow-panel-student" hidden></div>
-    </div>
-
-    <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
+      <a class="ow-cta-btn" href="${esc(authHref)}">${esc(p('cta-label', 'Start Organising'))}</a>
+    </div>`;
 }
 
-// ── ORGANISATION panel ───────────────────────────────────────────────────
-let _orgAuthTab = 'login';
-let _orgShowCreateForm = false;
+// ── AUTH page (Sign Up / Log In — shared by organisers and admins) ────────
+let _authTab = 'login';
 
-function renderOrgAuth(block, panel) {
-  panel.innerHTML = `
-    <div class="ow-card ow-login-card">
-      <div class="ow-subtabs">
-        <button type="button" class="ow-subtab ${_orgAuthTab === 'login' ? 'active' : ''}" data-authtab="login">${esc(p('login-tab-label', 'Log In'))}</button>
-        <button type="button" class="ow-subtab ${_orgAuthTab === 'signup' ? 'active' : ''}" data-authtab="signup">${esc(p('signup-tab-label', 'Sign Up'))}</button>
-      </div>
-      <div id="ow-auth-body"></div>
-    </div>`;
+function decorateAuth(block) {
+  const dashboardHref = p('dashboard-href', '/organiser-dashboard');
+  block.innerHTML = `
+    <div class="ow-hero ow-auth-hero">
+      <div class="ow-card ow-login-card" id="ow-auth-card"></div>
+    </div>
+    <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
+  renderAuthCard(block, dashboardHref);
+}
 
-  panel.querySelectorAll('[data-authtab]').forEach((btn) => {
-    btn.addEventListener('click', () => { _orgAuthTab = btn.dataset.authtab; renderOrgAuth(block, panel); });
+function renderAuthCard(block, dashboardHref) {
+  const card = block.querySelector('#ow-auth-card');
+  card.innerHTML = `
+    <div class="ow-subtabs">
+      <button type="button" class="ow-subtab ${_authTab === 'login' ? 'active' : ''}" data-authtab="login">${esc(p('login-tab-label', 'Log In'))}</button>
+      <button type="button" class="ow-subtab ${_authTab === 'signup' ? 'active' : ''}" data-authtab="signup">${esc(p('signup-tab-label', 'Sign Up'))}</button>
+    </div>
+    <div id="ow-auth-body"></div>`;
+
+  card.querySelectorAll('[data-authtab]').forEach((btn) => {
+    btn.addEventListener('click', () => { _authTab = btn.dataset.authtab; renderAuthCard(block, dashboardHref); });
   });
 
-  const body = panel.querySelector('#ow-auth-body');
+  const body = card.querySelector('#ow-auth-body');
 
-  if (_orgAuthTab === 'signup') {
+  if (_authTab === 'signup') {
     body.innerHTML = `
-      <h2>${esc(p('signup-title', 'Create Your Organiser Account'))}</h2>
+      <h2>${esc(p('signup-title', 'Create Your Account'))}</h2>
+      <p class="ow-hint">${esc(p('signup-hint', 'Organisers list hackathons. Admins review and approve them.'))}</p>
+      <div class="ow-field">
+        <label>${esc(p('label-role', 'I am signing up as'))}</label>
+        <select id="ow-su-role">
+          <option value="organisation">${esc(p('role-organisation', 'Organisation'))}</option>
+          <option value="admin">${esc(p('role-admin', 'Admin'))}</option>
+        </select>
+      </div>
       <div class="ow-field">
         <label>${esc(p('label-org-name', 'Your Name'))}</label>
         <input type="text" id="ow-su-name" placeholder="Jane Doe">
@@ -185,6 +205,7 @@ function renderOrgAuth(block, panel) {
       <button type="button" class="ow-btn-primary" id="ow-su-submit">${esc(p('signup-submit-label', 'Create Account'))}</button>`;
 
     body.querySelector('#ow-su-submit').addEventListener('click', () => {
+      const role = body.querySelector('#ow-su-role').value;
       const name = body.querySelector('#ow-su-name').value.trim();
       const company = body.querySelector('#ow-su-company').value.trim();
       const email = body.querySelector('#ow-su-email').value.trim().toLowerCase();
@@ -197,9 +218,11 @@ function renderOrgAuth(block, panel) {
         showToast(block, p('error-signup-exists', 'An account with this email already exists.'));
         return;
       }
-      saveOrgAccount({ name, company, email, password });
+      saveOrgAccount({
+        role, name, company, email, password,
+      });
       setOrgSessionEmail(email);
-      renderOrganisationPanel(block);
+      window.location.href = dashboardHref;
     });
     return;
   }
@@ -225,12 +248,55 @@ function renderOrgAuth(block, panel) {
       return;
     }
     setOrgSessionEmail(email);
-    renderOrganisationPanel(block);
+    window.location.href = dashboardHref;
   });
 }
 
-function renderCreateHackathonForm(block, panel, account) {
-  panel.innerHTML += `
+// ── DASHBOARD page (gated; routes to Organisation or Admin view) ──────────
+function decorateDashboard(block) {
+  const authHref = p('auth-href', '/organiser-login');
+  const account = getCurrentOrgAccount();
+
+  if (!account) {
+    block.innerHTML = `
+      <div class="ow-hero">
+        <div class="ow-card ow-login-card">
+          <h2>${esc(p('login-required-title', 'Please Log In'))}</h2>
+          <p class="ow-hint">${esc(p('login-required-desc', 'You need to be logged in to view your dashboard.'))}</p>
+          <a class="ow-btn-primary" href="${esc(authHref)}">${esc(p('login-required-cta', 'Go to Login'))}</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  block.innerHTML = `
+    <div class="ow-workflow-page">
+      <div class="ow-panel-header">
+        <span class="ow-logged-in">${esc(p('dashboard-welcome', 'Welcome back'))}, <strong>${esc(account.name)}</strong> (${esc(account.company)})</span>
+        <button type="button" class="ow-link-btn" id="ow-logout">${esc(p('logout-label', 'Log Out'))}</button>
+      </div>
+      <div id="ow-dash-body"></div>
+    </div>
+    <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
+
+  block.querySelector('#ow-logout').addEventListener('click', () => {
+    clearOrgSession();
+    window.location.href = authHref;
+  });
+
+  if (account.role === 'admin') {
+    renderAdminDashboard(block);
+  } else {
+    renderOrgDashboard(block, account);
+  }
+}
+
+// ── Organisation dashboard ─────────────────────────────────────────────────
+let _orgShowCreateForm = false;
+
+function renderCreateHackathonForm(block, account) {
+  const body = block.querySelector('#ow-dash-body');
+  body.innerHTML = `
     <div class="ow-card">
       <button type="button" class="ow-link-btn" id="ow-cancel-create">&larr; ${esc(p('back-to-dashboard-label', 'Back to Dashboard'))}</button>
       <h2>${esc(p('form-title', 'Create New Hackathon'))}</h2>
@@ -281,13 +347,13 @@ function renderCreateHackathonForm(block, panel, account) {
       <button type="button" class="ow-btn-primary" id="ow-org-submit">${esc(p('submit-label', 'Submit for Review'))}</button>
     </div>`;
 
-  panel.querySelector('#ow-cancel-create').addEventListener('click', () => {
+  body.querySelector('#ow-cancel-create').addEventListener('click', () => {
     _orgShowCreateForm = false;
-    renderOrganisationPanel(block);
+    renderOrgDashboard(block, account);
   });
 
   let bannerDataUrl = '';
-  const bannerInput = panel.querySelector('#ow-f-banner');
+  const bannerInput = body.querySelector('#ow-f-banner');
   bannerInput.addEventListener('change', () => {
     const file = bannerInput.files[0];
     if (!file) return;
@@ -297,15 +363,15 @@ function renderCreateHackathonForm(block, panel, account) {
     reader.readAsDataURL(file);
   });
 
-  panel.querySelector('#ow-org-submit').addEventListener('click', () => {
-    const company = panel.querySelector('#ow-f-company').value.trim();
-    const contact = panel.querySelector('#ow-f-contact').value.trim();
-    const contactEmail = panel.querySelector('#ow-f-contact-email').value.trim();
-    const hackName = panel.querySelector('#ow-f-hack-name').value.trim();
-    const description = panel.querySelector('#ow-f-description').value.trim();
-    const deadline = panel.querySelector('#ow-f-deadline').value;
-    const teamSize = panel.querySelector('#ow-f-team-size').value.trim();
-    const prize = panel.querySelector('#ow-f-prize').value.trim();
+  body.querySelector('#ow-org-submit').addEventListener('click', () => {
+    const company = body.querySelector('#ow-f-company').value.trim();
+    const contact = body.querySelector('#ow-f-contact').value.trim();
+    const contactEmail = body.querySelector('#ow-f-contact-email').value.trim();
+    const hackName = body.querySelector('#ow-f-hack-name').value.trim();
+    const description = body.querySelector('#ow-f-description').value.trim();
+    const deadline = body.querySelector('#ow-f-deadline').value;
+    const teamSize = body.querySelector('#ow-f-team-size').value.trim();
+    const prize = body.querySelector('#ow-f-prize').value.trim();
 
     if (!company || !hackName || !deadline) {
       showToast(block, p('error-required', 'Please fill in Company Name, Hackathon Name, and Deadline.'));
@@ -332,42 +398,23 @@ function renderCreateHackathonForm(block, panel, account) {
 
     showToast(block, p('success-message', 'Your hackathon has been submitted for review.'));
     _orgShowCreateForm = false;
-    renderOrganisationPanel(block);
+    renderOrgDashboard(block, account);
   });
 }
 
-function renderOrganisationPanel(block) {
-  const panel = block.querySelector('#ow-panel-organisation');
-  const account = getCurrentOrgAccount();
-
-  if (!account) {
-    _orgShowCreateForm = false;
-    renderOrgAuth(block, panel);
-    return;
-  }
-
-  panel.innerHTML = `
-    <div class="ow-panel-header">
-      <span class="ow-logged-in">${esc(p('dashboard-welcome', 'Welcome back'))}, <strong>${esc(account.name)}</strong> (${esc(account.company)})</span>
-      <button type="button" class="ow-link-btn" id="ow-org-logout">${esc(p('logout-label', 'Log Out'))}</button>
-    </div>`;
-
-  panel.querySelector('#ow-org-logout').addEventListener('click', () => {
-    clearOrgSession();
-    renderOrganisationPanel(block);
-  });
-
+function renderOrgDashboard(block, account) {
   if (_orgShowCreateForm) {
-    renderCreateHackathonForm(block, panel, account);
+    renderCreateHackathonForm(block, account);
     return;
   }
 
+  const body = block.querySelector('#ow-dash-body');
   const myPending = getPending().filter((h) => h.organiserEmail === account.email);
   const myApproved = getApproved().filter((h) => h.organiserEmail === account.email);
   const myHackathons = [...myPending, ...myApproved];
   const regs = getRegistrations();
 
-  panel.innerHTML += `
+  body.innerHTML = `
     <div class="ow-card">
       <div class="ow-panel-header">
         <h2>${esc(p('my-hackathons-title', 'My Hackathons'))}</h2>
@@ -392,24 +439,24 @@ function renderOrganisationPanel(block) {
       </div>`}
     </div>`;
 
-  panel.querySelector('#ow-open-create').addEventListener('click', () => {
+  body.querySelector('#ow-open-create').addEventListener('click', () => {
     _orgShowCreateForm = true;
-    renderOrganisationPanel(block);
+    renderOrgDashboard(block, account);
   });
 }
 
-// ── ADMIN panel ───────────────────────────────────────────────────────────
+// ── Admin dashboard ─────────────────────────────────────────────────────────
 let _adminTab = 'pending';
 let _adminSelectedHackathonId = null;
 let _regSearch = '';
 let _regSort = 'newest';
 
-function renderAdminPanel(block) {
-  const panel = block.querySelector('#ow-panel-admin');
+function renderAdminDashboard(block) {
+  const body = block.querySelector('#ow-dash-body');
   const pending = getPending();
   const approved = getApproved();
 
-  panel.innerHTML = `
+  body.innerHTML = `
     <div class="ow-subtabs">
       <button type="button" class="ow-subtab ${_adminTab === 'pending' ? 'active' : ''}" data-tab="pending">
         ${esc(p('admin-pending-tab', 'Pending Approvals'))} (${pending.length})
@@ -420,22 +467,22 @@ function renderAdminPanel(block) {
     </div>
     <div class="ow-card" id="ow-admin-body"></div>`;
 
-  panel.querySelectorAll('.ow-subtab').forEach((btn) => {
+  body.querySelectorAll('.ow-subtab').forEach((btn) => {
     btn.addEventListener('click', () => {
       _adminTab = btn.dataset.tab;
       _adminSelectedHackathonId = null;
-      renderAdminPanel(block);
+      renderAdminDashboard(block);
     });
   });
 
-  const body = panel.querySelector('#ow-admin-body');
+  const admin = body.querySelector('#ow-admin-body');
 
   if (_adminTab === 'pending') {
     if (!pending.length) {
-      body.innerHTML = `<div class="ow-empty">${esc(p('empty-pending', 'No pending hackathons.'))}</div>`;
+      admin.innerHTML = `<div class="ow-empty">${esc(p('empty-pending', 'No pending hackathons.'))}</div>`;
       return;
     }
-    body.innerHTML = pending.map((h) => `
+    admin.innerHTML = pending.map((h) => `
       <div class="ow-pending-row" data-id="${esc(h.id)}">
         <div class="ow-pending-info">
           <div class="ow-pending-name">${esc(h.hackathonName)}</div>
@@ -448,7 +495,7 @@ function renderAdminPanel(block) {
         </div>
       </div>`).join('');
 
-    body.querySelectorAll('.ow-btn-approve').forEach((btn) => {
+    admin.querySelectorAll('.ow-btn-approve').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         const list = getPending();
@@ -461,15 +508,15 @@ function renderAdminPanel(block) {
         setApproved(app);
         setPending(list);
         showToast(block, p('approved-message', 'Hackathon approved and is now live.'));
-        renderAdminPanel(block);
+        renderAdminDashboard(block);
       });
     });
-    body.querySelectorAll('.ow-btn-reject').forEach((btn) => {
+    admin.querySelectorAll('.ow-btn-reject').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         setPending(getPending().filter((h) => h.id !== id));
         showToast(block, p('rejected-message', 'Hackathon rejected.'));
-        renderAdminPanel(block);
+        renderAdminDashboard(block);
       });
     });
     return;
@@ -478,10 +525,10 @@ function renderAdminPanel(block) {
   // ── "All Hackathons" tab ──
   if (!_adminSelectedHackathonId) {
     if (!approved.length) {
-      body.innerHTML = `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>`;
+      admin.innerHTML = `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>`;
       return;
     }
-    body.innerHTML = approved.map((h) => {
+    admin.innerHTML = approved.map((h) => {
       const count = getRegistrations().filter((r) => r.hackathonId === h.id).length;
       return `
       <div class="ow-approved-row">
@@ -493,11 +540,11 @@ function renderAdminPanel(block) {
       </div>`;
     }).join('');
 
-    body.querySelectorAll('.ow-btn-secondary').forEach((btn) => {
+    admin.querySelectorAll('.ow-btn-secondary').forEach((btn) => {
       btn.addEventListener('click', () => {
         _adminSelectedHackathonId = btn.dataset.id;
         _regSearch = '';
-        renderAdminPanel(block);
+        renderAdminDashboard(block);
       });
     });
     return;
@@ -517,7 +564,7 @@ function renderAdminPanel(block) {
     return new Date(b.registrationDate) - new Date(a.registrationDate);
   });
 
-  body.innerHTML = `
+  admin.innerHTML = `
     <div class="ow-panel-header">
       <button type="button" class="ow-link-btn" id="ow-back-to-list">&larr; ${esc(p('back-label', 'Back'))}</button>
       <h3 class="ow-reg-title">${esc(hack?.hackathonName || '')}</h3>
@@ -555,19 +602,19 @@ function renderAdminPanel(block) {
       </table>
     </div>`}`;
 
-  body.querySelector('#ow-back-to-list').addEventListener('click', () => {
+  admin.querySelector('#ow-back-to-list').addEventListener('click', () => {
     _adminSelectedHackathonId = null;
-    renderAdminPanel(block);
+    renderAdminDashboard(block);
   });
-  body.querySelector('#ow-reg-search').addEventListener('input', (e) => {
+  admin.querySelector('#ow-reg-search').addEventListener('input', (e) => {
     _regSearch = e.target.value;
-    renderAdminPanel(block);
+    renderAdminDashboard(block);
   });
-  body.querySelector('#ow-reg-sort').addEventListener('change', (e) => {
+  admin.querySelector('#ow-reg-sort').addEventListener('change', (e) => {
     _regSort = e.target.value;
-    renderAdminPanel(block);
+    renderAdminDashboard(block);
   });
-  body.querySelector('#ow-download-csv')?.addEventListener('click', () => {
+  admin.querySelector('#ow-download-csv')?.addEventListener('click', () => {
     downloadCSV(
       `${(hack?.hackathonName || 'registrations').replace(/\s+/g, '-')}.csv`,
       ['Name', 'College', 'Email', 'GitHub', 'LinkedIn', 'Skills', 'Registered On'],
@@ -576,19 +623,24 @@ function renderAdminPanel(block) {
   });
 }
 
-// ── STUDENT panel ─────────────────────────────────────────────────────────
+// ── STUDENT page ─────────────────────────────────────────────────────────
 let _studentSelectedId = null;
 
-function renderStudentPanel(block) {
-  const panel = block.querySelector('#ow-panel-student');
+function decorateStudent(block) {
+  block.innerHTML = `<div class="ow-workflow-page"><div id="ow-student-body"></div></div><div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
+  renderStudentBody(block);
+}
+
+function renderStudentBody(block) {
+  const body = block.querySelector('#ow-student-body');
   const approved = getApproved();
 
   if (!_studentSelectedId) {
     if (!approved.length) {
-      panel.innerHTML = `<div class="ow-card"><div class="ow-empty">${esc(p('empty-approved-student', 'No hackathons available yet. Check back soon!'))}</div></div>`;
+      body.innerHTML = `<div class="ow-card"><div class="ow-empty">${esc(p('empty-approved-student', 'No hackathons available yet. Check back soon!'))}</div></div>`;
       return;
     }
-    panel.innerHTML = `<div class="ow-student-grid">${approved.map((h) => `
+    body.innerHTML = `<div class="ow-student-grid">${approved.map((h) => `
       <div class="ow-student-card" data-id="${esc(h.id)}">
         ${h.banner ? `<div class="ow-student-banner" style="background-image:url('${h.banner}')"></div>` : '<div class="ow-student-banner ow-student-banner-empty"></div>'}
         <div class="ow-student-card-body">
@@ -603,17 +655,17 @@ function renderStudentPanel(block) {
         </div>
       </div>`).join('')}</div>`;
 
-    panel.querySelectorAll('.ow-student-register-btn').forEach((btn) => {
+    body.querySelectorAll('.ow-student-register-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         _studentSelectedId = btn.dataset.id;
-        renderStudentPanel(block);
+        renderStudentBody(block);
       });
     });
     return;
   }
 
   const hack = approved.find((h) => h.id === _studentSelectedId);
-  panel.innerHTML = `
+  body.innerHTML = `
     <div class="ow-card">
       <button type="button" class="ow-link-btn" id="ow-student-back">&larr; ${esc(p('back-label', 'Back'))}</button>
       <h2>${esc(p('reg-form-title', 'Register for This Hackathon'))}</h2>
@@ -651,18 +703,18 @@ function renderStudentPanel(block) {
       <button type="button" class="ow-btn-primary" id="ow-r-submit">${esc(p('reg-submit-label', 'Submit Registration'))}</button>
     </div>`;
 
-  panel.querySelector('#ow-student-back').addEventListener('click', () => {
+  body.querySelector('#ow-student-back').addEventListener('click', () => {
     _studentSelectedId = null;
-    renderStudentPanel(block);
+    renderStudentBody(block);
   });
 
-  panel.querySelector('#ow-r-submit').addEventListener('click', () => {
-    const studentName = panel.querySelector('#ow-r-name').value.trim();
-    const college = panel.querySelector('#ow-r-college').value.trim();
-    const email = panel.querySelector('#ow-r-email').value.trim();
-    const github = panel.querySelector('#ow-r-github').value.trim();
-    const linkedin = panel.querySelector('#ow-r-linkedin').value.trim();
-    const skills = panel.querySelector('#ow-r-skills').value.trim();
+  body.querySelector('#ow-r-submit').addEventListener('click', () => {
+    const studentName = body.querySelector('#ow-r-name').value.trim();
+    const college = body.querySelector('#ow-r-college').value.trim();
+    const email = body.querySelector('#ow-r-email').value.trim();
+    const github = body.querySelector('#ow-r-github').value.trim();
+    const linkedin = body.querySelector('#ow-r-linkedin').value.trim();
+    const skills = body.querySelector('#ow-r-skills').value.trim();
 
     if (!studentName || !email) {
       showToast(block, p('error-required-student', 'Please fill in your name and email.'));
@@ -685,41 +737,17 @@ function renderStudentPanel(block) {
 
     showToast(block, p('reg-success-message', "You're registered! Good luck."));
     _studentSelectedId = null;
-    renderStudentPanel(block);
+    renderStudentBody(block);
   });
 }
 
 // ── MAIN DECORATE ─────────────────────────────────────────────────────────
 export default function decorate(block) {
   _cfg = parseConfig(block);
+  loadFonts();
 
-  if (!document.querySelector('link[data-font="ow-fonts"], link[data-font="hc-fonts"], link[data-font="bebas-neue"], link[data-font="fb-fonts"], link[data-font="hof-fonts"]')) {
-    const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com';
-    const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = '';
-    const fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.dataset.font = 'ow-fonts';
-    fl.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap';
-    document.head.append(pc1, pc2, fl);
-  }
-
-  buildShell(block);
-
-  const workflow = block.querySelector('#ow-workflow');
-  block.querySelector('#ow-start-btn').addEventListener('click', () => {
-    workflow.hidden = false;
-    workflow.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-
-  block.querySelector('#ow-role-switch').addEventListener('click', (e) => {
-    const btn = e.target.closest('.ow-role-btn');
-    if (!btn) return;
-    block.querySelectorAll('.ow-role-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    const role = btn.dataset.role;
-    block.querySelectorAll('.ow-panel').forEach((panel) => { panel.hidden = panel.id !== `ow-panel-${role}`; });
-    if (role === 'organisation') renderOrganisationPanel(block);
-    if (role === 'admin') renderAdminPanel(block);
-    if (role === 'student') renderStudentPanel(block);
-  });
-
-  renderOrganisationPanel(block);
+  if (block.classList.contains('auth')) { decorateAuth(block); return; }
+  if (block.classList.contains('dashboard')) { decorateDashboard(block); return; }
+  if (block.classList.contains('student')) { decorateStudent(block); return; }
+  decorateLanding(block);
 }

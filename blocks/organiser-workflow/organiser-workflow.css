@@ -84,50 +84,30 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
   border-radius: 50px;
   padding: 14px 34px;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.2s, transform 0.15s;
 }
 
 .organiser-workflow .ow-cta-btn:hover {
   background: #f0c674;
   transform: translateY(-1px);
+  text-decoration: none;
 }
 
-/* ── Workflow shell ────────────────────────────────────────────────────── */
-.organiser-workflow .ow-workflow {
+/* ── Auth page (Sign Up / Log In, standalone page) ────────────────────── */
+.organiser-workflow .ow-auth-hero {
+  max-width: 440px;
+  margin: 40px auto;
+}
+
+.organiser-workflow .ow-hero .ow-card {
+  text-align: left;
+}
+
+/* ── Dashboard / Student pages (standalone, no hero) ──────────────────── */
+.organiser-workflow .ow-workflow-page {
   max-width: 900px;
   margin: 0 auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 40px;
-}
-
-.organiser-workflow .ow-role-switch {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.organiser-workflow .ow-role-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #a1a1aa;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 10px 20px;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.organiser-workflow .ow-role-btn:hover { border-color: rgba(217, 164, 65, 0.4); color: #e4e4e7; }
-
-.organiser-workflow .ow-role-btn.active {
-  background: rgba(217, 164, 65, 0.15);
-  border-color: #d9a441;
-  color: #d9a441;
 }
 
 /* ── Card / fields ─────────────────────────────────────────────────────── */
