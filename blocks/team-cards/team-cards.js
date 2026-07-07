@@ -52,6 +52,51 @@ function getEmail() {
   return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
 }
 
+// Reads the logged-in student's saved profile skills once (cheap, synchronous,
+// no network) -- reused for every card's skill-match badge below.
+function getUserSkills() {
+  try {
+    const email = getEmail();
+    let profile = null;
+    if (email) {
+      const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+      profile = profiles[email];
+    }
+    if (!profile) profile = JSON.parse(localStorage.getItem('hk_profile') || 'null');
+    const { skills } = profile || {};
+    if (Array.isArray(skills)) return skills.map((s) => s.toLowerCase().trim()).filter(Boolean);
+    if (typeof skills === 'string') return skills.split(',').map((s) => s.toLowerCase().trim()).filter(Boolean);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+// How many of the student's own skills show up in this team's tech stack.
+// No badge if the student has no saved skills or nothing overlaps.
+function computeSkillMatch(userSkills, techStack) {
+  if (!userSkills.length || !techStack.length) return null;
+  const techLower = techStack.map((t) => t.toLowerCase());
+  const matched = userSkills.filter((s) => techLower.some((t) => t.includes(s) || s.includes(t)));
+  if (!matched.length) return null;
+  return Math.round((matched.length / userSkills.length) * 100);
+}
+
+// Computed once per card at render time (not a ticking timer) -- a deadline
+// that's days away doesn't need per-second updates. Team `deadline` is a
+// clean ISO date (e.g. "2026-07-25"), unlike the freeform hackathon date text.
+function formatCountdown(deadlineStr) {
+  if (!deadlineStr) return null;
+  const deadline = new Date(deadlineStr);
+  if (Number.isNaN(deadline.getTime())) return null;
+  const msLeft = deadline.getTime() - Date.now();
+  const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+  if (daysLeft < 0) return { text: 'Closed', urgent: false, closed: true };
+  if (daysLeft === 0) return { text: 'Closes today', urgent: true, closed: false };
+  if (daysLeft === 1) return { text: '1 day left', urgent: true, closed: false };
+  return { text: `${daysLeft} days left`, urgent: daysLeft <= 3, closed: false };
+}
+
 function parseBlockRows(container) {
   const data = {};
   [...container.querySelectorAll(':scope > div')].forEach((row) => {
@@ -262,6 +307,9 @@ export default async function decorate(block) {
     document.head.append(pc1, pc2, fl);
   }
 
+  // Read once, reused for every card's skill-match badge.
+  const userSkills = getUserSkills();
+
   // ── 3. Fetch + merge teams ─────────────────────────────────────────────────
   const { config, teams: staticTeams } = await fetchTeamsData(dataPage);
   const TEAMS = [...staticTeams];
@@ -411,6 +459,9 @@ export default async function decorate(block) {
       const openCount = t.roles.filter((r) => r.o).length;
       const filled = t.members.length;
       const chips = t.roles.slice(0, 3).map((r) => `<span class="tm-chip">${r.n}</span>`).join('');
+      const fillPct = t.totalSpots ? Math.min(100, Math.round((filled / t.totalSpots) * 100)) : 0;
+      const matchPct = computeSkillMatch(userSkills, t.techStack);
+      const countdown = formatCountdown(t.deadline);
 
       const card = document.createElement('div');
       card.className = 'tm-card';
@@ -421,6 +472,7 @@ export default async function decorate(block) {
             <img src="${t.avatar}" alt="${t.team}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
           </div>
         </div>
+        ${matchPct !== null ? `<span class="tm-skill-match">${matchPct}% Match</span>` : ''}
         <div class="tm-card-body">
           <div class="tm-team">${t.team}</div>
           <div class="tm-hackname">${t.name}</div>
@@ -431,6 +483,8 @@ export default async function decorate(block) {
               <span class="tm-dot-label">${openCount > 0 ? 'Open' : 'Full'}</span>
             </div>
           </div>
+          <div class="tm-fill-bar"><div class="tm-fill-fill" style="width:${fillPct}%"></div></div>
+          ${countdown ? `<div class="tm-countdown${countdown.urgent ? ' tm-countdown-urgent' : ''}${countdown.closed ? ' tm-countdown-closed' : ''}">${countdown.text}</div>` : ''}
           <div class="tm-divider"></div>
           <div class="tm-roles-label">Roles needed</div>
           <div class="tm-roles">${chips}</div>

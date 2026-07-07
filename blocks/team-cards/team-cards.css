@@ -239,6 +239,69 @@
   border-color: rgba(201, 162, 39, 0.4);
 }
 
+/* ── Skill-match badge (next to the floating avatar) ──────────── */
+.team-cards .tm-skill-match {
+  position: absolute;
+  top: -20px;
+  left: 92px;
+  z-index: 2;
+  padding: 4px 12px;
+  background: #1e9e5c;
+  border: 1px solid #2ecc78;
+  color: #fff;
+  font-family: var(--tc-font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Team-fill progress bar ───────────────────────────────────── */
+.team-cards .tm-fill-bar {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.team-cards .tm-fill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tc-accent), var(--tc-accent-light));
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+/* ── Application-deadline countdown ───────────────────────────── */
+.team-cards .tm-countdown {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-bottom: 14px;
+  background: rgba(217, 164, 65, 0.15);
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: #f0c674;
+  font-family: var(--tc-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 100px;
+}
+
+.team-cards .tm-countdown-urgent {
+  background: rgba(224, 80, 80, 0.18);
+  border-color: rgba(255, 80, 80, 0.5);
+  color: #ff8080;
+}
+
+.team-cards .tm-countdown-closed {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.35);
+}
+
 /* ── CARD BODY ── */
 .team-cards .tm-card-body {
   padding-top: 42px;
