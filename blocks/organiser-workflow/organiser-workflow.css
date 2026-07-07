@@ -405,6 +405,81 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
 
 .organiser-workflow .ow-reg-table a { color: #d9a441; }
 
+/* ── Landing page thank-you: what happens next ────────────────────────── */
+.organiser-workflow .ow-expect {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+}
+
+.organiser-workflow .ow-expect h3 {
+  font-size: 0.98rem;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.organiser-workflow .ow-expect ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.organiser-workflow .ow-expect li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #d4d4d8;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/* ── Landing page thank-you: platform story / stats ───────────────────── */
+.organiser-workflow .ow-story-band {
+  margin-top: 26px;
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgb(217 164 65 / 8%) 0%, #16171f 100%);
+  border: 1px solid rgb(217 164 65 / 18%);
+  text-align: center;
+}
+
+.organiser-workflow .ow-story-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #a1a1aa;
+  margin: 0 0 16px;
+}
+
+.organiser-workflow .ow-story-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.organiser-workflow .ow-story-stat { display: flex; flex-direction: column; gap: 4px; }
+
+.organiser-workflow .ow-story-stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.9rem;
+  color: #d9a441;
+  line-height: 1;
+}
+
+.organiser-workflow .ow-story-stat-label {
+  font-size: 0.7rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'DM Mono', monospace;
+}
+
 /* ── Social links (landing page thank-you) ────────────────────────────── */
 .organiser-workflow .ow-social-row {
   margin-top: 24px;

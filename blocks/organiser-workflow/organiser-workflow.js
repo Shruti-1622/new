@@ -331,9 +331,38 @@ function renderSubmissionSuccess(block) {
     { key: 'social-twitter', label: 'Twitter / X' },
   ].filter((s) => p(s.key, ''));
 
+  const storyStats = p('story-stats', '50+: Hackathons Hosted | 1,200+: Active Student Innovators | ₹2Cr+: Prizes Awarded')
+    .split('|').map((s) => s.trim()).filter(Boolean)
+    .map((s) => {
+      const [value, ...rest] = s.split(':');
+      return { value: (value || '').trim(), label: rest.join(':').trim() };
+    });
+
   card.innerHTML = `
-    <h2>${esc(p('success-title', "You're All Set!"))}</h2>
-    <p class="ow-hint">${esc(p('success-message', "Thanks for submitting your hackathon. Our team will review it and reach out to you shortly — we'll help set everything up and manage the hackathon on your behalf, so you don't have to worry about a thing."))}</p>
+    <h2>${esc(p('success-title', "Thank You — We've Got This Covered"))}</h2>
+    <p class="ow-hint">${esc(p('success-message', "Our partnerships team will personally reach out to you within 24 hours to walk through the details and get your hackathon ready to go live. From there, we handle everything — hosting your event page, managing the full registration pipeline, and actively promoting it to our community — so your team can stay focused on running a great event, not chasing logistics."))}</p>
+
+    <div class="ow-expect">
+      <h3>${esc(p('expect-title', 'What Happens Next'))}</h3>
+      <ul>
+        <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-1', 'A dedicated HackHub partner manager will call or email you within 24 hours to confirm the details and answer any questions.'))}</li>
+        <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-2', "We'll build and publish your hackathon page, then open registrations to our community — no setup work needed on your end."))}</li>
+        <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-3', "We'll actively promote your hackathon across our platform, social channels, and student network to drive quality sign-ups."))}</li>
+      </ul>
+    </div>
+
+    ${storyStats.length ? `
+    <div class="ow-story-band">
+      <p class="ow-story-label">${esc(p('story-label', "You're joining a community that's already delivering results"))}</p>
+      <div class="ow-story-stats">
+        ${storyStats.map((s) => `
+        <div class="ow-story-stat">
+          <span class="ow-story-stat-value">${esc(s.value)}</span>
+          <span class="ow-story-stat-label">${esc(s.label)}</span>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+
     ${socialLinks.length ? `
     <div class="ow-social-row">
       <span class="ow-social-label">${esc(p('social-follow-label', 'Follow us for updates'))}</span>
