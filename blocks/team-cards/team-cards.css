@@ -239,11 +239,11 @@
   border-color: rgba(201, 162, 39, 0.4);
 }
 
-/* ── Skill-match badge (next to the floating avatar) ──────────── */
+/* ── Skill-match badge (top-right, mirrors the floating avatar) ── */
 .team-cards .tm-skill-match {
   position: absolute;
   top: -20px;
-  left: 92px;
+  right: 1.5rem;
   z-index: 2;
   padding: 4px 12px;
   background: #1e9e5c;
