@@ -317,6 +317,43 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
   padding: 40px 0;
 }
 
+/* ── Organiser dashboard: status badges + registration count ─────────── */
+.organiser-workflow .ow-my-hack-list .ow-pending-row { align-items: center; }
+
+.organiser-workflow .ow-status-badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+
+.organiser-workflow .ow-status-pending {
+  background: rgba(217, 164, 65, 0.12);
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: #d9a441;
+}
+
+.organiser-workflow .ow-status-approved {
+  background: rgba(63, 201, 128, 0.12);
+  border: 1px solid rgba(63, 201, 128, 0.4);
+  color: #3fc980;
+}
+
+.organiser-workflow .ow-reg-count {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  white-space: nowrap;
+}
+
+.organiser-workflow .ow-reg-count strong {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
 /* ── Registrations table ──────────────────────────────────────────────── */
 .organiser-workflow .ow-reg-title { font-size: 1.1rem; color: #fff; margin: 0; }
 

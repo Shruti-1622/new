@@ -43,9 +43,23 @@ function setApproved(v) { lsSet('approvedHackathons', v); }
 function getRegistrations() { return lsGet('registrations', []); }
 function setRegistrations(v) { lsSet('registrations', v); }
 
-// TODO(backend): replace with a real organiser auth/session lookup.
-function getOrgIdentity() { return lsGet('hk_org_identity', null); }
-function setOrgIdentity(identity) { lsSet('hk_org_identity', identity); }
+// TODO(backend): replace this whole block with real organiser auth
+// (hashed passwords, server-side session, etc). This is a simulated
+// account system for the prototype only -- plaintext in localStorage.
+function getOrgAccounts() { return lsGet('hk_org_accounts', {}); }
+function saveOrgAccount(account) {
+  const accounts = getOrgAccounts();
+  accounts[account.email] = account;
+  lsSet('hk_org_accounts', accounts);
+}
+function getOrgSessionEmail() { return lsGet('hk_org_session', null); }
+function setOrgSessionEmail(email) { lsSet('hk_org_session', email); }
+function clearOrgSession() { lsSet('hk_org_session', null); }
+function getCurrentOrgAccount() {
+  const email = getOrgSessionEmail();
+  if (!email) return null;
+  return getOrgAccounts()[email] || null;
+}
 
 function genId(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
@@ -130,57 +144,110 @@ function buildShell(block) {
 }
 
 // ── ORGANISATION panel ───────────────────────────────────────────────────
-function renderOrganisationPanel(block) {
-  const panel = block.querySelector('#ow-panel-organisation');
-  const identity = getOrgIdentity();
+let _orgAuthTab = 'login';
+let _orgShowCreateForm = false;
 
-  if (!identity) {
-    panel.innerHTML = `
-      <div class="ow-card ow-login-card">
-        <h2>${esc(p('login-title', 'Continue as Organiser'))}</h2>
-        <p class="ow-hint">${esc(p('login-hint', 'Just your name and email — no password needed for this demo.'))}</p>
-        <div class="ow-field">
-          <label>${esc(p('login-name-label', 'Your Name'))}</label>
-          <input type="text" id="ow-login-name" placeholder="Jane Doe">
-        </div>
-        <div class="ow-field">
-          <label>${esc(p('login-email-label', 'Work Email'))}</label>
-          <input type="email" id="ow-login-email" placeholder="jane@company.com">
-        </div>
-        <button type="button" class="ow-btn-primary" id="ow-login-submit">${esc(p('login-submit-label', 'Continue'))}</button>
-      </div>`;
+function renderOrgAuth(block, panel) {
+  panel.innerHTML = `
+    <div class="ow-card ow-login-card">
+      <div class="ow-subtabs">
+        <button type="button" class="ow-subtab ${_orgAuthTab === 'login' ? 'active' : ''}" data-authtab="login">${esc(p('login-tab-label', 'Log In'))}</button>
+        <button type="button" class="ow-subtab ${_orgAuthTab === 'signup' ? 'active' : ''}" data-authtab="signup">${esc(p('signup-tab-label', 'Sign Up'))}</button>
+      </div>
+      <div id="ow-auth-body"></div>
+    </div>`;
 
-    panel.querySelector('#ow-login-submit').addEventListener('click', () => {
-      const name = panel.querySelector('#ow-login-name').value.trim();
-      const email = panel.querySelector('#ow-login-email').value.trim();
-      if (!name || !email) { showToast(block, 'Please enter your name and email.'); return; }
-      setOrgIdentity({ name, email });
+  panel.querySelectorAll('[data-authtab]').forEach((btn) => {
+    btn.addEventListener('click', () => { _orgAuthTab = btn.dataset.authtab; renderOrgAuth(block, panel); });
+  });
+
+  const body = panel.querySelector('#ow-auth-body');
+
+  if (_orgAuthTab === 'signup') {
+    body.innerHTML = `
+      <h2>${esc(p('signup-title', 'Create Your Organiser Account'))}</h2>
+      <div class="ow-field">
+        <label>${esc(p('label-org-name', 'Your Name'))}</label>
+        <input type="text" id="ow-su-name" placeholder="Jane Doe">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-company', 'Company Name'))}</label>
+        <input type="text" id="ow-su-company" placeholder="Acme Inc.">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-org-email', 'Work Email'))}</label>
+        <input type="email" id="ow-su-email" placeholder="jane@company.com">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-org-password', 'Password'))}</label>
+        <input type="password" id="ow-su-password" placeholder="••••••••">
+      </div>
+      <button type="button" class="ow-btn-primary" id="ow-su-submit">${esc(p('signup-submit-label', 'Create Account'))}</button>`;
+
+    body.querySelector('#ow-su-submit').addEventListener('click', () => {
+      const name = body.querySelector('#ow-su-name').value.trim();
+      const company = body.querySelector('#ow-su-company').value.trim();
+      const email = body.querySelector('#ow-su-email').value.trim().toLowerCase();
+      const password = body.querySelector('#ow-su-password').value;
+      if (!name || !company || !email || !password) {
+        showToast(block, p('error-required-signup', 'Please fill in every field.'));
+        return;
+      }
+      if (getOrgAccounts()[email]) {
+        showToast(block, p('error-signup-exists', 'An account with this email already exists.'));
+        return;
+      }
+      saveOrgAccount({ name, company, email, password });
+      setOrgSessionEmail(email);
       renderOrganisationPanel(block);
     });
     return;
   }
 
-  panel.innerHTML = `
-    <div class="ow-panel-header">
-      <span class="ow-logged-in">${esc(p('logged-in-as', 'Logged in as'))} <strong>${esc(identity.name)}</strong> (${esc(identity.email)})</span>
-      <button type="button" class="ow-link-btn" id="ow-org-switch">${esc(p('switch-account-label', 'Switch account'))}</button>
+  body.innerHTML = `
+    <h2>${esc(p('login-title', 'Welcome Back'))}</h2>
+    <div class="ow-field">
+      <label>${esc(p('label-org-email', 'Work Email'))}</label>
+      <input type="email" id="ow-li-email" placeholder="jane@company.com">
     </div>
+    <div class="ow-field">
+      <label>${esc(p('label-org-password', 'Password'))}</label>
+      <input type="password" id="ow-li-password" placeholder="••••••••">
+    </div>
+    <button type="button" class="ow-btn-primary" id="ow-li-submit">${esc(p('login-submit-label', 'Log In'))}</button>`;
+
+  body.querySelector('#ow-li-submit').addEventListener('click', () => {
+    const email = body.querySelector('#ow-li-email').value.trim().toLowerCase();
+    const password = body.querySelector('#ow-li-password').value;
+    const account = getOrgAccounts()[email];
+    if (!account || account.password !== password) {
+      showToast(block, p('error-login-failed', 'Incorrect email or password.'));
+      return;
+    }
+    setOrgSessionEmail(email);
+    renderOrganisationPanel(block);
+  });
+}
+
+function renderCreateHackathonForm(block, panel, account) {
+  panel.innerHTML += `
     <div class="ow-card">
-      <h2>${esc(p('form-title', 'Submit Your Hackathon'))}</h2>
+      <button type="button" class="ow-link-btn" id="ow-cancel-create">&larr; ${esc(p('back-to-dashboard-label', 'Back to Dashboard'))}</button>
+      <h2>${esc(p('form-title', 'Create New Hackathon'))}</h2>
       <div class="ow-field-row">
         <div class="ow-field">
           <label>${esc(p('label-company', 'Company Name'))}</label>
-          <input type="text" id="ow-f-company" placeholder="Acme Inc.">
+          <input type="text" id="ow-f-company" value="${esc(account.company)}">
         </div>
         <div class="ow-field">
           <label>${esc(p('label-contact', 'Contact Person'))}</label>
-          <input type="text" id="ow-f-contact" value="${esc(identity.name)}">
+          <input type="text" id="ow-f-contact" value="${esc(account.name)}">
         </div>
       </div>
       <div class="ow-field-row">
         <div class="ow-field">
           <label>${esc(p('label-contact-email', 'Contact Email'))}</label>
-          <input type="email" id="ow-f-contact-email" value="${esc(identity.email)}">
+          <input type="email" id="ow-f-contact-email" value="${esc(account.email)}">
         </div>
         <div class="ow-field">
           <label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label>
@@ -214,8 +281,8 @@ function renderOrganisationPanel(block) {
       <button type="button" class="ow-btn-primary" id="ow-org-submit">${esc(p('submit-label', 'Submit for Review'))}</button>
     </div>`;
 
-  panel.querySelector('#ow-org-switch').addEventListener('click', () => {
-    setOrgIdentity(null);
+  panel.querySelector('#ow-cancel-create').addEventListener('click', () => {
+    _orgShowCreateForm = false;
     renderOrganisationPanel(block);
   });
 
@@ -248,6 +315,7 @@ function renderOrganisationPanel(block) {
     const pending = getPending();
     pending.push({
       id: genId('hack'),
+      organiserEmail: account.email,
       company,
       contactPerson: contact,
       contactEmail,
@@ -263,6 +331,69 @@ function renderOrganisationPanel(block) {
     setPending(pending);
 
     showToast(block, p('success-message', 'Your hackathon has been submitted for review.'));
+    _orgShowCreateForm = false;
+    renderOrganisationPanel(block);
+  });
+}
+
+function renderOrganisationPanel(block) {
+  const panel = block.querySelector('#ow-panel-organisation');
+  const account = getCurrentOrgAccount();
+
+  if (!account) {
+    _orgShowCreateForm = false;
+    renderOrgAuth(block, panel);
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="ow-panel-header">
+      <span class="ow-logged-in">${esc(p('dashboard-welcome', 'Welcome back'))}, <strong>${esc(account.name)}</strong> (${esc(account.company)})</span>
+      <button type="button" class="ow-link-btn" id="ow-org-logout">${esc(p('logout-label', 'Log Out'))}</button>
+    </div>`;
+
+  panel.querySelector('#ow-org-logout').addEventListener('click', () => {
+    clearOrgSession();
+    renderOrganisationPanel(block);
+  });
+
+  if (_orgShowCreateForm) {
+    renderCreateHackathonForm(block, panel, account);
+    return;
+  }
+
+  const myPending = getPending().filter((h) => h.organiserEmail === account.email);
+  const myApproved = getApproved().filter((h) => h.organiserEmail === account.email);
+  const myHackathons = [...myPending, ...myApproved];
+  const regs = getRegistrations();
+
+  panel.innerHTML += `
+    <div class="ow-card">
+      <div class="ow-panel-header">
+        <h2>${esc(p('my-hackathons-title', 'My Hackathons'))}</h2>
+        <button type="button" class="ow-btn-primary" id="ow-open-create">${esc(p('create-hackathon-btn', '+ Create New Hackathon'))}</button>
+      </div>
+      ${!myHackathons.length ? `<div class="ow-empty">${esc(p('empty-my-hackathons', "You haven't created any hackathons yet."))}</div>` : `
+      <div class="ow-my-hack-list">
+        ${myHackathons.map((h) => {
+          const isApproved = h.status === 'Approved';
+          const count = isApproved ? regs.filter((r) => r.hackathonId === h.id).length : 0;
+          return `
+          <div class="ow-pending-row">
+            <div class="ow-pending-info">
+              <div class="ow-pending-name">${esc(h.hackathonName)}</div>
+              <div class="ow-pending-meta">
+                <span class="ow-status-badge ${isApproved ? 'ow-status-approved' : 'ow-status-pending'}">${isApproved ? esc(p('status-approved-label', 'Approved')) : esc(p('status-pending-label', 'Pending Approval'))}</span>
+              </div>
+            </div>
+            ${isApproved ? `<div class="ow-reg-count"><strong>${count}</strong> ${esc(p('registered-count-label', 'students registered'))}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>`}
+    </div>`;
+
+  panel.querySelector('#ow-open-create').addEventListener('click', () => {
+    _orgShowCreateForm = true;
     renderOrganisationPanel(block);
   });
 }
