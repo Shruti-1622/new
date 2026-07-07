@@ -217,17 +217,20 @@ export default async function decorate(block) {
 }
 
 /**
- * Turn the CTA cell into one button per "segment", handling the common
- * authoring slip where only some of the button text ends up hyperlinked
- * (e.g. "Get Started, [Organise Hackathon](/organise)" typed on one line —
- * "Get Started" stays plain/bold text with no <a>). Real <a> tags keep
- * their href; a bare <strong> run becomes a button with no destination
+ * Turn the CTA cell into one button per "segment", handling common
+ * authoring variations: a <strong> run that wraps a link (bold + linked
+ * text), a link nested inside bold text, or plain bold text with no link
+ * at all typed alongside a real link ("Get Started, [Organise Hackathon]
+ * (/organise)" on one line). Every <a> keeps its own href and is never
+ * double-counted via an ancestor/descendant <strong>; a <strong> run with
+ * no link anywhere in it becomes its own button with no destination
  * (href="#") so it's still visible rather than silently dropped.
  */
 function parseCtaCell(val) {
-  const nodes = [...val.querySelectorAll('a, strong')].filter((el) => (
-    el.tagName === 'A' || !el.closest('a')
-  ));
+  const nodes = [...val.querySelectorAll('a, strong')].filter((el) => {
+    if (el.tagName === 'A') return true;
+    return !el.closest('a') && !el.querySelector('a');
+  });
   return nodes.map((el) => {
     if (el.tagName === 'A') return el;
     const a = document.createElement('a');
