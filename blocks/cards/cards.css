@@ -318,7 +318,7 @@ main .section:has(.cards.featured-hackathons) > div {
 main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 {
   font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 3rem;
+  margin-bottom: 0.75rem;
   color: #e5e5e5;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -328,6 +328,14 @@ main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 em,
 main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 i {
   font-style: normal;
   color: #D9A441;
+}
+
+main .section:has(.cards.featured-hackathons) .default-content-wrapper p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  color: #a1a1aa;
+  max-width: 560px;
+  margin: 0 0 3rem;
 }
 
 /* ── MOMENTS VARIANT ────────────────────────────────────────────────────────── */
