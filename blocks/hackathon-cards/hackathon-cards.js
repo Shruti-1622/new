@@ -515,7 +515,7 @@ export default async function decorate(block) {
   // shown as its own section below everything else this block renders.
   // Only shows up for a logged-in student with matching skills; otherwise
   // there's nothing to recommend and the section is simply not built.
-  const RECOMMEND_THRESHOLD = 70;
+  const RECOMMEND_THRESHOLD = 60;
   const recommended = cardsData.filter((d) => d.matchPct !== null && d.matchPct >= RECOMMEND_THRESHOLD);
 
   if (recommended.length) {
