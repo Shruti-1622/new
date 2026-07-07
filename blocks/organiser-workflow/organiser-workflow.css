@@ -588,6 +588,14 @@ main > .section > .organiser-workflow-wrapper { max-width: 100%; padding: 0; }
 
 .organiser-workflow .ow-content-header { margin-bottom: 24px; }
 
+.organiser-workflow .ow-content-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .organiser-workflow .ow-content-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(28px, 4vw, 38px);

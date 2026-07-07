@@ -454,7 +454,7 @@ function renderAdminTab(block) {
   if (!content) return;
   if (_adminTab === 'overview') { renderTabOverview(content); return; }
   if (_adminTab === 'requests') { renderTabRequests(block, content); return; }
-  if (_adminTab === 'hackathons') { renderTabHackathons(content); return; }
+  if (_adminTab === 'hackathons') { renderTabHackathons(block, content); return; }
   if (_adminTab === 'registrations') { renderTabRegistrations(block, content); return; }
   if (_adminTab === 'export') { renderTabExport(block, content); }
 }
@@ -610,12 +610,15 @@ function renderTabRequests(block, content) {
 }
 
 // ── Tab 3: Hackathons (this workflow's approvals + real site pages) ───────
-function renderTabHackathons(content) {
+function renderTabHackathons(block, content) {
   const all = getAllLiveHackathons();
 
   content.innerHTML = `
-    <div class="ow-content-header">
-      <h1 class="ow-content-title">${esc(p('tab-hackathons', 'Hackathons'))}</h1>
+    <div class="ow-content-header ow-content-header-row">
+      <div>
+        <h1 class="ow-content-title">${esc(p('tab-hackathons', 'Hackathons'))}</h1>
+      </div>
+      <button type="button" class="ow-btn-primary" id="ow-post-hackathon-btn">${esc(p('post-hackathon-label', '+ Post New Hackathon'))}</button>
     </div>
     <div class="ow-card">
       ${!all.length ? `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>` : `
@@ -638,6 +641,118 @@ function renderTabHackathons(content) {
         </table>
       </div>`}
     </div>`;
+
+  content.querySelector('#ow-post-hackathon-btn').addEventListener('click', () => openPostHackathonModal(block));
+}
+
+// ── Admin: post a hackathon directly (bypasses the org submission form) ────
+// Goes through the same pending → approve pipeline as organisation
+// submissions, so the Requests tab remains the single approval funnel
+// regardless of whether a hackathon came from the public form or was
+// entered by an admin directly (e.g. a deal closed over email/call).
+function openPostHackathonModal(block) {
+  const bodyHtml = `
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-company', 'Company Name'))}</label>
+        <input type="text" id="ow-ap-company" placeholder="Acme Inc.">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-contact', 'Contact Person'))}</label>
+        <input type="text" id="ow-ap-contact" placeholder="Jane Doe">
+      </div>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-contact-email', 'Contact Email'))}</label>
+        <input type="email" id="ow-ap-contact-email" placeholder="jane@company.com">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label>
+        <input type="text" id="ow-ap-hack-name" placeholder="InnovateTech 2026">
+      </div>
+    </div>
+    <div class="ow-field">
+      <label>${esc(p('label-description', 'Description'))}</label>
+      <textarea id="ow-ap-description" rows="3" placeholder="Themes, goals, what makes it worth joining…"></textarea>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-deadline', 'Registration Deadline'))}</label>
+        <input type="date" id="ow-ap-deadline">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-team-size', 'Team Size'))}</label>
+        <input type="text" id="ow-ap-team-size" placeholder="2-4">
+      </div>
+    </div>
+    <div class="ow-field-row">
+      <div class="ow-field">
+        <label>${esc(p('label-prize', 'Prize Pool'))}</label>
+        <input type="text" id="ow-ap-prize" placeholder="₹5,00,000">
+      </div>
+      <div class="ow-field">
+        <label>${esc(p('label-banner', 'Banner Image'))}</label>
+        <input type="file" id="ow-ap-banner" accept="image/*">
+      </div>
+    </div>
+    <button type="button" class="ow-btn-primary" id="ow-ap-submit">${esc(p('post-hackathon-submit-label', 'Post Hackathon'))}</button>`;
+
+  openModal(block, p('post-hackathon-title', 'Post a New Hackathon'), bodyHtml);
+
+  const root = block.querySelector('#ow-modal-root');
+  if (!root) return;
+
+  let bannerDataUrl = '';
+  root.querySelector('#ow-ap-banner').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { showToast(block, p('error-banner-size', 'Banner must be under 2MB.')); e.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => { bannerDataUrl = ev.target.result; };
+    reader.readAsDataURL(file);
+  });
+
+  root.querySelector('#ow-ap-submit').addEventListener('click', () => {
+    const company = root.querySelector('#ow-ap-company').value.trim();
+    const contactPerson = root.querySelector('#ow-ap-contact').value.trim();
+    const contactEmail = root.querySelector('#ow-ap-contact-email').value.trim();
+    const hackathonName = root.querySelector('#ow-ap-hack-name').value.trim();
+    const description = root.querySelector('#ow-ap-description').value.trim();
+    const deadline = root.querySelector('#ow-ap-deadline').value;
+    const teamSize = root.querySelector('#ow-ap-team-size').value.trim();
+    const prize = root.querySelector('#ow-ap-prize').value.trim();
+
+    if (!company || !hackathonName || !deadline) {
+      showToast(block, p('error-required-admin-post', 'Please fill in Company Name, Hackathon Name, and Deadline.'));
+      return;
+    }
+
+    const pending = getPending();
+    pending.push({
+      id: genId('hack'),
+      company,
+      contactPerson,
+      contactEmail,
+      hackathonName,
+      description,
+      deadline,
+      teamSize,
+      prize,
+      banner: bannerDataUrl,
+      status: 'Pending Approval',
+      submittedAt: new Date().toISOString(),
+      postedByAdmin: true,
+    });
+    setPending(pending);
+
+    root.innerHTML = '';
+    showToast(block, p('posted-message', 'Hackathon posted — approve it below to make it live.'));
+
+    _adminTab = 'requests';
+    block.querySelectorAll('.ow-sidebar-link').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'requests'));
+    renderAdminTab(block);
+  });
 }
 
 // ── Tab 4: Registrations — grouped by hackathon, detail view in a modal ────
