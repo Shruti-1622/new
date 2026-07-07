@@ -55,6 +55,7 @@ const ICON = {
   lock: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
   shield: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   github: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
+  linkedin: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/><path d="M10 21v-8M10 13a4 4 0 0 1 8 0v8"/></svg>',
   eyeOff: '<svg class="af-eye-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
   eye: '<svg class="af-eye" style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
 };
@@ -136,8 +137,12 @@ export default function decorate(block) {
                 <span class="af-field-icon">${ICON.github}</span>
                 <input type="url" id="af-github" placeholder="${ph('ph-github', 'GitHub URL (Optional)')}">
               </div>
+              <div class="af-field af-icon-field">
+                <span class="af-field-icon">${ICON.linkedin}</span>
+                <input type="url" id="af-linkedin" placeholder="${ph('ph-linkedin', 'LinkedIn URL (Optional)')}">
+              </div>
               <div class="af-field">
-                <input type="text" id="af-skills" placeholder="${ph('ph-skills', 'Skills (e.g. React, Node.js, Python)')}">
+                <input type="text" id="af-skills" placeholder="${ph('ph-skills', 'Skills & Tools (e.g. React, Node.js, Figma)')}">
               </div>
               <div class="af-field af-icon-field af-pw-field">
                 <span class="af-field-icon">${ICON.lock}</span>
@@ -246,6 +251,7 @@ export default function decorate(block) {
     const role = block.querySelector('#af-role').value;
     const experience = block.querySelector('#af-experience').value;
     const github = block.querySelector('#af-github').value.trim();
+    const linkedin = block.querySelector('#af-linkedin').value.trim();
     const skillsRaw = block.querySelector('#af-skills').value.trim();
 
     if (!firstname || !lastname) { showToast(toast, cfg['err-name'] || 'Please enter both first and last name.'); return; }
@@ -261,7 +267,7 @@ export default function decorate(block) {
     const skills = skillsRaw.split(',').map((s) => s.trim()).filter(Boolean);
     const avatar = randomAvatar();
     const profile = {
-      name, email, role, experience, github, skills, avatar, password, membership: 'free',
+      name, email, role, experience, github, linkedin, skills, avatar, password, membership: 'free',
     };
     profiles[email] = profile;
     localStorage.setItem('hk_profiles', JSON.stringify(profiles));
