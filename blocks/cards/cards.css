@@ -306,7 +306,7 @@ main .section:has(.cards.featured-hackathons) > div {
   margin: 0 auto;
 }
 
-main .section > div:has(.cards.featured-hackathons) > h2:first-child {
+main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 {
   font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
   margin-bottom: 3rem;
@@ -315,8 +315,8 @@ main .section > div:has(.cards.featured-hackathons) > h2:first-child {
   letter-spacing: 0.03em;
 }
 
-main .section > div:has(.cards.featured-hackathons) > h2:first-child em,
-main .section > div:has(.cards.featured-hackathons) > h2:first-child i {
+main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 em,
+main .section:has(.cards.featured-hackathons) .default-content-wrapper h2 i {
   font-style: normal;
   color: #D9A441;
 }
