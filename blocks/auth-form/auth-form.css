@@ -44,7 +44,7 @@ body.auth-page main > div {
   flex-direction: column;
   justify-content: space-between;
   padding: 3rem;
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 80px rgb(0 0 0 / 80%);
 }
 
 .auth-form .af-visual-bg {
@@ -66,10 +66,10 @@ body.auth-page main > div {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(8, 7, 6, 0.25) 0%,
-    rgba(10, 9, 8, 0.35) 40%,
-    rgba(9, 8, 7, 0.75) 70%,
-    rgba(9, 9, 11, 0.97) 100%
+    rgb(8 7 6 / 25%) 0%,
+    rgb(10 9 8 / 35%) 40%,
+    rgb(9 8 7 / 75%) 70%,
+    rgb(9 9 11 / 97%) 100%
   );
   z-index: 1;
 }
@@ -95,12 +95,12 @@ body.auth-page main > div {
   max-width: none !important;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 6px rgba(217, 164, 65, 0.15));
+  filter: drop-shadow(0 0 6px rgb(217 164 65 / 15%));
   transition: filter 0.25s;
 }
 
 .auth-form .af-logo-link:hover .af-logo-img {
-  filter: drop-shadow(0 0 14px rgba(217, 164, 65, 0.5));
+  filter: drop-shadow(0 0 14px rgb(217 164 65 / 50%));
 }
 
 .auth-form .af-logo-text {
@@ -125,7 +125,7 @@ body.auth-page main > div {
   margin: 0 0 1rem !important;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, #fff 0%, #d4c5a9 100%);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -133,7 +133,7 @@ body.auth-page main > div {
 .auth-form .af-visual-sub {
   font-family: 'DM Sans', sans-serif;
   font-size: 1.25rem !important;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgb(255 255 255 / 85%);
   line-height: 1.6;
   font-weight: 400;
   margin: 0 !important;
@@ -160,8 +160,8 @@ body.auth-page main > div {
 .auth-form .af-tabs-control {
   position: relative;
   display: flex;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgb(255 255 255 / 3%);
+  border: 1px solid rgb(255 255 255 / 16%);
   padding: 4px;
   border-radius: 9999px;
   width: fit-content;
@@ -178,7 +178,7 @@ body.auth-page main > div {
   border-radius: 9999px;
   z-index: 1;
   transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 4px 15px rgba(217, 164, 65, 0.3);
+  box-shadow: 0 4px 15px rgb(217 164 65 / 30%);
 }
 
 .auth-form .af-tab-btn {
@@ -187,7 +187,7 @@ body.auth-page main > div {
   background: none;
   border: none;
   outline: none;
-  color: rgba(161, 161, 170, 1);
+  color: rgb(161 161 170 / 100%);
   font-family: 'Bebas Neue', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
@@ -251,8 +251,8 @@ body.auth-page main > div {
 .auth-form .af-field select {
   width: 100%;
   padding: 0.95rem 1.2rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  background: rgb(255 255 255 / 8%);
+  border: 1.5px solid rgb(255 255 255 / 16%);
   border-radius: 14px;
   color: #fff;
   font-size: 0.95rem;
@@ -261,7 +261,7 @@ body.auth-page main > div {
   transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
   box-sizing: border-box;
   appearance: none;
-  -webkit-appearance: none;
+  appearance: none;
 }
 
 .auth-form .af-field select {
@@ -280,12 +280,12 @@ body.auth-page main > div {
 .auth-form .af-field input:focus,
 .auth-form .af-field select:focus {
   border-color: #d9a441;
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 20px rgba(217, 164, 65, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 12%);
+  box-shadow: 0 0 20px rgb(217 164 65 / 25%), inset 0 1px 1px rgb(255 255 255 / 5%);
 }
 
 .auth-form .af-field input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgb(255 255 255 / 55%);
 }
 
 .auth-form .af-field-icon {
@@ -293,7 +293,7 @@ body.auth-page main > div {
   left: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.3);
+  color: rgb(255 255 255 / 30%);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -314,7 +314,7 @@ body.auth-page main > div {
   background: none;
   border: none;
   outline: none;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgb(255 255 255 / 35%);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -341,7 +341,7 @@ body.auth-page main > div {
 .auth-form .af-pw-bar {
   flex: 1;
   height: 100%;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgb(255 255 255 / 7%);
   border-radius: 2px;
   transition: background 0.2s;
 }
@@ -369,13 +369,13 @@ body.auth-page main > div {
   letter-spacing: 0.06em;
   cursor: pointer;
   margin-top: 1rem;
-  box-shadow: 0 4px 20px rgba(217, 164, 65, 0.3);
+  box-shadow: 0 4px 20px rgb(217 164 65 / 30%);
   transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
 }
 
 .auth-form .af-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(217, 164, 65, 0.45);
+  box-shadow: 0 8px 25px rgb(217 164 65 / 45%);
   filter: brightness(1.05);
 }
 
@@ -395,17 +395,17 @@ body.auth-page main > div {
 }
 
 .af-toast-item {
-  background: rgba(18, 18, 20, 0.85);
+  background: rgb(18 18 20 / 85%);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgb(255 255 255 / 8%);
   color: #fff;
   padding: 1rem 1.5rem;
   border-radius: 12px;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 50%);
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s, transform 0.3s;
@@ -424,8 +424,68 @@ body.auth-page main > div {
   border-left: 4px solid #10b981;
 }
 
+/* ── Complete-profile modal (shown once, right after signup) ──────────────────── */
+.auth-form .af-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 70%);
+  backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 10001;
+}
+
+.auth-form .af-modal-overlay.open {
+  display: flex;
+}
+
+.auth-form .af-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #121214;
+  border: 1.5px solid rgb(255 255 255 / 10%);
+  border-radius: 20px;
+  padding: 2.2rem;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 50%);
+}
+
+.auth-form .af-modal .af-form-title {
+  font-size: 1.7rem !important;
+  margin-bottom: 0.6rem !important;
+}
+
+.auth-form .af-modal-sub {
+  color: rgb(255 255 255 / 60%);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0 0 1.8rem;
+}
+
+.auth-form .af-skip-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  color: rgb(255 255 255 / 50%);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 0.4rem;
+  transition: color 0.2s;
+}
+
+.auth-form .af-skip-btn:hover {
+  color: #fff;
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────────────── */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .auth-form .af-container {
     padding: 0.5rem;
   }
@@ -439,7 +499,7 @@ body.auth-page main > div {
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .auth-form .af-row {
     flex-direction: column;
   }

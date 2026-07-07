@@ -133,17 +133,6 @@ export default function decorate(block) {
                   <select id="af-experience">${buildOptions(cfg['experience-options'], ph('ph-experience', 'Experience'))}</select>
                 </div>
               </div>
-              <div class="af-field af-icon-field">
-                <span class="af-field-icon">${ICON.github}</span>
-                <input type="url" id="af-github" placeholder="${ph('ph-github', 'GitHub URL (Optional)')}">
-              </div>
-              <div class="af-field af-icon-field">
-                <span class="af-field-icon">${ICON.linkedin}</span>
-                <input type="url" id="af-linkedin" placeholder="${ph('ph-linkedin', 'LinkedIn URL (Optional)')}">
-              </div>
-              <div class="af-field">
-                <input type="text" id="af-skills" placeholder="${ph('ph-skills', 'Skills & Tools (e.g. React, Node.js, Figma)')}">
-              </div>
               <div class="af-field af-icon-field af-pw-field">
                 <span class="af-field-icon">${ICON.lock}</span>
                 <input type="password" id="af-password" placeholder="${ph('ph-password', 'Password')}" autocomplete="new-password">
@@ -186,7 +175,30 @@ export default function decorate(block) {
         </div>
       </div>
     </div>
-    <div id="af-toast-container"></div>`;
+    <div id="af-toast-container"></div>
+
+    <!-- ── COMPLETE PROFILE MODAL (shown once, right after signup) ── -->
+    <div class="af-modal-overlay" id="af-complete-overlay">
+      <div class="af-modal">
+        <h2 class="af-form-title">${cfg['complete-title'] || "You're In! One Last Thing"}</h2>
+        <p class="af-modal-sub">${cfg['complete-subtitle'] || 'Add your skills and links so organisers and teammates can find you. You can always edit this later from your profile.'}</p>
+        <form id="af-complete-form" novalidate>
+          <div class="af-field af-icon-field">
+            <span class="af-field-icon">${ICON.github}</span>
+            <input type="url" id="af-complete-github" placeholder="${ph('ph-github', 'GitHub URL (Optional)')}">
+          </div>
+          <div class="af-field af-icon-field">
+            <span class="af-field-icon">${ICON.linkedin}</span>
+            <input type="url" id="af-complete-linkedin" placeholder="${ph('ph-linkedin', 'LinkedIn URL (Optional)')}">
+          </div>
+          <div class="af-field">
+            <input type="text" id="af-complete-skills" placeholder="${ph('ph-skills', 'Skills & Tools (e.g. React, Node.js, Figma)')}">
+          </div>
+          <button type="submit" class="af-submit-btn">${cfg['complete-btn'] || 'Save & Get Verified'}</button>
+          <button type="button" class="af-skip-btn" id="af-complete-skip">${cfg['skip-btn'] || 'Skip for now'}</button>
+        </form>
+      </div>
+    </div>`;
 
   const toast = block.querySelector('#af-toast-container');
 
@@ -250,9 +262,6 @@ export default function decorate(block) {
     const confirm = block.querySelector('#af-confirm').value;
     const role = block.querySelector('#af-role').value;
     const experience = block.querySelector('#af-experience').value;
-    const github = block.querySelector('#af-github').value.trim();
-    const linkedin = block.querySelector('#af-linkedin').value.trim();
-    const skillsRaw = block.querySelector('#af-skills').value.trim();
 
     if (!firstname || !lastname) { showToast(toast, cfg['err-name'] || 'Please enter both first and last name.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast(toast, cfg['err-email'] || 'Please enter a valid email address.'); return; }
@@ -264,10 +273,9 @@ export default function decorate(block) {
     if (profiles[email]) { showToast(toast, cfg['err-exists'] || 'User already exists. Please log in.'); return; }
 
     const name = `${firstname} ${lastname}`;
-    const skills = skillsRaw.split(',').map((s) => s.trim()).filter(Boolean);
     const avatar = randomAvatar();
     const profile = {
-      name, email, role, experience, github, linkedin, skills, avatar, password, membership: 'free',
+      name, email, role, experience, github: '', linkedin: '', skills: [], avatar, password, membership: 'free',
     };
     profiles[email] = profile;
     localStorage.setItem('hk_profiles', JSON.stringify(profiles));
@@ -278,9 +286,37 @@ export default function decorate(block) {
     if (!localStorage.getItem('hk_notifications')) localStorage.setItem('hk_notifications', '[]');
     if (!localStorage.getItem('hk_user_teams')) localStorage.setItem('hk_user_teams', '[]');
 
+    block.querySelector('#af-complete-overlay').classList.add('open');
+  });
+
+  // ── Complete profile (shown once, right after signup) ─────────────────────────
+  function finishSignup() {
+    block.querySelector('#af-complete-overlay').classList.remove('open');
     showToast(toast, cfg['success-signup'] || 'Account created! Redirecting...', 'success');
     setTimeout(() => { window.location.href = redirect; }, 1200);
+  }
+
+  block.querySelector('#af-complete-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
+    if (!email) { finishSignup(); return; }
+
+    const github = block.querySelector('#af-complete-github').value.trim();
+    const linkedin = block.querySelector('#af-complete-linkedin').value.trim();
+    const skills = block.querySelector('#af-complete-skills').value.trim()
+      .split(',').map((s) => s.trim()).filter(Boolean);
+
+    const profiles = getProfiles();
+    const profile = profiles[email] || JSON.parse(localStorage.getItem('hk_profile') || '{}');
+    Object.assign(profile, { github, linkedin, skills });
+    profiles[email] = profile;
+    localStorage.setItem('hk_profiles', JSON.stringify(profiles));
+    localStorage.setItem('hk_profile', JSON.stringify(profile));
+
+    finishSignup();
   });
+
+  block.querySelector('#af-complete-skip').addEventListener('click', finishSignup);
 
   // ── Log in ───────────────────────────────────────────────────────────────────
   block.querySelector('#af-login-form').addEventListener('submit', (e) => {
