@@ -254,19 +254,29 @@ export default async function decorate(block) {
 
   // Each row = one slug pointing to a /hackathons/[slug] da.live page
   // Last row with a link = "View All" CTA
+  // One optional labeled row ("Recommended Title" | text) overrides the
+  // "Recommended For You" heading -- exact key match, same convention every
+  // other block's config rows use, so it can't be confused with a slug row.
   const rows = [...block.children];
   let viewAllHref = '/hackathons';
   let viewAllLabel = 'View All Events';
+  let recommendedTitle = 'Recommended For You';
   const slugs = [];
 
   rows.forEach((row) => {
+    const cells = [...row.children];
+    const key = cells[0]?.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    if (key === 'recommended-title') {
+      recommendedTitle = cells[1]?.textContent.trim() || recommendedTitle;
+      return;
+    }
     const linkEl = row.querySelector('a');
     if (linkEl) {
       viewAllHref = linkEl.href;
       viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
       return;
     }
-    const slug = row.querySelector('div')?.textContent.trim();
+    const slug = cells[0]?.textContent.trim();
     if (slug) slugs.push(slug);
   });
 
@@ -499,4 +509,49 @@ export default async function decorate(block) {
     renderEventCards(cardsData);
     searchInput.focus();
   });
+
+  // ── "Recommended For You" — same skill-match score already computed for
+  // the badge on each card, just filtered to a high-confidence threshold and
+  // shown as its own section below everything else this block renders.
+  // Only shows up for a logged-in student with matching skills; otherwise
+  // there's nothing to recommend and the section is simply not built.
+  const RECOMMEND_THRESHOLD = 70;
+  const recommended = cardsData.filter((d) => d.matchPct !== null && d.matchPct >= RECOMMEND_THRESHOLD);
+
+  if (recommended.length) {
+    const recSection = document.createElement('div');
+    recSection.className = 'hc-recommended';
+    recSection.innerHTML = `
+      <h2 class="hc-recommended-title">${recommendedTitle}</h2>
+      <p class="hc-recommended-sub">Hackathons that best match the skills on your profile.</p>
+      <div class="hc-event-grid hc-recommended-grid"></div>`;
+    const recGrid = recSection.querySelector('.hc-recommended-grid');
+
+    recommended.forEach((d) => {
+      const { month, day } = parseDate(d.date);
+      const card = document.createElement('div');
+      card.className = 'hc-event-card';
+      card.innerHTML = `
+        <div class="hc-ec-image${d.imgSrc ? '' : ' hc-ec-image--placeholder'}">
+          ${d.imgSrc ? `<img src="${d.imgSrc}" alt="${d.imgAlt}" loading="lazy">` : ''}
+        </div>
+        <div class="hc-ec-content">
+          <div class="hc-ec-date-box">
+            <div class="hc-ec-month">${month}</div>
+            <div class="hc-ec-day">${day}</div>
+          </div>
+          <div class="hc-ec-details">
+            <span class="hc-skill-match-inline">${d.matchPct}% Match</span>
+            <div class="hc-ec-location">${d.tag || 'Open'}</div>
+            <div class="hc-ec-title">${d.title}</div>
+            <div class="hc-ec-desc">${d.org}${d.prize ? ` · ${d.prize}` : ''}</div>
+          </div>
+        </div>`;
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => { window.location.href = d.href; });
+      recGrid.appendChild(card);
+    });
+
+    block.appendChild(recSection);
+  }
 }
