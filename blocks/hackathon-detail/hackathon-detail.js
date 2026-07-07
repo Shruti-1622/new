@@ -112,12 +112,20 @@ export default function decorate(block) {
   const maxTeam = parseInt(teamParts[1]?.trim() || '4', 10);
   const teamRequired = minTeam > 1;
 
-  // ── State (localStorage — same keys as original) ──────────────────
+  // ── State (localStorage — same real site session every other block uses) ──
   const state = {
-    getUser() { try { return JSON.parse(localStorage.getItem('hackhub_user')); } catch { return null; } },
-    setUser(u) { localStorage.setItem('hackhub_user', JSON.stringify(u)); localStorage.setItem('isLoggedIn', 'true'); },
-    isLoggedIn() { return !!this.getUser() || localStorage.getItem('isLoggedIn') === 'true'; },
-    email() { return (this.getUser()?.email) || ''; },
+    isLoggedIn() { return localStorage.getItem('isLoggedIn') === 'true'; },
+    email() { return (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase(); },
+    getUser() {
+      const email = this.email();
+      if (!email) return null;
+      let name = email.split('@')[0];
+      try {
+        const profile = JSON.parse(localStorage.getItem('hk_profile') || 'null');
+        if (profile?.name) name = profile.name;
+      } catch { /* fall back to email-derived name */ }
+      return { name, email };
+    },
     regsKey() { return `hackhub_registrations_${this.email()}`; },
     isReg(id) { try { return (JSON.parse(localStorage.getItem(this.regsKey())) || []).some((r) => r.hackathonId === id); } catch { return false; } },
     addReg(id) {
@@ -360,118 +368,16 @@ export default function decorate(block) {
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeAll(); });
   }
 
-  // ── Login modal ───────────────────────────────────────────────────
-  let pendingReg = false;
-
-  function openLogin() {
-    closeAll();
-    const ov = getModal('hk-login-ov');
-    ov.innerHTML = `
-      <div class="hk-modal">
-        <button class="hk-modal-x" id="hk-lx">✕</button>
-        <div class="hk-modal-head"><h2>Welcome Back</h2><p>Sign in to HackHub to continue</p></div>
-        <div class="hk-modal-body">
-          <div class="hk-fg"><label class="hk-lbl">Email</label><input type="email" id="hk-le" class="hk-inp" placeholder="you@example.com"></div>
-          <div class="hk-fg"><label class="hk-lbl">Password</label><input type="password" id="hk-lp" class="hk-inp" placeholder="••••••••"></div>
-          <button class="hk-btn" id="hk-lgo">Login</button>
-          <p class="hk-link-row">Don't have an account? <button id="hk-to-signup">Sign up</button></p>
-        </div>
-      </div>`;
-    ov.classList.add('open');
-    onOutsideClick(ov);
-    ov.querySelector('#hk-lx').addEventListener('click', closeAll);
-    ov.querySelector('#hk-to-signup').addEventListener('click', openSignup);
-    ov.querySelector('#hk-lgo').addEventListener('click', doLogin);
-    ov.querySelector('#hk-lp').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
-  }
-
-  function doLogin() {
-    const email = document.getElementById('hk-le').value.trim().toLowerCase();
-    if (!email || !email.includes('@')) { showToast('Enter a valid email', 'error'); return; }
-    const btn = document.getElementById('hk-lgo');
-    btn.innerHTML = '<span class="hk-spin"></span>'; btn.disabled = true;
-    setTimeout(() => {
-      state.setUser({ name: email.split('@')[0], email });
-      closeAll();
-      showToast(`Welcome back, ${email.split('@')[0]}!`, 'success');
-      if (pendingReg) { pendingReg = false; openReg(); }
-    }, 900);
-  }
-
-  // ── Signup modal ──────────────────────────────────────────────────
-  function openSignup() {
-    closeAll();
-    const ov = getModal('hk-signup-ov');
-    ov.innerHTML = `
-      <div class="hk-modal">
-        <button class="hk-modal-x" id="hk-sx">✕</button>
-        <div class="hk-modal-head"><h2>Create Account</h2><p>Join HackHub</p></div>
-        <div class="hk-modal-body">
-          <div class="hk-form-row">
-            <div class="hk-fg"><label class="hk-lbl">First Name <span class="hk-req">*</span></label><input type="text" id="hk-sfn" class="hk-inp"></div>
-            <div class="hk-fg"><label class="hk-lbl">Last Name</label><input type="text" id="hk-sln" class="hk-inp"></div>
-          </div>
-          <div class="hk-fg"><label class="hk-lbl">Email <span class="hk-req">*</span></label><input type="email" id="hk-sem" class="hk-inp"></div>
-          <div class="hk-fg">
-            <label class="hk-lbl">Password <span class="hk-req">*</span></label>
-            <input type="password" id="hk-spw" class="hk-inp">
-            <div class="hk-pw-wrap"><div class="hk-pw-bar"><div id="hk-pw-fill" class="hk-pw-fill"></div></div><span id="hk-pw-lbl" class="hk-pw-lbl">Password strength</span></div>
-          </div>
-          <div class="hk-fg"><label class="hk-lbl">Role <span class="hk-req">*</span></label>
-            <select id="hk-srl" class="hk-sel">
-              <option value="">Select role</option>
-              <option>Frontend Dev</option><option>Backend Dev</option><option>UI/UX Designer</option><option>ML Engineer</option><option>Other</option>
-            </select>
-          </div>
-          <label class="hk-chk"><input type="checkbox" id="hk-stm"> <span>I agree to Terms of Service</span></label>
-          <button class="hk-btn" id="hk-sgo">Create Account</button>
-          <p class="hk-link-row">Already have an account? <button id="hk-to-login">Log in</button></p>
-        </div>
-      </div>`;
-    ov.classList.add('open');
-    onOutsideClick(ov);
-    ov.querySelector('#hk-sx').addEventListener('click', closeAll);
-    ov.querySelector('#hk-to-login').addEventListener('click', openLogin);
-    ov.querySelector('#hk-sgo').addEventListener('click', doSignup);
-    ov.querySelector('#hk-spw').addEventListener('input', (e) => checkStrength(e.target.value));
-  }
-
-  function checkStrength(v) {
-    const fill = document.getElementById('hk-pw-fill');
-    const lbl = document.getElementById('hk-pw-lbl');
-    if (!fill) return;
-    if (!v) { fill.style.width = '0'; lbl.textContent = 'Password strength'; return; }
-    let s = 0;
-    if (v.length >= 8) s += 1; if (/[A-Z]/.test(v)) s += 1;
-    if (/[0-9]/.test(v)) s += 1; if (/[^A-Za-z0-9]/.test(v)) s += 1;
-    const map = { 1: ['25%', '#ef4444', 'Weak'], 2: ['50%', '#f59e0b', 'Fair'], 3: ['75%', '#10b981', 'Good'], 4: ['100%', '#10b981', 'Strong'] };
-    const [w, c, t] = map[s] || map[1];
-    fill.style.width = w; fill.style.background = c; lbl.textContent = t; lbl.style.color = c;
-  }
-
-  function doSignup() {
-    const fn = document.getElementById('hk-sfn').value.trim();
-    const em = document.getElementById('hk-sem').value.trim().toLowerCase();
-    const pw = document.getElementById('hk-spw').value;
-    const tm = document.getElementById('hk-stm').checked;
-    if (!fn || !em || !pw || !tm) { showToast('Please fill all required fields', 'error'); return; }
-    const btn = document.getElementById('hk-sgo');
-    btn.innerHTML = '<span class="hk-spin"></span>'; btn.disabled = true;
-    setTimeout(() => {
-      state.setUser({ name: fn, email: em });
-      closeAll();
-      showToast('Account created! Welcome to HackHub 🎉', 'success');
-      if (pendingReg) { pendingReg = false; openReg(); }
-    }, 1000);
-  }
-
   // ── Registration wizard ───────────────────────────────────────────
   let wizStep = 1;
   let wizPref = '';
   let wizTeamEmailCount = 0;
 
   function openReg() {
-    if (!state.isLoggedIn()) { pendingReg = true; showToast('Please login to register', 'info'); openLogin(); return; }
+    if (!state.isLoggedIn()) {
+      window.location.href = `/auth-form?mode=login&redirect=${encodeURIComponent(window.location.href)}`;
+      return;
+    }
     if (state.isReg(hackId)) { showToast("You're already registered!", 'info'); return; }
     if (totalSlots && registeredCount >= totalSlots) { showToast('This hackathon is full.', 'error'); return; }
     wizStep = 1; renderWiz();
