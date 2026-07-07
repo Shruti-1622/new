@@ -354,6 +354,11 @@ export default async function decorate(block) {
       <section class="teams-section tf-teams-section">
         <div class="teams-grid" id="tc-grid"></div>
       </section>
+      <section class="teams-section tf-recommended-section" id="tc-recommended-section" style="display:none;">
+        <h2 class="tf-recommended-title">Recommended For You</h2>
+        <p class="tf-recommended-sub">Teams whose tech stack best matches the skills on your profile.</p>
+        <div class="teams-grid" id="tc-recommended-grid"></div>
+      </section>
     </div>
     <div class="tc-panel" id="tc-panel-create" style="display:none;">
       <div class="tf-create-panel">
@@ -416,7 +421,7 @@ export default async function decorate(block) {
           if (!yes) return;
           if (processWithdraw(t)) {
             if (drawerApplyBtn) { drawerApplyBtn.textContent = 'Apply to Join'; drawerApplyBtn.classList.remove('applied'); }
-            doRenderGrid();
+            renderAll();
           }
         });
       } else {
@@ -427,7 +432,7 @@ export default async function decorate(block) {
 
   const { openApply } = initApplyModal({
     getTeams: () => TEAMS,
-    onSuccess: () => doRenderGrid(),
+    onSuccess: () => renderAll(),
     onStaticSave: () => saveStaticApplied(TEAMS),
   });
 
@@ -439,11 +444,73 @@ export default async function decorate(block) {
     onCreated: (newTeam) => {
       TEAMS.push(newTeam);
       populateRoleFilter();
-      doRenderGrid();
+      renderAll();
     },
   });
 
   // ── 7. Grid rendering ──────────────────────────────────────────────────────
+  // Shared by the main grid and the Recommended For You grid below -- same
+  // card, same behaviour, just a different source list.
+  function buildTeamCard(t) {
+    const openCount = t.roles.filter((r) => r.o).length;
+    const filled = t.members.length;
+    const chips = t.roles.slice(0, 3).map((r) => `<span class="tm-chip">${r.n}</span>`).join('');
+    const fillPct = t.totalSpots ? Math.min(100, Math.round((filled / t.totalSpots) * 100)) : 0;
+    const matchPct = computeSkillMatch(userSkills, t.techStack);
+    const countdown = formatCountdown(t.deadline);
+
+    const card = document.createElement('div');
+    card.className = 'tm-card';
+    card.dataset.id = String(t.id);
+    card.innerHTML = `
+      <div class="tm-avatar-wrap">
+        <div class="tm-avatar">
+          <img src="${t.avatar}" alt="${t.team}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
+        </div>
+      </div>
+      ${matchPct !== null ? `<span class="tm-skill-match">${matchPct}% Match</span>` : ''}
+      <div class="tm-card-body">
+        <div class="tm-team">${t.team}</div>
+        <div class="tm-hackname">${t.name}</div>
+        <div class="tm-status-row">
+          <span class="tm-size">${filled}/${t.totalSpots} Members</span>
+          <div class="tm-dot-wrap">
+            <div class="tm-dot ${openCount > 0 ? 'open' : 'full'}"></div>
+            <span class="tm-dot-label">${openCount > 0 ? 'Open' : 'Full'}</span>
+          </div>
+        </div>
+        <div class="tm-fill-bar"><div class="tm-fill-fill" style="width:${fillPct}%"></div></div>
+        ${countdown ? `<div class="tm-countdown${countdown.urgent ? ' tm-countdown-urgent' : ''}${countdown.closed ? ' tm-countdown-closed' : ''}">${countdown.text}</div>` : ''}
+        <div class="tm-divider"></div>
+        <div class="tm-roles-label">Roles needed</div>
+        <div class="tm-roles">${chips}</div>
+        <div class="tm-footer">
+          <button class="tm-view-btn" type="button">View Details</button>
+          <button class="tm-apply-btn ${t.applied ? 'applied' : ''}" type="button">${t.applied ? '✓ Applied' : 'Apply'}</button>
+        </div>
+      </div>`;
+
+    card.querySelector('.tm-view-btn').addEventListener('click', (e) => { e.stopPropagation(); openDrawer(t.id); });
+    card.querySelector('.tm-apply-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const applyBtn = card.querySelector('.tm-apply-btn');
+      if (t.applied) {
+        showConfirm().then((yes) => {
+          if (!yes) return;
+          if (processWithdraw(t)) {
+            applyBtn.textContent = 'Apply';
+            applyBtn.classList.remove('applied');
+            renderAll();
+          }
+        });
+      } else {
+        openApply(t.id, applyBtn);
+      }
+    });
+
+    return card;
+  }
+
   function doRenderGrid() {
     const list = getCurrentList();
     const grid = block.querySelector('#tc-grid');
@@ -455,65 +522,32 @@ export default async function decorate(block) {
     }
 
     grid.innerHTML = '';
-    list.forEach((t) => {
-      const openCount = t.roles.filter((r) => r.o).length;
-      const filled = t.members.length;
-      const chips = t.roles.slice(0, 3).map((r) => `<span class="tm-chip">${r.n}</span>`).join('');
-      const fillPct = t.totalSpots ? Math.min(100, Math.round((filled / t.totalSpots) * 100)) : 0;
-      const matchPct = computeSkillMatch(userSkills, t.techStack);
-      const countdown = formatCountdown(t.deadline);
+    list.forEach((t) => grid.appendChild(buildTeamCard(t)));
+  }
 
-      const card = document.createElement('div');
-      card.className = 'tm-card';
-      card.dataset.id = String(t.id);
-      card.innerHTML = `
-        <div class="tm-avatar-wrap">
-          <div class="tm-avatar">
-            <img src="${t.avatar}" alt="${t.team}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
-          </div>
-        </div>
-        ${matchPct !== null ? `<span class="tm-skill-match">${matchPct}% Match</span>` : ''}
-        <div class="tm-card-body">
-          <div class="tm-team">${t.team}</div>
-          <div class="tm-hackname">${t.name}</div>
-          <div class="tm-status-row">
-            <span class="tm-size">${filled}/${t.totalSpots} Members</span>
-            <div class="tm-dot-wrap">
-              <div class="tm-dot ${openCount > 0 ? 'open' : 'full'}"></div>
-              <span class="tm-dot-label">${openCount > 0 ? 'Open' : 'Full'}</span>
-            </div>
-          </div>
-          <div class="tm-fill-bar"><div class="tm-fill-fill" style="width:${fillPct}%"></div></div>
-          ${countdown ? `<div class="tm-countdown${countdown.urgent ? ' tm-countdown-urgent' : ''}${countdown.closed ? ' tm-countdown-closed' : ''}">${countdown.text}</div>` : ''}
-          <div class="tm-divider"></div>
-          <div class="tm-roles-label">Roles needed</div>
-          <div class="tm-roles">${chips}</div>
-          <div class="tm-footer">
-            <button class="tm-view-btn" type="button">View Details</button>
-            <button class="tm-apply-btn ${t.applied ? 'applied' : ''}" type="button">${t.applied ? '✓ Applied' : 'Apply'}</button>
-          </div>
-        </div>`;
+  // ── 7b. Recommended For You — same skill-match % already computed for the
+  // per-card badge, filtered to a high-confidence threshold. Independent of
+  // search/filter state; only reacts to TEAMS or applied-state changes.
+  const RECOMMEND_THRESHOLD = 50;
+  function renderRecommended() {
+    const section = block.querySelector('#tc-recommended-section');
+    const grid = block.querySelector('#tc-recommended-grid');
+    if (!section || !grid) return;
 
-      card.querySelector('.tm-view-btn').addEventListener('click', (e) => { e.stopPropagation(); openDrawer(t.id); });
-      card.querySelector('.tm-apply-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const applyBtn = card.querySelector('.tm-apply-btn');
-        if (t.applied) {
-          showConfirm().then((yes) => {
-            if (!yes) return;
-            if (processWithdraw(t)) {
-              applyBtn.textContent = 'Apply';
-              applyBtn.classList.remove('applied');
-              doRenderGrid();
-            }
-          });
-        } else {
-          openApply(t.id, applyBtn);
-        }
-      });
-
-      grid.appendChild(card);
+    const list = TEAMS.filter((t) => {
+      const pct = computeSkillMatch(userSkills, t.techStack);
+      return pct !== null && pct >= RECOMMEND_THRESHOLD;
     });
+
+    if (!list.length) { section.style.display = 'none'; return; }
+    section.style.display = '';
+    grid.innerHTML = '';
+    list.forEach((t) => grid.appendChild(buildTeamCard(t)));
+  }
+
+  function renderAll() {
+    doRenderGrid();
+    renderRecommended();
   }
 
   // ── 8. Role filter ─────────────────────────────────────────────────────────
@@ -596,7 +630,7 @@ export default async function decorate(block) {
       const t = TEAMS.find((x) => String(x.id) === String(id));
       if (!t) return;
       if (t.applied) {
-        showConfirm().then((yes) => { if (yes && processWithdraw(t)) { if (btn) { btn.textContent = 'Apply'; btn.classList.remove('applied'); } doRenderGrid(); } });
+        showConfirm().then((yes) => { if (yes && processWithdraw(t)) { if (btn) { btn.textContent = 'Apply'; btn.classList.remove('applied'); } renderAll(); } });
       } else { openApply(id, btn); }
     },
     applyDrawer: (id) => {
@@ -604,11 +638,11 @@ export default async function decorate(block) {
       if (!t) return;
       const drawerBtn = document.getElementById('tm-d-apply-btn');
       if (t.applied) {
-        showConfirm().then((yes) => { if (yes && processWithdraw(t)) { if (drawerBtn) { drawerBtn.textContent = 'Apply to Join'; drawerBtn.classList.remove('applied'); } doRenderGrid(); } });
+        showConfirm().then((yes) => { if (yes && processWithdraw(t)) { if (drawerBtn) { drawerBtn.textContent = 'Apply to Join'; drawerBtn.classList.remove('applied'); } renderAll(); } });
       } else { openApply(id, drawerBtn); }
     },
     getRandomAvatar,
-    addTeam: (newTeam) => { TEAMS.push(newTeam); populateRoleFilter(); doRenderGrid(); },
+    addTeam: (newTeam) => { TEAMS.push(newTeam); populateRoleFilter(); renderAll(); },
   };
 
   window.CreateTeamModal = {
@@ -620,5 +654,5 @@ export default async function decorate(block) {
   };
 
   // ── 13. Initial render ─────────────────────────────────────────────────────
-  doRenderGrid();
+  renderAll();
 }
