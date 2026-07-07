@@ -61,36 +61,6 @@ export default function decorate(block) {
 
   header.append(eyebrow, title, sub);
 
-  // ── Header-only variant — skip cards, own element classes, no opacity conflict ──
-  if (block.classList.contains('header')) {
-    // Zero out EDS section margin + wrapper padding (same as spotlight-heading does)
-    const section = block.closest('.section');
-    if (section) section.style.setProperty('margin', '0', 'important');
-    const wrapper = block.parentElement;
-    if (wrapper) { wrapper.style.maxWidth = '100%'; wrapper.style.padding = '0'; }
-
-    const eyebrow2 = document.createElement('span');
-    eyebrow2.className = 'hs-heading-eyebrow';
-    eyebrow2.textContent = eyebrowCell.textContent.trim();
-
-    const title2 = document.createElement('h2');
-    title2.className = 'hs-heading-title';
-    const titleSrc = titleCell.querySelector('p') || titleCell;
-    title2.innerHTML = titleSrc.innerHTML.trim();
-
-    const sub2 = document.createElement('p');
-    sub2.className = 'hs-heading-sub';
-    sub2.textContent = subtitleCell ? subtitleCell.textContent.trim() : '';
-
-    const container = document.createElement('div');
-    container.className = 'hs-heading';
-    container.append(eyebrow2, title2, sub2);
-
-    block.innerHTML = '';
-    block.append(container);
-    return;
-  }
-
   // ── Featured card ──
   const [posterCell, badgeCell, eventTitleCell, metaCell] = [...featuredRow.children];
 

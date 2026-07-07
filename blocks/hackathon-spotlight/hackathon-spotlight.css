@@ -313,55 +313,6 @@ main > .section > .hackathon-spotlight-wrapper { max-width: 100%; padding: 0; }
   transform: scale(1.06);
 }
 
-/* ── header-only variant — fresh class names, zero opacity conflicts ── */
-.hackathon-spotlight.header {
-  padding: 80px 5% 48px;
-}
-
-.hackathon-spotlight.header::before {
-  display: none;
-}
-
-.hackathon-spotlight.header .hs-heading {
-  text-align: center;
-}
-
-.hackathon-spotlight.header .hs-heading-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #d9a441;
-  margin-bottom: 12px;
-}
-
-.hackathon-spotlight.header .hs-heading-title {
-  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
-  font-size: clamp(36px, 5vw, 64px);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #fff;
-  line-height: 1;
-  margin-bottom: 12px;
-  font-weight: 400;
-}
-
-.hackathon-spotlight.header .hs-heading-title strong,
-.hackathon-spotlight.header .hs-heading-title em {
-  color: #d9a441;
-  font-style: normal;
-  font-weight: inherit;
-}
-
-.hackathon-spotlight.header .hs-heading-sub {
-  font-size: 14px;
-  color: #808080;
-  max-width: 440px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 /* ── responsive ── */
 @media (min-width: 600px) {
   .hackathon-spotlight .spotlight-video-card {
