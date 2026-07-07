@@ -10,10 +10,16 @@
 //   Organiser Workflow            -> landing/pitch page with the hackathon
 //                                     submission form built right in (no
 //                                     login required to submit a request)
-//   Organiser Workflow (dashboard)-> gated to admins only; six-tab sidebar:
+//   Organiser Workflow (dashboard)-> gated to admins only; five-tab sidebar:
 //                                     Dashboard, Organisation Requests,
-//                                     Hackathons, Registrations, Export,
-//                                     Settings
+//                                     Hackathons, Registrations, Export.
+//                                     Hackathon/registration counts merge this
+//                                     workflow's own data with the real site's
+//                                     pre-existing hackathon pages (author-
+//                                     configured slug list, since there's no
+//                                     query-index) and real per-user
+//                                     registrations already recorded by
+//                                     hackathon-detail.js.
 //   Organiser Workflow (student)  -> student browse + register page
 // Dynamic data (submissions/approvals/registrations) lives in localStorage,
 // standing in for a real backend. All copy/labels are author-editable via
@@ -67,6 +73,74 @@ function siteLogout() {
 function isAdminEmail(email) {
   const list = p('admin-emails', '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
   return list.includes(email);
+}
+
+// ── Real site data: registrations already made on live hackathon pages ─────
+// hackathon-detail.js writes one array per user to `hackhub_registrations_<email>`
+// (shape: {hackathonId, registeredAt}) whenever a student registers on a real
+// /hackathons/<slug> page. Scanning every such key (rather than one fixed key)
+// is the only way to see registrations made by more than one account in this
+// browser, since there's no backend to aggregate them centrally.
+function getSiteRegistrations() {
+  const out = [];
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith('hackhub_registrations_')) continue;
+    const email = key.slice('hackhub_registrations_'.length);
+    let list;
+    try { list = JSON.parse(localStorage.getItem(key)) || []; } catch { list = []; }
+    list.forEach((r) => out.push({ email, hackathonId: r.hackathonId, registeredAt: r.registeredAt }));
+  }
+  return out;
+}
+
+function getSiteProfile(email) {
+  try {
+    const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+    return profiles[email] || null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Real site data: hackathons that already exist as da.live pages ─────────
+// There's no query-index (forbidden for this project) and no site-wide slug
+// list, so the admin page's `legacy-hackathon-slugs` config row is the only
+// way to tell this block which pre-existing /hackathons/<slug> pages to fold
+// in. Fetched lazily/fire-and-forget so it never blocks page load.
+async function fetchLegacyHackathons() {
+  const slugs = p('legacy-hackathon-slugs', '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (!slugs.length) return [];
+
+  const results = await Promise.all(slugs.map(async (slug) => {
+    const path = slug.startsWith('/') ? slug : `/hackathons/${slug}`;
+    try {
+      const res = await fetch(`${path}.plain.html`);
+      if (!res.ok) return null;
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const detail = doc.querySelector('.hackathon-detail');
+      if (!detail) return null;
+      const data = {};
+      [...detail.querySelectorAll(':scope > div')].forEach((row) => {
+        const cols = [...row.querySelectorAll(':scope > div')];
+        if (cols.length < 2) return;
+        data[cols[0].textContent.trim().toLowerCase()] = cols[1].textContent.trim();
+      });
+      return {
+        id: path,
+        hackathonName: data.title || slug,
+        company: data.organiser || data.organizer || '—',
+        deadline: data.deadline || '',
+        prize: data.prize || '',
+        source: 'legacy',
+      };
+    } catch {
+      return null;
+    }
+  }));
+
+  return results.filter(Boolean);
 }
 
 function genId(prefix) {
@@ -271,6 +345,48 @@ function renderSubmissionSuccess(block) {
 
 // ── DASHBOARD page (admins only) ────────────────────────────────────────────
 let _adminTab = 'overview';
+let _legacyHackathons = [];
+let _legacyLoaded = false;
+let _justApproved = null;
+
+const STAT_ICONS = {
+  pending: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="M9 12h6M9 16h6"/></svg>',
+  live: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
+  regs: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  partners: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>',
+};
+
+function tpl(str, vars) {
+  return str.replace(/\{(\w+)\}/g, (_, k) => (vars?.[k] != null ? vars[k] : ''));
+}
+
+function getAllLiveHackathons() {
+  return [...getApproved(), ..._legacyHackathons];
+}
+
+function regCountFor(hack) {
+  if (hack.source === 'legacy') return getSiteRegistrations().filter((r) => r.hackathonId === hack.id).length;
+  return getRegistrations().filter((r) => r.hackathonId === hack.id).length;
+}
+
+function openModal(block, title, bodyHtml) {
+  const root = block.querySelector('#ow-modal-root');
+  if (!root) return;
+  root.innerHTML = `
+    <div class="ow-modal-overlay" id="ow-modal-overlay">
+      <div class="ow-modal">
+        <div class="ow-modal-head">
+          <h2>${esc(title)}</h2>
+          <button type="button" class="ow-modal-close" id="ow-modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="ow-modal-body">${bodyHtml}</div>
+      </div>
+    </div>`;
+  const overlay = root.querySelector('#ow-modal-overlay');
+  const close = () => { root.innerHTML = ''; };
+  root.querySelector('#ow-modal-close').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+}
 
 function decorateDashboard(block) {
   if (!isSiteLoggedIn()) {
@@ -301,11 +417,11 @@ function decorateDashboard(block) {
         <button type="button" class="ow-sidebar-link" data-tab="hackathons">${esc(p('tab-hackathons', 'Hackathons'))}</button>
         <button type="button" class="ow-sidebar-link" data-tab="registrations">${esc(p('tab-registrations', 'Registrations'))}</button>
         <button type="button" class="ow-sidebar-link" data-tab="export">${esc(p('tab-export', 'Export'))}</button>
-        <button type="button" class="ow-sidebar-link" data-tab="settings">${esc(p('tab-settings', 'Settings'))}</button>
         <button type="button" class="ow-sidebar-logout" id="ow-logout">${esc(p('logout-label', 'Log Out'))}</button>
       </nav>
       <main class="ow-admin-content" id="ow-admin-content"></main>
     </div>
+    <div class="ow-modal-root" id="ow-modal-root"></div>
     <div class="ow-toast-wrap" id="ow-toast-wrap"></div>`;
 
   block.querySelector('#ow-logout').addEventListener('click', () => {
@@ -318,58 +434,100 @@ function decorateDashboard(block) {
       block.querySelectorAll('.ow-sidebar-link').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       _adminTab = btn.dataset.tab;
-      renderAdminTab(block, email);
+      renderAdminTab(block);
     });
   });
 
-  renderAdminTab(block, email);
+  renderAdminTab(block);
+
+  if (!_legacyLoaded) {
+    fetchLegacyHackathons().then((list) => {
+      _legacyHackathons = list;
+      _legacyLoaded = true;
+      renderAdminTab(block);
+    });
+  }
 }
 
-function renderAdminTab(block, email) {
+function renderAdminTab(block) {
   const content = block.querySelector('#ow-admin-content');
+  if (!content) return;
   if (_adminTab === 'overview') { renderTabOverview(content); return; }
   if (_adminTab === 'requests') { renderTabRequests(block, content); return; }
   if (_adminTab === 'hackathons') { renderTabHackathons(content); return; }
   if (_adminTab === 'registrations') { renderTabRegistrations(block, content); return; }
-  if (_adminTab === 'export') { renderTabExport(block, content); return; }
-  if (_adminTab === 'settings') { renderTabSettings(content, email); }
+  if (_adminTab === 'export') { renderTabExport(block, content); }
 }
 
 // ── Tab 1: Dashboard overview ───────────────────────────────────────────────
 function renderTabOverview(content) {
   const pending = getPending();
-  const approved = getApproved();
-  const regs = getRegistrations();
-  const partners = new Set(approved.map((h) => h.company)).size;
+  const live = getAllLiveHackathons();
+  const totalRegs = getRegistrations().length + getSiteRegistrations().length;
+  const partners = new Set([
+    ...getApproved().map((h) => h.company),
+    ..._legacyHackathons.map((h) => h.company),
+  ].filter(Boolean)).size;
 
   content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-dashboard', 'Dashboard'))}</h1>
+    <div class="ow-content-header">
+      <h1 class="ow-content-title">${esc(p('tab-dashboard', 'Dashboard'))}</h1>
+      <p class="ow-content-sub">${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackHub right now.'))}</p>
+    </div>
     <div class="ow-stats-grid">
       <div class="ow-stat-card">
+        <div class="ow-stat-icon ow-stat-icon-pending">${STAT_ICONS.pending}</div>
         <div class="ow-stat-label">${esc(p('stat-pending-label', 'Pending Organisation Requests'))}</div>
         <div class="ow-stat-value">${pending.length}</div>
       </div>
       <div class="ow-stat-card">
+        <div class="ow-stat-icon ow-stat-icon-live">${STAT_ICONS.live}</div>
         <div class="ow-stat-label">${esc(p('stat-live-label', 'Live Hackathons'))}</div>
-        <div class="ow-stat-value">${approved.length}</div>
+        <div class="ow-stat-value">${live.length}</div>
       </div>
       <div class="ow-stat-card">
+        <div class="ow-stat-icon ow-stat-icon-regs">${STAT_ICONS.regs}</div>
         <div class="ow-stat-label">${esc(p('stat-regs-label', 'Total Student Registrations'))}</div>
-        <div class="ow-stat-value">${regs.length}</div>
+        <div class="ow-stat-value">${totalRegs}</div>
       </div>
       <div class="ow-stat-card">
+        <div class="ow-stat-icon ow-stat-icon-partners">${STAT_ICONS.partners}</div>
         <div class="ow-stat-label">${esc(p('stat-partners-label', 'Partner Organisations'))}</div>
         <div class="ow-stat-value">${partners}</div>
       </div>
-    </div>`;
+    </div>
+    ${!_legacyLoaded && p('legacy-hackathon-slugs', '') ? `<p class="ow-sync-note">${esc(p('syncing-label', 'Syncing live site data…'))}</p>` : ''}`;
 }
 
 // ── Tab 2: Organisation Requests ────────────────────────────────────────────
 function renderTabRequests(block, content) {
   const pending = getPending();
   content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-requests', 'Organisation Requests'))}</h1>
+    <div class="ow-content-header">
+      <h1 class="ow-content-title">${esc(p('tab-requests', 'Organisation Requests'))}</h1>
+    </div>
+    <div id="ow-requests-banner"></div>
     <div class="ow-card" id="ow-requests-body"></div>`;
+
+  const bannerWrap = content.querySelector('#ow-requests-banner');
+  if (_justApproved) {
+    bannerWrap.innerHTML = `
+      <div class="ow-next-steps-banner">
+        <div class="ow-next-steps-head">
+          <strong>${esc(tpl(p('next-steps-title', 'Approved — Next Steps for {company}'), _justApproved))}</strong>
+          <button type="button" class="ow-link-btn" id="ow-next-steps-dismiss">${esc(p('dismiss-label', 'Dismiss'))}</button>
+        </div>
+        <ul>
+          <li>${esc(tpl(p('next-step-1', 'We will reach out to {company} within 24 hours.'), _justApproved))}</li>
+          <li>${esc(tpl(p('next-step-2', 'We will manage {hackathon} and its registrations on their behalf.'), _justApproved))}</li>
+          <li>${esc(tpl(p('next-step-3', 'We will promote {hackathon} across our social channels.'), _justApproved))}</li>
+        </ul>
+      </div>`;
+    bannerWrap.querySelector('#ow-next-steps-dismiss').addEventListener('click', () => {
+      _justApproved = null;
+      renderTabRequests(block, content);
+    });
+  }
 
   const body = content.querySelector('#ow-requests-body');
   if (!pending.length) {
@@ -407,6 +565,7 @@ function renderTabRequests(block, content) {
       app.push(item);
       setApproved(app);
       setPending(list);
+      _justApproved = { company: item.company, hackathon: item.hackathonName };
       showToast(block, p('approved-message', 'Hackathon approved and is now live.'));
       renderTabRequests(block, content);
     });
@@ -421,15 +580,16 @@ function renderTabRequests(block, content) {
   });
 }
 
-// ── Tab 3: Hackathons ────────────────────────────────────────────────────────
+// ── Tab 3: Hackathons (this workflow's approvals + real site pages) ───────
 function renderTabHackathons(content) {
-  const approved = getApproved();
-  const regs = getRegistrations();
+  const all = getAllLiveHackathons();
 
   content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-hackathons', 'Hackathons'))}</h1>
+    <div class="ow-content-header">
+      <h1 class="ow-content-title">${esc(p('tab-hackathons', 'Hackathons'))}</h1>
+    </div>
     <div class="ow-card">
-      ${!approved.length ? `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>` : `
+      ${!all.length ? `<div class="ow-empty">${esc(p('empty-approved', 'No approved hackathons yet.'))}</div>` : `
       <div class="ow-reg-table-wrap">
         <table class="ow-reg-table">
           <thead><tr>
@@ -439,10 +599,10 @@ function renderTabHackathons(content) {
             <th>${esc(p('status-label', 'Status'))}</th>
           </tr></thead>
           <tbody>
-            ${approved.map((h) => `<tr>
+            ${all.map((h) => `<tr>
               <td>${esc(h.hackathonName)}</td>
               <td>${esc(h.company)}</td>
-              <td>${regs.filter((r) => r.hackathonId === h.id).length}</td>
+              <td>${regCountFor(h)}</td>
               <td><span class="ow-status-badge ow-status-approved">${esc(p('status-live-label', 'Live'))}</span></td>
             </tr>`).join('')}
           </tbody>
@@ -451,66 +611,105 @@ function renderTabHackathons(content) {
     </div>`;
 }
 
-// ── Tab 4: Registrations (all, filterable by hackathon) ───────────────────
-let _regFilterId = 'all';
-
+// ── Tab 4: Registrations — grouped by hackathon, detail view in a modal ────
 function renderTabRegistrations(block, content) {
-  const approved = getApproved();
-  const allRegs = getRegistrations();
-  const filtered = _regFilterId === 'all' ? allRegs : allRegs.filter((r) => r.hackathonId === _regFilterId);
-  const hackName = (id) => approved.find((h) => h.id === id)?.hackathonName || '—';
+  const all = getAllLiveHackathons();
 
   content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-registrations', 'Registrations'))}</h1>
+    <div class="ow-content-header">
+      <h1 class="ow-content-title">${esc(p('tab-registrations', 'Registrations'))}</h1>
+    </div>
     <div class="ow-card">
-      <div class="ow-reg-toolbar">
-        <select id="ow-reg-filter">
-          <option value="all">${esc(p('filter-all-hackathons', 'All Hackathons'))}</option>
-          ${approved.map((h) => `<option value="${esc(h.id)}" ${h.id === _regFilterId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
-        </select>
-      </div>
-      ${!filtered.length ? `<div class="ow-empty">${esc(p('empty-registrations', 'No registrations yet.'))}</div>` : `
+      ${!all.length ? `<div class="ow-empty">${esc(p('empty-registrations', 'No registrations yet.'))}</div>` : `
       <div class="ow-reg-table-wrap">
         <table class="ow-reg-table">
           <thead><tr>
-            <th>${esc(p('label-student-name', 'Student Name'))}</th>
-            <th>${esc(p('label-college', 'College'))}</th>
-            <th>${esc(p('label-skills', 'Skills'))}</th>
-            ${_regFilterId === 'all' ? `<th>${esc(p('label-hackathon-name', 'Hackathon'))}</th>` : ''}
-            <th>${esc(p('registered-on-label', 'Registration Date'))}</th>
+            <th>${esc(p('label-hackathon-name', 'Hackathon'))}</th>
+            <th>${esc(p('label-company', 'Organisation'))}</th>
+            <th>${esc(p('reg-count-label', 'Registrations'))}</th>
+            <th></th>
           </tr></thead>
           <tbody>
-            ${filtered.map((r) => `<tr>
-              <td>${esc(r.studentName)}</td>
-              <td>${esc(r.college)}</td>
-              <td>${esc(r.skills)}</td>
-              ${_regFilterId === 'all' ? `<td>${esc(hackName(r.hackathonId))}</td>` : ''}
-              <td>${new Date(r.registrationDate).toLocaleDateString()}</td>
+            ${all.map((h) => `<tr>
+              <td>${esc(h.hackathonName)}</td>
+              <td>${esc(h.company)}</td>
+              <td>${regCountFor(h)}</td>
+              <td><button type="button" class="ow-btn-secondary ow-view-regs-btn" data-id="${esc(h.id)}">${esc(p('view-label', 'View'))}</button></td>
             </tr>`).join('')}
           </tbody>
         </table>
       </div>`}
     </div>`;
 
-  content.querySelector('#ow-reg-filter').addEventListener('change', (e) => {
-    _regFilterId = e.target.value;
-    renderTabRegistrations(block, content);
+  content.querySelectorAll('.ow-view-regs-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const hack = all.find((h) => h.id === btn.dataset.id);
+      if (hack) openRegistrationsModal(block, hack);
+    });
   });
+}
+
+function openRegistrationsModal(block, hack) {
+  let rows;
+  if (hack.source === 'legacy') {
+    rows = getSiteRegistrations()
+      .filter((r) => r.hackathonId === hack.id)
+      .map((r) => {
+        const prof = getSiteProfile(r.email);
+        return {
+          name: prof?.name || r.email,
+          college: '—',
+          skills: Array.isArray(prof?.skills) ? prof.skills.join(', ') : (prof?.skills || '—'),
+          date: r.registeredAt,
+        };
+      });
+  } else {
+    rows = getRegistrations()
+      .filter((r) => r.hackathonId === hack.id)
+      .map((r) => ({
+        name: r.studentName, college: r.college, skills: r.skills, date: r.registrationDate,
+      }));
+  }
+
+  const bodyHtml = !rows.length
+    ? `<div class="ow-empty">${esc(p('empty-registrations', 'No registrations yet.'))}</div>`
+    : `<div class="ow-reg-table-wrap">
+        <table class="ow-reg-table">
+          <thead><tr>
+            <th>${esc(p('label-student-name', 'Student Name'))}</th>
+            <th>${esc(p('label-college', 'College'))}</th>
+            <th>${esc(p('label-skills', 'Skills'))}</th>
+            <th>${esc(p('registered-on-label', 'Registration Date'))}</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((r) => `<tr>
+              <td>${esc(r.name)}</td>
+              <td>${esc(r.college)}</td>
+              <td>${esc(r.skills)}</td>
+              <td>${new Date(r.date).toLocaleDateString()}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+
+  openModal(block, hack.hackathonName, bodyHtml);
 }
 
 // ── Tab 5: Export ────────────────────────────────────────────────────────────
 let _exportId = '';
 
 function renderTabExport(block, content) {
-  const approved = getApproved();
+  const all = getAllLiveHackathons();
   content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-export', 'Export'))}</h1>
+    <div class="ow-content-header">
+      <h1 class="ow-content-title">${esc(p('tab-export', 'Export'))}</h1>
+    </div>
     <div class="ow-card">
       <div class="ow-field">
         <label>${esc(p('export-select-label', 'Select a Hackathon'))}</label>
         <select id="ow-export-select">
           <option value="">${esc(p('export-select-placeholder', 'Choose a hackathon…'))}</option>
-          ${approved.map((h) => `<option value="${esc(h.id)}" ${h.id === _exportId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
+          ${all.map((h) => `<option value="${esc(h.id)}" ${h.id === _exportId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
         </select>
       </div>
       <button type="button" class="ow-btn-primary" id="ow-export-btn">${esc(p('download-csv-label', 'Download CSV'))}</button>
@@ -519,32 +718,29 @@ function renderTabExport(block, content) {
   content.querySelector('#ow-export-select').addEventListener('change', (e) => { _exportId = e.target.value; });
   content.querySelector('#ow-export-btn').addEventListener('click', () => {
     if (!_exportId) { showToast(block, p('error-no-hackathon-selected', 'Please select a hackathon first.')); return; }
-    const hack = approved.find((h) => h.id === _exportId);
-    const regs = getRegistrations().filter((r) => r.hackathonId === _exportId);
+    const hack = all.find((h) => h.id === _exportId);
+    if (!hack) return;
+
+    let rows;
+    if (hack.source === 'legacy') {
+      rows = getSiteRegistrations().filter((r) => r.hackathonId === hack.id).map((r) => {
+        const prof = getSiteProfile(r.email);
+        return [
+          prof?.name || '', '', r.email, prof?.github || '', prof?.linkedin || '',
+          Array.isArray(prof?.skills) ? prof.skills.join(', ') : '', r.registeredAt,
+        ];
+      });
+    } else {
+      rows = getRegistrations().filter((r) => r.hackathonId === hack.id)
+        .map((r) => [r.studentName, r.college, r.email, r.github, r.linkedin, r.skills, r.registrationDate]);
+    }
+
     downloadCSV(
-      `${(hack?.hackathonName || 'registrations').replace(/\s+/g, '-')}.csv`,
+      `${hack.hackathonName.replace(/\s+/g, '-')}.csv`,
       ['Name', 'College', 'Email', 'GitHub', 'LinkedIn', 'Skills', 'Registered On'],
-      regs.map((r) => [r.studentName, r.college, r.email, r.github, r.linkedin, r.skills, r.registrationDate]),
+      rows,
     );
   });
-}
-
-// ── Tab 6: Settings ──────────────────────────────────────────────────────────
-function renderTabSettings(content, email) {
-  content.innerHTML = `
-    <h1 class="ow-content-title">${esc(p('tab-settings', 'Settings'))}</h1>
-    <div class="ow-card ow-settings-section">
-      <h3>${esc(p('settings-profile-label', 'Profile'))}</h3>
-      <p class="ow-hint">${esc(p('logged-in-as', 'Logged in as'))} <strong>${esc(email)}</strong></p>
-    </div>
-    <div class="ow-card ow-settings-section">
-      <h3>${esc(p('settings-theme-label', 'Theme'))}</h3>
-      <p class="ow-hint">${esc(p('settings-theme-value', 'Dark (default)'))}</p>
-    </div>
-    <div class="ow-card ow-settings-section">
-      <h3>${esc(p('settings-about-label', 'About'))}</h3>
-      <p class="ow-hint">${esc(p('settings-about-text', 'HackHub Admin Dashboard — review organisation requests, manage live hackathons, and track student registrations from one place.'))}</p>
-    </div>`;
 }
 
 // ── STUDENT page ─────────────────────────────────────────────────────────
