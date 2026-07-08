@@ -893,6 +893,137 @@ function hcParseDetailPage(html, slug, userSkills) {
   };
 }
 
+// ── HACKATHONS + SAVED VARIANT — wishlist grid, ported from the standalone
+// hackathon-cards block's (saved) variant. Authored as "Cards (hackathons,
+// saved)" in da.live so both classes land on the block.
+function decorateHackathonsSaved(block) {
+  if (block.dataset.hackathonsDecorated) return;
+  block.dataset.hackathonsDecorated = 'true';
+
+  const section = block.closest('.section');
+  if (section) {
+    section.style.setProperty('margin', '0', 'important');
+    section.style.setProperty('background', '#0a0a0a', 'important');
+  }
+  const wrapper = block.parentElement;
+  if (wrapper) { wrapper.style.maxWidth = '100%'; wrapper.style.padding = '0'; }
+
+  if (!document.querySelector('link[data-font="hc-fonts"], link[data-font="bebas-neue"], link[data-font="fb-fonts"], link[data-font="hof-fonts"]')) {
+    const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com';
+    const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = '';
+    const fl = document.createElement('link'); fl.rel = 'stylesheet';
+    fl.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap';
+    fl.dataset.font = 'hc-fonts';
+    document.head.append(pc1, pc2, fl);
+  }
+
+  // Optional config row: | cta-href | cta-label |
+  const cfgRows = [...block.children];
+  let ctaHref = '/hackathons';
+  let ctaLabel = 'Explore Hackathons';
+  if (cfgRows.length) {
+    const cells = [...cfgRows[0].children];
+    const link = cfgRows[0].querySelector('a');
+    if (link) { ctaHref = link.href; ctaLabel = link.textContent.trim() || ctaLabel; } else if (cells[0]?.textContent.trim()) ctaHref = cells[0].textContent.trim();
+    if (cells[1]?.textContent.trim()) ctaLabel = cells[1].textContent.trim();
+  }
+
+  function buildCard(d) {
+    const card = document.createElement('div');
+    card.className = 'hc-card';
+    card.dataset.key = d.key;
+    card.dataset.href = d.href || '#';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.innerHTML = `
+      ${d.imgSrc ? `<div class="hc-card-img" role="img" aria-label="${d.imgAlt || ''}" style="background-image:url('${d.imgSrc}')"></div>` : ''}
+      <div class="hc-card-scrim"></div>
+      <button class="hc-like-btn liked" aria-label="Remove from saved" type="button">
+        <svg class="hc-like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="currentColor" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+      <span class="hc-card-cat">${d.tag || ''}</span>
+      <div class="hc-card-body">
+        <span class="hc-card-organizer">${d.org || ''}</span>
+        <h3 class="hc-card-name">${d.title || ''}</h3>
+        <div class="hc-card-meta">
+          <span>${d.date || ''}</span>
+          ${d.prize ? `<span>${d.prize}</span>` : ''}
+        </div>
+        <span class="hc-card-btn">Explore →</span>
+      </div>`;
+    return card;
+  }
+
+  function buildEmpty() {
+    const el = document.createElement('div');
+    el.className = 'hc-saved-empty';
+    el.innerHTML = `
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none"
+        stroke="rgba(255,255,255,0.28)" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <p class="hc-saved-empty-title">No saved hackathons yet</p>
+      <p class="hc-saved-empty-sub">Explore the list of upcoming hackathons and click the heart icon to save them here for quick access.</p>
+      <a class="hc-saved-empty-btn" href="${ctaHref}">${ctaLabel.toUpperCase()} →</a>`;
+    return el;
+  }
+
+  function render() {
+    block.innerHTML = '';
+    const saved = hcGetSaved();
+
+    if (!saved.length) {
+      block.append(buildEmpty());
+      return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'hc-saved-grid';
+    saved.forEach((d) => grid.append(buildCard(d)));
+    block.append(grid);
+
+    grid.addEventListener('click', (e) => {
+      const likeBtn = e.target.closest('.hc-like-btn');
+      if (likeBtn) {
+        e.stopPropagation();
+        const card = likeBtn.closest('.hc-card');
+        if (!card?.dataset.key) return;
+        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.92)';
+        setTimeout(() => {
+          hcUnsaveCard(card.dataset.key);
+        }, 280);
+        return;
+      }
+      const card = e.target.closest('.hc-card');
+      if (card?.dataset.href && card.dataset.href !== '#') {
+        window.open(card.dataset.href, '_blank', 'noopener');
+      }
+    });
+
+    grid.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('.hc-card');
+      if (card?.dataset.href && card.dataset.href !== '#') {
+        window.open(card.dataset.href, '_blank', 'noopener');
+      }
+    });
+  }
+
+  render();
+
+  window.addEventListener('hh:saved-change', render);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'hh-saved') render();
+  });
+}
+
 async function decorateHackathons(block) {
   if (block.dataset.hackathonsDecorated) return;
   block.dataset.hackathonsDecorated = 'true';
@@ -1245,6 +1376,11 @@ export default async function decorate(block) {
 
   // Hackathons carousel — mirrors the standalone hackathon-cards block's main
   // (non-saved) variant, kept in place until confirmed as a 100% match
+  if (block.classList.contains('hackathons') && block.classList.contains('saved')) {
+    decorateHackathonsSaved(block);
+    return;
+  }
+
   if (block.classList.contains('hackathons')) {
     decorateHackathons(block);
     return;

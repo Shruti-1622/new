@@ -1762,3 +1762,87 @@ main .section:has(.cards.featured-hackathons) .default-content-wrapper p {
   padding: 3rem 0;
   font-size: 0.95rem;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   HACKATHONS + SAVED VARIANT — ported from .hackathon-cards.saved
+   ═══════════════════════════════════════════════════════════════ */
+.cards.hackathons.saved {
+  background: #0a0a0a;
+  padding: 60px 5% 80px;
+}
+
+.cards.hackathons.saved .hc-card {
+  width: auto;
+  height: 360px;
+  flex-shrink: unset;
+}
+
+.cards.hackathons.saved .hc-saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cards.hackathons.saved .hc-saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 90px 48px;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: rgb(255 255 255 / 1.5%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 16px;
+}
+
+.cards.hackathons.saved .hc-saved-empty-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.cards.hackathons.saved .hc-saved-empty-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: rgb(255 255 255 / 45%);
+  max-width: 460px;
+  margin: 0;
+  line-height: 1.65;
+}
+
+.cards.hackathons.saved .hc-saved-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 32px;
+  background: #d9a441;
+  color: #000;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 50px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.cards.hackathons.saved .hc-saved-empty-btn:hover {
+  background: #f5c14e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgb(217 164 65 / 35%);
+}
+
+@media (width >= 900px) {
+  .cards.hackathons.saved { padding: 70px 8% 100px; }
+}
