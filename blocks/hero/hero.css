@@ -13,8 +13,8 @@
   --font-mono:    'DM Mono', monospace;
 
   position: relative;
-  min-height: 92vh;
-  padding: 40px 10vw 50px;
+  min-height: min(78vh, 620px);
+  padding: 32px 10vw;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -111,7 +111,7 @@
   color: #d4d4d8;
   font-size: 1rem;
   line-height: 1.7;
-  margin: 1.25rem auto 1.5rem;
+  margin: 1rem auto 1.25rem;
   max-width: 460px;
   text-shadow: 0 2px 12px rgb(0 0 0 / 50%);
 }
@@ -123,7 +123,7 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .hero .hero-actions .btn-primary {
