@@ -846,70 +846,16 @@ main .section:has(.cards.featured-hackathons) .default-content-wrapper p {
   .cards.champion .champion-title { font-size: 2.2rem; }
 }
 
-/* ── SPOTLIGHT VARIANT (featured hackathon hero + side event list) ───────── */
+/* ── SPOTLIGHT VARIANT (featured hackathon hero + side event list) ─────────
+   Heading (eyebrow/title/subtitle) is NOT part of this block -- it's a
+   separate Section Heading (spotlight) block placed right before this one,
+   reusing that block's own gold-line/eyebrow/title styling instead of
+   duplicating it here a third time. This block starts directly at the
+   featured card. */
 .cards.spotlight {
-  padding: 100px 4vw 80px;
+  padding: 0 4vw 80px;
   background: #0a0a0a;
   position: relative;
-}
-
-.cards.spotlight::before {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 2px;
-  background: #d9a441;
-  margin: 0 auto 64px;
-  border-radius: 2px;
-  opacity: 0.7;
-}
-
-.cards.spotlight .spotlight-header {
-  text-align: center;
-  margin-bottom: 56px;
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
-}
-
-.cards.spotlight .spotlight-header.sl-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.cards.spotlight .spotlight-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #d9a441;
-  margin-bottom: 16px;
-}
-
-.cards.spotlight .spotlight-title {
-  font-family: 'Bebas Neue', 'Inter Tight', sans-serif;
-  font-size: clamp(36px, 5vw, 64px);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #fff;
-  line-height: 1;
-  margin-bottom: 14px;
-}
-
-.cards.spotlight .spotlight-title strong,
-.cards.spotlight .spotlight-title em {
-  color: #d9a441;
-  font-style: normal;
-  font-weight: inherit;
-}
-
-.cards.spotlight .spotlight-sub {
-  font-size: 15px;
-  color: #a1a1aa;
-  max-width: 440px;
-  margin: 0 auto;
-  line-height: 1.6;
 }
 
 .cards.spotlight .spotlight-stage {

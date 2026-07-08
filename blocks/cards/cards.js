@@ -418,10 +418,13 @@ function decorateSpotlight(block) {
   block.dataset.spotlightDecorated = 'true';
 
   const rows = [...block.children];
-  if (rows.length < 2) return;
+  if (rows.length < 1) return;
 
-  const [headerRow, featuredRow, ...sideRows] = rows;
-  const [eyebrowCell, titleCell, subtitleCell] = [...headerRow.children];
+  // No header row here on purpose -- the heading (eyebrow/title/subtitle)
+  // is authored as its own Section Heading (spotlight) block placed right
+  // before this one, reusing that block's existing exact-match styling
+  // instead of duplicating it a third time.
+  const [featuredRow, ...sideRows] = rows;
 
   const section = block.closest('.section');
   if (section) section.style.setProperty('margin', '0', 'important');
@@ -435,24 +438,6 @@ function decorateSpotlight(block) {
     fl.dataset.font = 'hof-fonts';
     document.head.append(pc1, pc2, fl);
   }
-
-  // ── Header ──
-  const header = document.createElement('div');
-  header.className = 'spotlight-header';
-
-  const eyebrow = document.createElement('span');
-  eyebrow.className = 'spotlight-eyebrow';
-  eyebrow.textContent = eyebrowCell.textContent.trim();
-
-  const title = document.createElement('h2');
-  title.className = 'spotlight-title';
-  title.innerHTML = titleCell.innerHTML.trim();
-
-  const sub = document.createElement('p');
-  sub.className = 'spotlight-sub';
-  sub.textContent = subtitleCell.textContent.trim();
-
-  header.append(eyebrow, title, sub);
 
   // ── Featured card ──
   const [posterCell, badgeCell, eventTitleCell, metaCell] = [...featuredRow.children];
@@ -574,7 +559,7 @@ function decorateSpotlight(block) {
   stage.append(featuredCard, panel);
 
   block.innerHTML = '';
-  block.append(header, stage);
+  block.append(stage);
 
   // ── Scroll reveal ──
   const io = new IntersectionObserver(
@@ -588,7 +573,7 @@ function decorateSpotlight(block) {
     },
     { threshold: 0.1 },
   );
-  [header, stage].forEach((el) => io.observe(el));
+  io.observe(stage);
 }
 
 // ── MOMENTS VARIANT ───────────────────────────────────────────────────────────

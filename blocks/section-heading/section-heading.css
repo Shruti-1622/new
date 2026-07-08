@@ -25,12 +25,13 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.72) 100%);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 50%) 0%, rgb(0 0 0 / 72%) 100%);
   pointer-events: none;
   z-index: 0;
 }
 
 /* ── Inner — matches original .hs-section + .hs-header ────────── */
+
 /* padding: 80px 0 60px (.hs-section) + padding: 0 5% (.hs-header) */
 .section-heading .sh-inner {
   position: relative;
@@ -104,10 +105,11 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 .section-heading.image .sh-sub { color: #c8c8cc; }
 
 /* ── TABS VARIANT — Find Teams hero ──────────────────────────── */
+
 /* Use: Section Heading (tabs) in da.live — NO (image) needed     */
 .section-heading.tabs {
   min-height: 380px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgb(255 255 255 / 5%);
 }
 
 /* Dark gradient over background image — self-contained, no .image class needed */
@@ -115,7 +117,7 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, #0a0a0a 100%);
+  background: linear-gradient(180deg, rgb(10 10 10 / 55%) 0%, #0a0a0a 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -126,8 +128,8 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(217, 164, 65, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(217, 164, 65, 0.02) 1px, transparent 1px);
+    linear-gradient(rgb(217 164 65 / 2%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(217 164 65 / 2%) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 2;
@@ -142,16 +144,18 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 /* Spacing overrides — match original teamfinder-page.css exactly */
 .section-heading.tabs .sh-line { margin-bottom: 32px; }
 .section-heading.tabs .sh-eyebrow { color: #f3f1f0; margin-bottom: 16px; }
+
 .section-heading.tabs .sh-title {
   font-size: clamp(42px, 6.5vw, 76px);
   margin-bottom: 16px;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 12px rgb(0 0 0 / 50%);
 }
+
 .section-heading.tabs .sh-sub {
   color: #a1a1aa;
   font-size: 15px;
   max-width: 620px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 }
 
 /* ── Tab buttons row ─────────────────────────────────────────── */
@@ -169,8 +173,8 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   align-items: center;
   gap: 10px;
   padding: 14px 36px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgb(255 255 255 / 2%);
+  border: 1px solid rgb(255 255 255 / 8%);
   border-radius: 50px;
   color: #808080;
   font-family: 'DM Mono', monospace;
@@ -181,7 +185,7 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .section-heading.tabs .sh-tab svg {
@@ -191,31 +195,31 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 }
 
 .section-heading.tabs .sh-tab:hover {
-  border-color: rgba(217, 164, 65, 0.35);
+  border-color: rgb(217 164 65 / 35%);
   color: #e5e5e5;
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
 }
 
 /* Active tab — gold */
 .section-heading.tabs .sh-tab.active {
-  background: rgba(217, 164, 65, 0.12);
+  background: rgb(217 164 65 / 12%);
   border-color: #d9a441;
   color: #d9a441;
   box-shadow:
-    0 8px 24px rgba(217, 164, 65, 0.12),
-    0 0 0 1px rgba(217, 164, 65, 0.2) inset;
+    0 8px 24px rgb(217 164 65 / 12%),
+    0 0 0 1px rgb(217 164 65 / 20%) inset;
 }
 
 .section-heading.tabs .sh-tab.active svg { opacity: 1; }
 
 /* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .section-heading.tabs { min-height: 340px; }
   .section-heading.tabs .sh-inner { padding: 120px 4vw 40px; }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .section-heading.tabs .sh-inner { padding: 70px 5vw 30px; }
 
   .section-heading.tabs .sh-tabs { flex-direction: column; align-items: center; }
@@ -228,13 +232,15 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 }
 
 /* ── HOF VARIANT — Hall of Fame hero ─────────────────────────── */
+
 /* Use: Section Heading (hof) in da.live                          */
+
 /* Gradient overlay — matches original hof-hero gradient          */
 .section-heading.hof::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 10, 10, 0.15) 0%, rgba(10, 10, 10, 0.6) 100%);
+  background: linear-gradient(180deg, rgb(10 10 10 / 15%) 0%, rgb(10 10 10 / 60%) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -248,10 +254,26 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
 /* Subtitle narrower — matches hof-hero-sub max-width: 440px */
 .section-heading.hof .sh-sub { max-width: 440px; }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .section-heading.hof .sh-inner { padding: 120px 4vw 80px; }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .section-heading.hof .sh-inner { padding: 80px 5vw 60px; }
+}
+
+/* ── SPOTLIGHT VARIANT — matches original hackathon-spotlight header ──── */
+
+/* Use: Section Heading (spotlight) in da.live, placed right before the
+   matching Cards (spotlight) block                                      */
+.section-heading.spotlight .sh-inner { padding: 100px 4vw 56px; }
+.section-heading.spotlight .sh-line { margin-bottom: 64px; }
+.section-heading.spotlight .sh-sub { max-width: 440px; }
+
+@media (width <= 768px) {
+  .section-heading.spotlight .sh-inner { padding: 80px 4vw 48px; }
+}
+
+@media (width <= 600px) {
+  .section-heading.spotlight .sh-inner { padding: 60px 5vw 40px; }
 }
