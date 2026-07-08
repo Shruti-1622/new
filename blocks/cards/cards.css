@@ -1218,7 +1218,7 @@ main .section:has(.cards.featured-hackathons) .default-content-wrapper p {
   gap: 18px;
   width: max-content;
   padding: 28px 5vw;
-  animation: hcScroll 38s linear infinite;
+  animation: hcScroll 20s linear infinite;
   will-change: transform;
 }
 
