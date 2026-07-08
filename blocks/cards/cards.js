@@ -2,6 +2,13 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 
 // ── HOF VARIANT ───────────────────────────────────────────────────────────────
 function decorateHof(block) {
+  // Guard against double-decoration re-appending the filter pills a second
+  // time -- aem.js's loadBlock() already guards against this in the normal
+  // path, but this makes the symptom impossible regardless of what triggers
+  // a second call.
+  if (block.dataset.hofDecorated) return;
+  block.dataset.hofDecorated = 'true';
+
   // EDS overrides + section background (#111111 must be set inline — lazy-styles may load late)
   const section = block.closest('.section');
   if (section) {
