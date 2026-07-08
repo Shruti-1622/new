@@ -75,7 +75,7 @@
   max-width: 640px;
   width: 100%;
   text-align: center;
-  margin: 0 auto;
+  margin: 2.5rem auto 0;
   animation: heroFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
