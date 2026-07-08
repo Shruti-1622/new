@@ -117,7 +117,7 @@ main > .section > .section-heading-wrapper { max-width: 100%; padding: 0; }
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(10 10 10 / 55%) 0%, #0a0a0a 100%);
+  background: linear-gradient(180deg, rgb(10 10 10 / 30%) 0%, #0a0a0a 100%);
   pointer-events: none;
   z-index: 1;
 }
