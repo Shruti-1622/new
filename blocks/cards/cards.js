@@ -36,12 +36,32 @@ function decorateHof(block) {
     return 'FINALIST';
   }
 
-  // Parse rows
-  // Cell layout per row:
+  // Parse rows. Two optional labeled rows (exact key match, same convention
+  // as every other block's config rows) configure the year/track filter pills
+  // built inline below -- everything else is positional card data.
+  // Cell layout per card row:
   // [0]=image  [1]=rank("2nd")  [2]=meta("CloudFest 26 · 2026")
   // [3]=track("health")  [4]=title  [5]=team  [6]=desc
   // [7]=tags(comma-sep)  [8]=prize  [9]=link
-  const cardsData = [...block.children].map((row) => {
+  let yearOptions = ['All Editions', '2026', '2025', '2024'];
+  let trackOptions = ['All Tracks', 'AI / ML', 'Web3', 'Health', 'Climate'];
+  const cardRows = [];
+
+  [...block.children].forEach((row) => {
+    const cells = [...row.children];
+    const key = cells[0]?.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    if (key === 'year-filters') {
+      yearOptions = (cells[1]?.textContent || '').split(',').map((s) => s.trim()).filter(Boolean);
+      return;
+    }
+    if (key === 'track-filters') {
+      trackOptions = (cells[1]?.textContent || '').split(',').map((s) => s.trim()).filter(Boolean);
+      return;
+    }
+    cardRows.push(row);
+  });
+
+  const cardsData = cardRows.map((row) => {
     const c = [...row.children];
     const picture = c[0]?.querySelector('picture');
     const img = c[0]?.querySelector('img');
@@ -150,8 +170,32 @@ function decorateHof(block) {
   grid.className = 'hof-grid';
   cardsData.forEach((d) => grid.append(buildCard(d)));
 
+  // Build filter pills inline (year + track), replacing the separate
+  // filter-bar block that used to sit above this one on the page.
+  function normalize(s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+  function buildPillGroup(options, axis) {
+    const group = document.createElement('div');
+    group.className = 'hof-pills';
+    group.dataset.axis = axis;
+    group.setAttribute('role', 'group');
+    options.forEach((label, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = i === 0 ? 'hof-pill active' : 'hof-pill';
+      btn.textContent = label;
+      btn.setAttribute('aria-pressed', String(i === 0));
+      group.append(btn);
+    });
+    return group;
+  }
+
+  const filterBar = document.createElement('div');
+  filterBar.className = 'hof-filter-bar';
+  filterBar.append(buildPillGroup(yearOptions, 'year'), buildPillGroup(trackOptions, 'track'));
+
   block.innerHTML = '';
-  block.append(grid);
+  block.append(filterBar, grid);
 
   // Scroll reveal (matches original .reveal → .revealed logic)
   const revealObs = new IntersectionObserver((entries) => {
@@ -164,30 +208,32 @@ function decorateHof(block) {
   }, { threshold: 0.1 });
   grid.querySelectorAll('.hof-card').forEach((card) => revealObs.observe(card));
 
-  // Filter-bar:change integration
-  // Two independent filter axes: year (from filters group) and track (from filters-secondary)
+  // Two independent filter axes: year and track. The first pill in each
+  // group always means "show all" regardless of its label; every other pill
+  // matches a card's data-year/data-track by normalized substring, so an
+  // author can reword pill labels without a hardcoded label→code map.
   const active = { year: 'all', track: 'all' };
-
-  const yearMap = {
-    'all editions': 'all', '2026': '2026', '2025': '2025', '2024': '2024',
-  };
-  const trackMap = {
-    'ai / ml': 'ai', 'web3': 'web3', 'health': 'health', 'climate': 'climate',
-  };
 
   function applyFilters() {
     grid.querySelectorAll('.hof-card').forEach((card) => {
-      const yearOk = active.year === 'all' || card.dataset.year === active.year;
-      const trackOk = active.track === 'all' || card.dataset.track === active.track;
+      const yearOk = active.year === 'all' || normalize(card.dataset.year) === normalize(active.year);
+      const trackOk = active.track === 'all' || normalize(card.dataset.track).includes(normalize(active.track))
+        || normalize(active.track).includes(normalize(card.dataset.track));
       card.style.display = yearOk && trackOk ? '' : 'none';
     });
   }
 
-  document.addEventListener('filter-bar:change', (e) => {
-    const { type, value } = e.detail;
-    const key = value.toLowerCase();
-    if (type === 'filters') active.year = yearMap[key] ?? 'all';
-    else if (type === 'filters-secondary') active.track = trackMap[key] ?? 'all';
+  filterBar.addEventListener('click', (e) => {
+    const pill = e.target.closest('.hof-pill');
+    if (!pill) return;
+    const group = pill.closest('.hof-pills');
+    const isFirst = pill === group.firstElementChild;
+    group.querySelectorAll('.hof-pill').forEach((p) => { p.classList.remove('active'); p.setAttribute('aria-pressed', 'false'); });
+    pill.classList.add('active');
+    pill.setAttribute('aria-pressed', 'true');
+    const value = isFirst ? 'all' : pill.textContent.trim();
+    if (group.dataset.axis === 'year') active.year = value;
+    else active.track = value;
     applyFilters();
   });
 }

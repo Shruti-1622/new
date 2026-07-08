@@ -576,22 +576,6 @@ export default async function decorate(block) {
     doRenderGrid();
   });
 
-  // ── 9b. If filter-bar block is on the page, delegate all filtering to it ───
-  if (document.querySelector('.filter-bar')) {
-    const toolbar = block.querySelector('.tf-toolbar');
-    if (toolbar) toolbar.style.display = 'none';
-    document.addEventListener('filter-bar:change', (e) => {
-      const { type, value } = e.detail || {};
-      if (type === 'search') { _query = value; doRenderGrid(); }
-      if (type === 'filters') { _filter = value; doRenderGrid(); }
-      if (type === 'dropdown') {
-        _roleFilter = value === 'all-roles' ? 'All Roles'
-          : value.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        doRenderGrid();
-      }
-    });
-  }
-
   // ── 10. Tab switching via sh-tab-switch event ──────────────────────────────
   document.addEventListener('sh-tab-switch', (e) => {
     const tab = e.detail?.tab;
