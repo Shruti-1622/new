@@ -802,6 +802,403 @@ async function decorateFeaturedHackathons(block) {
   block.append(viewAllPara);
 }
 
+// ── HACKATHONS VARIANT — infinite carousel + "View All" search grid + skill
+// match, ported from the standalone hackathon-cards block (main carousel
+// only, not its separate "saved" wishlist variant). Kept in place until
+// confirmed as a 100% match; hc-* prefixed helpers avoid clashing with the
+// rest of cards.js.
+function hcGetSaved() {
+  try { return JSON.parse(localStorage.getItem('hh-saved') || '[]'); } catch { return []; }
+}
+function hcIsCardSaved(key) {
+  return hcGetSaved().some((c) => c.key === key);
+}
+function hcSaveCard(data) {
+  const saved = hcGetSaved();
+  if (!saved.find((c) => c.key === data.key)) {
+    saved.push(data);
+    localStorage.setItem('hh-saved', JSON.stringify(saved));
+    window.dispatchEvent(new CustomEvent('hh:saved-change', { detail: { key: data.key, saved: true } }));
+  }
+}
+function hcUnsaveCard(key) {
+  const saved = hcGetSaved().filter((c) => c.key !== key);
+  localStorage.setItem('hh-saved', JSON.stringify(saved));
+  window.dispatchEvent(new CustomEvent('hh:saved-change', { detail: { key, saved: false } }));
+}
+
+function hcFormatCountdown(deadlineStr) {
+  if (!deadlineStr) return null;
+  const deadline = new Date(deadlineStr);
+  if (Number.isNaN(deadline.getTime())) return null;
+  const msLeft = deadline.getTime() - Date.now();
+  const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+  if (daysLeft < 0) return { text: 'Closed', urgent: false, closed: true };
+  if (daysLeft === 0) return { text: 'Closes today', urgent: true, closed: false };
+  if (daysLeft === 1) return { text: '1 day left', urgent: true, closed: false };
+  return { text: `${daysLeft} days left`, urgent: daysLeft <= 3, closed: false };
+}
+
+function hcGetUserSkills() {
+  try {
+    const email = (localStorage.getItem('currentUserEmail') || '').trim().toLowerCase();
+    let profile = null;
+    if (email) {
+      const profiles = JSON.parse(localStorage.getItem('hk_profiles') || '{}');
+      profile = profiles[email];
+    }
+    if (!profile) profile = JSON.parse(localStorage.getItem('hk_profile') || 'null');
+    const { skills } = profile || {};
+    if (Array.isArray(skills)) return skills.map((s) => s.toLowerCase().trim()).filter(Boolean);
+    if (typeof skills === 'string') return skills.split(',').map((s) => s.toLowerCase().trim()).filter(Boolean);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function hcComputeSkillMatch(userSkills, hackathonSkillsText) {
+  if (!userSkills.length || !hackathonSkillsText) return null;
+  const haystack = hackathonSkillsText.toLowerCase();
+  const matched = userSkills.filter((s) => haystack.includes(s));
+  if (!matched.length) return null;
+  return Math.round((matched.length / userSkills.length) * 100);
+}
+
+function hcParseDetailPage(html, slug, userSkills) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const data = {};
+  doc.querySelectorAll('div').forEach((div) => {
+    const kids = [...div.children];
+    if (kids.length !== 2) return;
+    const key = kids[0]?.textContent.trim().toLowerCase();
+    if (['title', 'image', 'organiser', 'organizer', 'date', 'prize', 'tags', 'deadline', 'skills'].includes(key)) {
+      data[key] = kids[1];
+    }
+  });
+  const img = data.image?.querySelector('img');
+  return {
+    key: slug,
+    id: slug,
+    imgSrc: img?.src || '',
+    imgAlt: data.title?.textContent.trim() || '',
+    title: data.title?.textContent.trim() || '',
+    org: (data.organiser || data.organizer)?.textContent.trim() || '',
+    tag: (data.tags?.textContent.trim() || '').split(',')[0].trim(),
+    date: data.date?.textContent.trim() || '',
+    prize: data.prize?.textContent.trim() || '',
+    countdown: hcFormatCountdown(data.deadline?.textContent.trim()),
+    matchPct: hcComputeSkillMatch(userSkills, data.skills?.textContent.trim()),
+    href: `/hackathons/${slug}`,
+  };
+}
+
+async function decorateHackathons(block) {
+  if (block.dataset.hackathonsDecorated) return;
+  block.dataset.hackathonsDecorated = 'true';
+
+  // Zero EDS section margin + wrapper (edge-to-edge carousel)
+  const section = block.closest('.section');
+  if (section) section.style.setProperty('margin', '0', 'important');
+  const wrapper = block.parentElement;
+  if (wrapper) { wrapper.style.maxWidth = '100%'; wrapper.style.padding = '0'; }
+
+  if (!document.querySelector('link[data-font="hc-fonts"], link[data-font="bebas-neue"], link[data-font="fb-fonts"], link[data-font="hof-fonts"]')) {
+    const pc1 = document.createElement('link'); pc1.rel = 'preconnect'; pc1.href = 'https://fonts.googleapis.com';
+    const pc2 = document.createElement('link'); pc2.rel = 'preconnect'; pc2.href = 'https://fonts.gstatic.com'; pc2.crossOrigin = '';
+    const fl = document.createElement('link'); fl.rel = 'stylesheet';
+    fl.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap';
+    fl.dataset.font = 'hc-fonts';
+    document.head.append(pc1, pc2, fl);
+  }
+
+  // Each row = one slug pointing to a /hackathons/[slug] da.live page.
+  // A row containing a link = "View All" CTA. One optional labeled row
+  // ("Recommended Title" | text) overrides the "Recommended For You" heading.
+  const rows = [...block.children];
+  let viewAllHref = '/hackathons';
+  let viewAllLabel = 'View All Events';
+  let recommendedTitle = 'Recommended For You';
+  const slugs = [];
+
+  rows.forEach((row) => {
+    const cells = [...row.children];
+    const key = cells[0]?.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    if (key === 'recommended-title') {
+      recommendedTitle = cells[1]?.textContent.trim() || recommendedTitle;
+      return;
+    }
+    const linkEl = row.querySelector('a');
+    if (linkEl) {
+      viewAllHref = linkEl.href;
+      viewAllLabel = linkEl.textContent.trim() || viewAllLabel;
+      return;
+    }
+    const slug = cells[0]?.textContent.trim();
+    if (slug) slugs.push(slug);
+  });
+
+  const userSkills = hcGetUserSkills();
+
+  const results = await Promise.all(slugs.map(async (slug) => {
+    try {
+      const resp = await fetch(`/hackathons/${slug}.plain.html`);
+      if (!resp.ok) return null;
+      return hcParseDetailPage(await resp.text(), slug, userSkills);
+    } catch { return null; }
+  }));
+  const cardsData = results.filter(Boolean);
+
+  function cardHTML(d) {
+    const saved = hcIsCardSaved(d.key);
+    const heart = saved ? 'fill="currentColor" stroke="currentColor"' : 'fill="none" stroke="currentColor"';
+    return `
+      <div class="hc-card" data-key="${d.key}" data-href="${d.href}" role="button" tabindex="0">
+        ${d.imgSrc ? `<div class="hc-card-img" role="img" aria-label="${d.imgAlt}" style="background-image:url('${d.imgSrc}')"></div>` : '<div class="hc-card-img hc-card-img-placeholder"></div>'}
+        <div class="hc-card-scrim"></div>
+        <button class="hc-like-btn${saved ? ' liked' : ''}" aria-label="Save hackathon" type="button">
+          <svg class="hc-like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ${heart} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+        ${d.matchPct !== null ? `<span class="hc-skill-match">${d.matchPct}% Match</span>` : ''}
+        <span class="hc-card-cat">${d.tag}</span>
+        <div class="hc-card-body">
+          <span class="hc-card-organizer">${d.org}</span>
+          <h3 class="hc-card-name">${d.title}</h3>
+          <div class="hc-card-meta">
+            <span>${d.date}</span>
+            ${d.prize ? `<span>${d.prize}</span>` : ''}
+            ${d.countdown ? `<span class="hc-countdown${d.countdown.urgent ? ' hc-countdown-urgent' : ''}${d.countdown.closed ? ' hc-countdown-closed' : ''}">${d.countdown.text}</span>` : ''}
+          </div>
+          <span class="hc-card-btn">Explore →</span>
+        </div>
+      </div>`;
+  }
+
+  const track = document.createElement('div');
+  track.className = 'hc-track';
+  track.innerHTML = [0, 1, 2].map(() => cardsData.map((d) => cardHTML(d)).join('')).join('');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'hc-track-wrap';
+  wrap.appendChild(track);
+
+  const ctaWrap = document.createElement('div');
+  ctaWrap.className = 'hc-cta';
+  const ctaBtn = document.createElement('button');
+  ctaBtn.className = 'hc-view-all-btn';
+  ctaBtn.type = 'button';
+  ctaBtn.textContent = viewAllLabel;
+  ctaWrap.appendChild(ctaBtn);
+
+  const allEventsEl = document.createElement('div');
+  allEventsEl.className = 'hc-all-events';
+  allEventsEl.innerHTML = `
+    <div class="hc-all-events-inner">
+      <div class="hc-search-wrap">
+        <svg class="hc-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="hc-search-input" type="text"
+          placeholder="Search hackathons by name, category, prize…" autocomplete="off">
+        <button class="hc-search-clear" type="button" aria-label="Clear search">✕</button>
+      </div>
+      <div class="hc-event-grid"></div>
+    </div>`;
+
+  block.innerHTML = '';
+  block.appendChild(wrap);
+  block.appendChild(ctaWrap);
+  block.appendChild(allEventsEl);
+
+  requestAnimationFrame(() => {
+    const setW = track.scrollWidth / 3;
+    track.style.setProperty('--hc-scroll-dist', `-${setW}px`);
+  });
+
+  wrap.addEventListener('mouseenter', () => wrap.classList.add('hc-paused'));
+  wrap.addEventListener('mouseleave', () => wrap.classList.remove('hc-paused'));
+  wrap.addEventListener('touchstart', () => wrap.classList.add('hc-paused'), { passive: true });
+  wrap.addEventListener('touchend', () => setTimeout(() => wrap.classList.remove('hc-paused'), 1200));
+
+  wrap.addEventListener('click', (e) => {
+    const likeBtn = e.target.closest('.hc-like-btn');
+    if (likeBtn) {
+      e.stopPropagation();
+      const card = likeBtn.closest('.hc-card');
+      const key = card?.dataset.key;
+      if (!key) return;
+
+      const data = cardsData.find((d) => d.key === key);
+      const nowSaved = !hcIsCardSaved(key);
+
+      if (nowSaved && data) hcSaveCard(data);
+      else hcUnsaveCard(key);
+
+      track.querySelectorAll(`.hc-card[data-key="${key}"] .hc-like-btn`).forEach((btn) => {
+        btn.classList.toggle('liked', nowSaved);
+        const svg = btn.querySelector('svg');
+        if (svg) {
+          svg.setAttribute('fill', nowSaved ? 'currentColor' : 'none');
+          svg.setAttribute('stroke', 'currentColor');
+        }
+      });
+      return;
+    }
+
+    const card = e.target.closest('.hc-card');
+    if (card?.dataset.href && card.dataset.href !== '#') {
+      window.location.href = card.dataset.href;
+    }
+  });
+
+  wrap.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.hc-card');
+    if (card?.dataset.href && card.dataset.href !== '#') {
+      window.location.href = card.dataset.href;
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key !== 'hh-saved') return;
+    cardsData.forEach((d) => {
+      const nowSaved = hcIsCardSaved(d.key);
+      track.querySelectorAll(`.hc-card[data-key="${d.key}"] .hc-like-btn`).forEach((btn) => {
+        btn.classList.toggle('liked', nowSaved);
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('fill', nowSaved ? 'currentColor' : 'none');
+      });
+    });
+  });
+
+  const searchInput = allEventsEl.querySelector('.hc-search-input');
+  const searchClear = allEventsEl.querySelector('.hc-search-clear');
+  const eventGrid = allEventsEl.querySelector('.hc-event-grid');
+
+  function parseDate(dateStr) {
+    const parts = (dateStr || '').trim().split(/[\s,]+/);
+    return {
+      month: (parts[0] || 'TBA').substring(0, 3).toUpperCase(),
+      day: (parts[1] || '--').replace(',', ''),
+    };
+  }
+
+  function renderEventCards(data) {
+    eventGrid.innerHTML = '';
+    if (!data.length) {
+      eventGrid.innerHTML = '<p class="hc-no-results">No hackathons found matching your search.</p>';
+      return;
+    }
+    data.forEach((d, idx) => {
+      const { month, day } = parseDate(d.date);
+      const card = document.createElement('div');
+      card.className = 'hc-event-card';
+      card.style.animationDelay = `${idx * 0.05}s`;
+      card.innerHTML = `
+        <div class="hc-ec-image${d.imgSrc ? '' : ' hc-ec-image--placeholder'}">
+          ${d.imgSrc ? `<img src="${d.imgSrc}" alt="${d.imgAlt}" loading="lazy">` : ''}
+        </div>
+        <div class="hc-ec-content">
+          <div class="hc-ec-date-box">
+            <div class="hc-ec-month">${month}</div>
+            <div class="hc-ec-day">${day}</div>
+          </div>
+          <div class="hc-ec-details">
+            <div class="hc-ec-location">${d.tag || 'Open'}</div>
+            <div class="hc-ec-title">${d.title}</div>
+            <div class="hc-ec-desc">${d.org}${d.prize ? ` · ${d.prize}` : ''}</div>
+          </div>
+        </div>`;
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        window.location.href = d.href || `/hackathon-detail?id=${d.id}`;
+      });
+      eventGrid.appendChild(card);
+    });
+  }
+
+  let allOpen = false;
+  ctaBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    allEventsEl.classList.toggle('open', allOpen);
+    ctaBtn.textContent = allOpen ? 'Show Less' : viewAllLabel;
+    if (allOpen) {
+      if (!eventGrid.children.length) renderEventCards(cardsData);
+      setTimeout(() => {
+        allEventsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        searchInput.focus();
+      }, 150);
+    } else {
+      searchInput.value = '';
+      searchClear.classList.remove('hc-search-clear--visible');
+      renderEventCards(cardsData);
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase().trim();
+    searchClear.classList.toggle('hc-search-clear--visible', q.length > 0);
+    const filtered = cardsData.filter((d) => (
+      d.title.toLowerCase().includes(q)
+      || d.org.toLowerCase().includes(q)
+      || d.tag.toLowerCase().includes(q)
+      || d.prize.toLowerCase().includes(q)
+    ));
+    renderEventCards(filtered);
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.classList.remove('hc-search-clear--visible');
+    renderEventCards(cardsData);
+    searchInput.focus();
+  });
+
+  const RECOMMEND_THRESHOLD = 60;
+  const recommended = cardsData.filter((d) => d.matchPct !== null && d.matchPct >= RECOMMEND_THRESHOLD);
+
+  if (recommended.length) {
+    const recSection = document.createElement('div');
+    recSection.className = 'hc-recommended';
+    recSection.innerHTML = `
+      <h2 class="hc-recommended-title">${recommendedTitle}</h2>
+      <p class="hc-recommended-sub">Hackathons that best match the skills on your profile.</p>
+      <div class="hc-event-grid hc-recommended-grid"></div>`;
+    const recGrid = recSection.querySelector('.hc-recommended-grid');
+
+    recommended.forEach((d) => {
+      const { month, day } = parseDate(d.date);
+      const card = document.createElement('div');
+      card.className = 'hc-event-card';
+      card.innerHTML = `
+        <div class="hc-ec-image${d.imgSrc ? '' : ' hc-ec-image--placeholder'}">
+          ${d.imgSrc ? `<img src="${d.imgSrc}" alt="${d.imgAlt}" loading="lazy">` : ''}
+        </div>
+        <div class="hc-ec-content">
+          <div class="hc-ec-date-box">
+            <div class="hc-ec-month">${month}</div>
+            <div class="hc-ec-day">${day}</div>
+          </div>
+          <div class="hc-ec-details">
+            <span class="hc-skill-match-inline">${d.matchPct}% Match</span>
+            <div class="hc-ec-location">${d.tag || 'Open'}</div>
+            <div class="hc-ec-title">${d.title}</div>
+            <div class="hc-ec-desc">${d.org}${d.prize ? ` · ${d.prize}` : ''}</div>
+          </div>
+        </div>`;
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => { window.location.href = d.href; });
+      recGrid.appendChild(card);
+    });
+
+    block.appendChild(recSection);
+  }
+}
+
 // ── MAIN DECORATE ─────────────────────────────────────────────────────────────
 export default async function decorate(block) {
   // HOF variant — fully separate rendering path
@@ -843,6 +1240,13 @@ export default async function decorate(block) {
   // blocking here would delay every section after this one on the page.
   if (block.classList.contains('featured-hackathons')) {
     decorateFeaturedHackathons(block);
+    return;
+  }
+
+  // Hackathons carousel — mirrors the standalone hackathon-cards block's main
+  // (non-saved) variant, kept in place until confirmed as a 100% match
+  if (block.classList.contains('hackathons')) {
+    decorateHackathons(block);
     return;
   }
 
