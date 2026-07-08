@@ -576,6 +576,58 @@ function decorateSpotlight(block) {
   io.observe(stage);
 }
 
+// ── LOGOS VARIANT (infinite-scroll logo belt, mirrors the marquee block) ───────
+function decorateLogos(block) {
+  if (block.dataset.logosDecorated) return;
+  block.dataset.logosDecorated = 'true';
+
+  let title = '';
+  let logos = [];
+
+  [...block.children].forEach((row) => {
+    const cols = row.children;
+    if (cols.length < 2) return;
+    const key = cols[0].textContent.trim().toLowerCase();
+    const val = cols[1];
+
+    if (key === 'title') {
+      title = val.textContent.trim();
+    } else if (key === 'logos') {
+      logos = [...val.querySelectorAll('picture, img')]
+        .filter((el) => el.tagName === 'PICTURE' || (el.tagName === 'IMG' && !el.closest('picture')));
+    }
+  });
+
+  block.innerHTML = '';
+
+  if (title) {
+    const h2 = document.createElement('h2');
+    h2.textContent = title;
+    block.appendChild(h2);
+  }
+
+  if (logos.length > 0) {
+    const outer = document.createElement('div');
+    outer.className = 'logos-outer';
+
+    const belt = document.createElement('div');
+    belt.className = 'logos-belt';
+
+    // Original logos, then a duplicated (aria-hidden) copy right after --
+    // the CSS animation translates exactly -50%, so the duplicate lines up
+    // perfectly with the original for a seamless infinite loop.
+    logos.forEach((logo) => belt.appendChild(logo.cloneNode(true)));
+    logos.forEach((logo) => {
+      const clone = logo.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      belt.appendChild(clone);
+    });
+
+    outer.appendChild(belt);
+    block.appendChild(outer);
+  }
+}
+
 // ── MOMENTS VARIANT ───────────────────────────────────────────────────────────
 function decorateMoments(block) {
   const section = block.closest('.section');
@@ -770,6 +822,13 @@ export default async function decorate(block) {
   // as a 100% match)
   if (block.classList.contains('spotlight')) {
     decorateSpotlight(block);
+    return;
+  }
+
+  // Logos variant — infinite-scroll logo belt (mirrors the standalone
+  // marquee block, kept in place until confirmed as a 100% match)
+  if (block.classList.contains('logos')) {
+    decorateLogos(block);
     return;
   }
 
