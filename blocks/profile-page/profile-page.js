@@ -1299,8 +1299,195 @@ function bindEvents() {
   });
 }
 
+// ── UPGRADE variant (/upgrade page) ─────────────────────────────────────────
+// Reuses this block instead of a new one: membership already lives on the
+// same profile object (DEFAULTS.membership), and profile-page.js already
+// links here from three places (this file's own Upgrade button, plus the
+// free-tier limit gates in team-cards/apply-modal.js and create-modal.js) --
+// all three already pass ?reason=&redirect= expecting this exact page to exist.
+function showUpgToast(block, msg, type = 'error') {
+  const wrap = block.querySelector('#pp-upg-toast');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.className = `pp-upg-toast-item ${type}`;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+async function decorateUpgrade(block) {
+  if (localStorage.getItem('isLoggedIn') !== 'true') {
+    const redir = encodeURIComponent(window.location.href);
+    window.location.replace(`/auth-form?mode=login&redirect=${redir}`);
+    return;
+  }
+
+  _cfg = parseRows(block);
+  const email = getEmail();
+  const profile = loadProfile(email);
+  document.body.classList.add('profile-page');
+
+  const params = new URLSearchParams(window.location.search);
+  const reason = params.get('reason') || 'default';
+  const redirect = params.get('redirect') ? decodeURIComponent(params.get('redirect')) : '/profile';
+
+  const copyByReason = {
+    apply_limit: {
+      title: p('apply-limit-title', 'Application Limit Reached!'),
+      subtitle: p('apply-limit-subtitle', "You've reached the maximum of 3 active team applications. Upgrade to Premium to apply to unlimited teams."),
+    },
+    create_limit: {
+      title: p('create-limit-title', 'Creation Limit Reached!'),
+      subtitle: p('create-limit-subtitle', 'Free accounts are limited to 3 team creations per month. Go Premium for unlimited creations.'),
+    },
+    profile_upgrade: {
+      title: p('profile-title', 'Upgrade to Premium'),
+      subtitle: p('profile-subtitle', 'Get unlimited applications, team creations, priority applicant status, and a premium badge.'),
+    },
+    default: {
+      title: p('default-title', 'Elevate Your Team Search'),
+      subtitle: p('default-subtitle', 'Unlock unlimited powers and connect with the best minds in tech.'),
+    },
+  };
+  const copy = copyByReason[reason] || copyByReason.default;
+
+  if (profile.membership === 'premium') {
+    block.innerHTML = `
+      <div class="pp-upg-page">
+        <div class="pp-upg-already">
+          <span class="pp-crown">👑</span>
+          <h1>${esc(p('already-title', "You're Already Premium"))}</h1>
+          <p>${esc(p('already-subtitle', 'You already have full access to every premium feature.'))}</p>
+          <a class="pp-save-btn" href="${esc(redirect)}">${esc(p('back-btn', 'Back'))}</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const eyebrow = p('eyebrow', 'HackHub Pro');
+  const price = p('price', '₹99');
+  const period = p('period', '/ month');
+  const priceNote = p('price-note', 'Minimal subscription. Cancel anytime from your profile settings.');
+  const planLabel = p('plan-label', 'Premium Plan');
+  const features = p(
+    'features',
+    'Unlimited Active Applications: Apply to as many active teams as you want. '
+    + '| Unlimited Team Creations: Create and lead multiple project squads every month. '
+    + '| Premium Profile Badge: Display a golden badge to signal your commitment. '
+    + '| Priority Candidate Status: Get featured near the top of applicant lists.',
+  ).split('|').map((f) => {
+    const idx = f.indexOf(':');
+    return idx === -1 ? { t: f.trim(), d: '' } : { t: f.slice(0, idx).trim(), d: f.slice(idx + 1).trim() };
+  }).filter((f) => f.t);
+
+  block.innerHTML = `
+    <div class="pp-upg-page">
+      <div class="pp-upg-grid">
+        <div class="pp-upg-benefits">
+          <span class="pp-upg-eyebrow">${esc(eyebrow)}</span>
+          <h1 class="pp-upg-title">${esc(copy.title)}</h1>
+          <p class="pp-upg-sub">${esc(copy.subtitle)}</p>
+          <div class="pp-upg-features">
+            ${features.map((f) => `
+              <div class="pp-upg-feature">
+                <span class="pp-upg-check">✓</span>
+                <div>
+                  <h3>${esc(f.t)}</h3>
+                  ${f.d ? `<p>${esc(f.d)}</p>` : ''}
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="pp-upg-price-card">
+            <span class="pp-upg-price-label">${esc(planLabel)}</span>
+            <div class="pp-upg-price">${esc(price)} <span>${esc(period)}</span></div>
+            <p class="pp-upg-price-note">${esc(priceNote)}</p>
+          </div>
+        </div>
+        <div class="pp-upg-checkout">
+          <h2>${esc(p('checkout-title', 'Payment Details'))}</h2>
+          <p class="pp-upg-checkout-sub">${esc(p('checkout-subtitle', 'Enter details securely below to instantly unlock Premium benefits.'))}</p>
+          <form id="pp-upg-form" novalidate>
+            <div class="pp-edit-field">
+              <label class="pp-edit-label">${esc(p('label-name', 'Name on Card'))}</label>
+              <input class="pp-edit-input" id="pp-upg-name" type="text" placeholder="Jane Doe" value="${esc(profile.name || '')}">
+            </div>
+            <div class="pp-edit-field">
+              <label class="pp-edit-label">${esc(p('label-card', 'Card Number'))}</label>
+              <input class="pp-edit-input" id="pp-upg-card" type="text" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242">
+            </div>
+            <div class="pp-edit-row">
+              <div class="pp-edit-field">
+                <label class="pp-edit-label">${esc(p('label-expiry', 'Expiry'))}</label>
+                <input class="pp-edit-input" id="pp-upg-expiry" type="text" maxlength="5" placeholder="MM/YY">
+              </div>
+              <div class="pp-edit-field">
+                <label class="pp-edit-label">${esc(p('label-cvv', 'CVV'))}</label>
+                <input class="pp-edit-input" id="pp-upg-cvv" type="text" inputmode="numeric" maxlength="4" placeholder="123">
+              </div>
+            </div>
+            <button type="submit" class="pp-save-btn pp-upg-pay-btn" id="pp-upg-pay-btn">${esc(p('pay-btn', `Pay & Upgrade — ${price}${period}`))}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="pp-upg-toast-wrap" id="pp-upg-toast"></div>`;
+
+  block.querySelector('#pp-upg-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = block.querySelector('#pp-upg-name').value.trim();
+    const card = block.querySelector('#pp-upg-card').value.replace(/\s+/g, '');
+    const expiry = block.querySelector('#pp-upg-expiry').value.trim();
+    const cvv = block.querySelector('#pp-upg-cvv').value.trim();
+
+    if (!name || card.length < 12 || !/^\d{2}\/\d{2}$/.test(expiry) || cvv.length < 3) {
+      showUpgToast(block, p('error-invalid', 'Please fill in valid payment details.'));
+      return;
+    }
+
+    const btn = block.querySelector('#pp-upg-pay-btn');
+    btn.disabled = true;
+    btn.textContent = p('processing-label', 'Processing…');
+
+    setTimeout(() => {
+      profile.membership = 'premium';
+      saveProfile(profile, email);
+
+      try {
+        if (window.Auth?.notify && email) {
+          window.Auth.notify(
+            email,
+            'membership_upgrade',
+            p('notify-title', 'Welcome to HackHub Premium!'),
+            p('notify-message', 'Your membership was upgraded to Premium. Enjoy unlimited creations and applications.'),
+          );
+        }
+      } catch { /* */ }
+
+      showUpgToast(block, p('success-message', 'Upgrade successful! Redirecting…'), 'success');
+      setTimeout(() => { window.location.href = redirect; }, 1000);
+    }, 900);
+  });
+
+  const cardInput = block.querySelector('#pp-upg-card');
+  cardInput.addEventListener('input', () => {
+    cardInput.value = cardInput.value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
+  });
+  const expiryInput = block.querySelector('#pp-upg-expiry');
+  expiryInput.addEventListener('input', () => {
+    let v = expiryInput.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length > 2) v = `${v.slice(0, 2)}/${v.slice(2)}`;
+    expiryInput.value = v;
+  });
+}
+
 // ── Main decorate ─────────────────────────────────────────────────────────────
 export default async function decorate(block) {
+  if (block.classList.contains('upgrade')) {
+    await decorateUpgrade(block);
+    return;
+  }
+
   // Auth guard
   if (localStorage.getItem('isLoggedIn') !== 'true') {
     const redir = encodeURIComponent(window.location.href);
