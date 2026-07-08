@@ -50,11 +50,11 @@
   z-index: 1;
   background:
     radial-gradient(circle at center,
-      rgb(10 10 10 / 45%) 0%,
-      rgb(10 10 10 / 85%) 75%,
-      rgb(10 10 10 / 98%) 100%),
+      rgb(10 10 10 / 25%) 0%,
+      rgb(10 10 10 / 55%) 75%,
+      rgb(10 10 10 / 70%) 100%),
     linear-gradient(to top,
-      rgb(10 10 10 / 85%) 0%,
+      rgb(10 10 10 / 55%) 0%,
       rgb(10 10 10 / 0%) 35%);
 }
 
