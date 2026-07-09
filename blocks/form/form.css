@@ -1,4 +1,8 @@
 /* ── Shell ────────────────────────────────────────────────────── */
+.form {
+  padding: 60px 5vw 90px;
+}
+
 .form .form-el {
   max-width: 720px;
   margin: 0 auto;
