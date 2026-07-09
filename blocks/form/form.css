@@ -1,0 +1,109 @@
+/* ── Shell ────────────────────────────────────────────────────── */
+.form .form-el {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #111117;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+/* ── Field layout ─────────────────────────────────────────────── */
+.form .form-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (width <= 600px) {
+  .form .form-field-row { grid-template-columns: 1fr; }
+}
+
+.form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form .form-field label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.form .form-field input,
+.form .form-field textarea,
+.form .form-field select {
+  background: rgb(255 255 255 / 5%);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form .form-field input:focus,
+.form .form-field textarea:focus {
+  border-color: rgb(217 164 65 / 60%);
+}
+
+.form .form-field input[type='file'] {
+  padding: 8px;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+}
+
+/* ── Submit button ────────────────────────────────────────────── */
+.form .form-submit-btn {
+  display: inline-block;
+  background: #d9a441;
+  color: #0a0a0a;
+  border: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 11px 26px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form .form-submit-btn:hover { background: #f0c674; }
+.form .form-submit-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Error ────────────────────────────────────────────────────── */
+.form .form-error {
+  color: #ff8080;
+  font-size: 0.82rem;
+  margin: 12px 0 0;
+}
+
+/* ── Success state ────────────────────────────────────────────── */
+.form .form-success {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #111117;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 16px;
+  padding: 40px 28px;
+  text-align: center;
+}
+
+.form .form-success h2 {
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 0 0 10px;
+}
+
+.form .form-success p {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}
