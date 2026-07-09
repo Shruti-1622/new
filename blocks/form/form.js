@@ -29,7 +29,9 @@ function lsSet(key, val) {
 }
 
 const FIELD_TYPES = new Set(['text', 'email', 'tel', 'date', 'textarea', 'number', 'url', 'file']);
-const CONFIG_KEYS = new Set(['action', 'submit-label', 'success-title', 'success-message']);
+const CONFIG_KEYS = new Set(['action', 'submit-label', 'success-title', 'success-message', 'expect-title', 'expect-steps']);
+
+const CHECK_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
 // Field labels are matched (case-insensitive) to the keys the
 // "hackathon-submission" action needs -- authors must use these exact
@@ -110,7 +112,13 @@ export default function decorate(block) {
 
   const submitLabel = cfg['submit-label'] || 'Submit';
   const successTitle = cfg['success-title'] || "Thank You — We've Got This Covered";
-  const successMessage = cfg['success-message'] || 'Your submission has been received and is under review.';
+  const successMessage = cfg['success-message'] || "Our partnerships team will personally reach out to you within 24 hours to walk through the details and get your hackathon ready to go live. From there, we handle everything — hosting your event page, managing the full registration pipeline, and actively promoting it to our community — so your team can stay focused on running a great event, not chasing logistics.";
+  const expectTitle = cfg['expect-title'] || 'What Happens Next';
+  const expectSteps = (cfg['expect-steps'] || [
+    'A dedicated HackHub partner manager will call or email you within 24 hours to confirm the details and answer any questions.',
+    "We'll build and publish your hackathon page, then open registrations to our community — no setup work needed on your end.",
+    "We'll actively promote your hackathon across our platform, social channels, and student network to drive quality sign-ups.",
+  ].join('|')).split('|').map((s) => s.trim()).filter(Boolean);
 
   const form = document.createElement('form');
   form.className = 'form-el';
@@ -208,6 +216,13 @@ export default function decorate(block) {
       <div class="form-success">
         <h2>${esc(successTitle)}</h2>
         <p>${esc(successMessage)}</p>
+        ${expectSteps.length ? `
+        <div class="form-expect">
+          <h3>${esc(expectTitle)}</h3>
+          <ul>
+            ${expectSteps.map((s) => `<li><span class="form-expect-check">${CHECK_ICON}</span>${esc(s)}</li>`).join('')}
+          </ul>
+        </div>` : ''}
       </div>`;
     submitBtn.disabled = false;
     submitBtn.textContent = originalLabel;
