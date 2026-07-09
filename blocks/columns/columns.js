@@ -18,20 +18,25 @@ export default function decorate(block) {
 
   // Handle About variant custom SVGs
   if (block.classList.contains('about')) {
+    // "no-icon" modifier -- e.g. authored as "Columns (about, no-icon)" --
+    // reuses this exact same card/title/description layout and cleanup
+    // logic below, just without injecting the colored SVG icons. Existing
+    // "Columns (about)" pages are untouched since this only skips a step.
+    const skipIcons = block.classList.contains('no-icon');
     const svgs = [
       '<div class="card-icon" style="color:#ffd700;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>',
       '<div class="card-icon" style="color:#ff4444;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>',
       '<div class="card-icon" style="color:#00c8ff;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.5-2.5 3.5-2.5 5.5C4 22 6 21 7.5 19.5M12 12l9-9M12 12c-1.5 1.5-3.5 2.5-5.5 2.5C6 14 4 13 2.5 11.5M12 12c1.5-1.5 2.5-3.5 2.5-5.5C14 6 13 4 11.5 2.5M12 12l-9 9"></path></svg></div>'
     ];
-    
+
     // The columns are the children of the first row
     const firstRow = block.firstElementChild;
     if (firstRow) {
       [...firstRow.children].forEach((col, i) => {
-        if (svgs[i]) {
+        if (svgs[i] && !skipIcons) {
           col.insertAdjacentHTML('afterbegin', svgs[i]);
         }
-        
+
         // Find the title (usually the second element after the SVG we just injected)
         // If da.live mashed the title and text together with a <br>, split them out!
         let elements = [...col.children];
