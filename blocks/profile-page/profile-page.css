@@ -1818,23 +1818,25 @@ body.profile-page main>.section>div {
 
 .profile-page .pp-adm-shell {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  align-items: stretch;
 }
 
-/* ── Sidebar ─────────────────────────────────────────────────── */
+/* ── Top bar (tabs in one row) ───────────────────────────────── */
 .profile-page .pp-adm-sidebar {
-  width: 260px;
+  width: 100%;
   flex-shrink: 0;
   background: #111113;
-  border-right: 1px solid #232326;
-  padding: 28px 16px;
+  border-bottom: 1px solid #232326;
+  padding: 0 32px;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 28px;
   position: sticky;
   top: 0;
-  height: 100vh;
+  z-index: 20;
+  height: 68px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 25%);
 }
 
 .profile-page .pp-adm-brand {
@@ -1842,29 +1844,35 @@ body.profile-page main>.section>div {
   font-weight: 700;
   font-size: 1.05rem;
   color: #fff;
-  padding: 4px 12px 24px;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .profile-page .pp-adm-nav {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
   flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.profile-page .pp-adm-nav::-webkit-scrollbar { display: none; }
 
 .profile-page .pp-adm-nav-link {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 11px 12px;
+  gap: 8px;
+  width: auto;
+  white-space: nowrap;
+  padding: 9px 16px;
   background: none;
   border: none;
-  border-radius: 10px;
+  border-radius: 100px;
   color: #9a9aa2;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
@@ -1887,19 +1895,21 @@ body.profile-page main>.section>div {
 .profile-page .pp-adm-nav-link.active {
   background: rgb(201 162 39 / 14%);
   color: #d9b13f;
+  box-shadow: 0 0 0 1px rgb(201 162 39 / 25%) inset;
 }
 
 .profile-page .pp-adm-nav-link.active .pp-adm-nav-icon { opacity: 1; }
 
 .profile-page .pp-adm-logout {
-  width: 100%;
-  padding: 11px 12px;
+  width: auto;
+  flex-shrink: 0;
+  padding: 8px 16px;
   background: none;
   border: 1px solid #242424;
-  border-radius: 10px;
+  border-radius: 100px;
   color: #9a9aa2;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
@@ -1914,8 +1924,11 @@ body.profile-page main>.section>div {
 .profile-page .pp-adm-content {
   flex: 1;
   min-width: 0;
-  padding: 40px 40px 80px;
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 40px 80px;
+  box-sizing: border-box;
 }
 
 .profile-page .pp-adm-content-header { margin-bottom: 28px; }
@@ -2450,22 +2463,70 @@ body.profile-page main>.section>div {
   transform: translateX(20px);
 }
 
+/* ── Recent Activity feed (Overview tab) ─────────────────────── */
+.profile-page .pp-adm-content-header h1.pp-adm-subheading {
+  font-size: 1.15rem;
+  margin: 36px 0 18px;
+}
+
+.profile-page .pp-adm-activity-feed {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.profile-page .pp-adm-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #1e1e20;
+}
+
+.profile-page .pp-adm-activity-row:last-child { border-bottom: none; }
+.profile-page .pp-adm-activity-row:hover { background: rgb(255 255 255 / 2%); }
+
+.profile-page .pp-adm-activity-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgb(201 162 39 / 10%);
+  color: #d9b13f;
+}
+
+.profile-page .pp-adm-activity-text {
+  flex: 1;
+  min-width: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  color: #d4d4d8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-page .pp-adm-activity-date {
+  flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.76rem;
+  color: #6c6c74;
+}
+
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (width <= 900px) {
-  .profile-page .pp-adm-shell { flex-direction: column; }
-
   .profile-page .pp-adm-sidebar {
-    width: 100%;
     height: auto;
-    position: relative;
-    flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
-    padding: 16px;
+    padding: 14px 16px;
+    gap: 12px;
   }
 
-  .profile-page .pp-adm-brand { padding: 4px 12px; margin-right: auto; }
-  .profile-page .pp-adm-nav { flex-direction: row; flex-wrap: wrap; }
+  .profile-page .pp-adm-nav { flex-wrap: wrap; overflow-x: visible; order: 3; width: 100%; }
   .profile-page .pp-adm-content { padding: 28px 20px 60px; }
   .profile-page .pp-adm-field-row { grid-template-columns: 1fr; }
 }

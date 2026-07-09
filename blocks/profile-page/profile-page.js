@@ -1765,11 +1765,50 @@ function admRenderTab(block) {
   if (_admTab === 'export') { admRenderExport(block, content); }
 }
 
+// Merges the four independent activity sources this dashboard already reads
+// (org requests, registrations from both the workflow + real site pages, and
+// team creations) into one chronological feed. Read-only, no new storage.
+function admGetRecentActivity(limit = 8) {
+  const items = [];
+
+  admGetPending().forEach((h) => items.push({
+    icon: ADM_ICONS.requests,
+    text: `${h.company} submitted "${h.hackathonName}" for review`,
+    date: h.submittedAt,
+  }));
+
+  admGetRegistrations().forEach((r) => items.push({
+    icon: ADM_ICONS.registrations,
+    text: `${r.studentName || 'A student'} registered`,
+    date: r.registrationDate,
+  }));
+  admGetSiteRegistrations().forEach((r) => {
+    const prof = admGetSiteProfile(r.email);
+    items.push({
+      icon: ADM_ICONS.registrations,
+      text: `${prof?.name || r.email} registered`,
+      date: r.registeredAt,
+    });
+  });
+
+  lsGet('hk_user_teams', []).forEach((t) => items.push({
+    icon: ADM_ICONS.teams,
+    text: `Team "${t.team || 'Unnamed'}" was created for ${t.name || 'a hackathon'}`,
+    date: t.creationDate,
+  }));
+
+  return items
+    .filter((i) => i.date)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, limit);
+}
+
 function admRenderOverview(content) {
   const pending = admGetPending();
   const live = admGetAllLiveHackathons();
   const totalRegs = admGetRegistrations().length + admGetSiteRegistrations().length;
   const { total: teamTotal, fullyStaffed } = admGetTeamStats();
+  const activity = admGetRecentActivity();
 
   content.innerHTML = `
     <div class="pp-adm-content-header">
@@ -1782,7 +1821,17 @@ function admRenderOverview(content) {
       ${admStatCard(ADM_ICONS.registrations, p('stat-regs-label', 'Total Student Registrations'), totalRegs)}
       ${admStatCard(ADM_ICONS.teams, p('stat-teams-label', 'Teams Formed'), teamTotal, `${fullyStaffed} fully staffed`)}
     </div>
-    ${!_admLegacyLoaded && p('legacy-hackathon-slugs', '') ? `<p class="pp-adm-sync-note">${esc(p('syncing-label', 'Syncing live site data…'))}</p>` : ''}`;
+    ${!_admLegacyLoaded && p('legacy-hackathon-slugs', '') ? `<p class="pp-adm-sync-note">${esc(p('syncing-label', 'Syncing live site data…'))}</p>` : ''}
+    <div class="pp-adm-content-header"><h1 class="pp-adm-subheading">${esc(p('activity-title', 'Recent Activity'))}</h1></div>
+    ${activity.length ? `
+    <div class="pp-adm-activity-feed">
+      ${activity.map((a) => `
+        <div class="pp-adm-activity-row">
+          <span class="pp-adm-activity-icon">${a.icon}</span>
+          <span class="pp-adm-activity-text">${esc(a.text)}</span>
+          <span class="pp-adm-activity-date">${new Date(a.date).toLocaleDateString()}</span>
+        </div>`).join('')}
+    </div>` : `<div class="pp-adm-empty">${esc(p('empty-activity', 'Nothing has happened yet.'))}</div>`}`;
 }
 
 function admRenderRequests(block, content) {
