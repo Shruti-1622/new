@@ -1481,8 +1481,609 @@ async function decorateUpgrade(block) {
   });
 }
 
+// ── ADMIN variant (/organiser-dashboard) ────────────────────────────────────
+// Reuses this block instead of a new one: same login-gated, role-branched
+// dashboard shell as the rest of profile-page.js, just gated to admins
+// (checked against a da.live-configured admin-emails list, same convention
+// as organiser-workflow.js used) instead of "any logged-in user". Data model
+// (pendingHackathons/approvedHackathons/registrations queues, real site
+// registrations + legacy hackathon slugs) is carried over unchanged from
+// that block so nothing already submitted is lost.
+let _admTab = 'overview';
+let _admLegacyHackathons = [];
+let _admLegacyLoaded = false;
+let _admJustApproved = null;
+let _admExportId = '';
+
+function admIsAdminEmail(email) {
+  const list = p('admin-emails', '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  return list.includes(email);
+}
+
+function admGetPending() { return lsGet('pendingHackathons', []); }
+function admSetPending(v) { lsSet('pendingHackathons', v); }
+function admGetApproved() { return lsGet('approvedHackathons', []); }
+function admSetApproved(v) { lsSet('approvedHackathons', v); }
+function admGetRegistrations() { return lsGet('registrations', []); }
+function admGetSiteRegistrations() {
+  const out = [];
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith('hackhub_registrations_')) continue;
+    const email = key.slice('hackhub_registrations_'.length);
+    let list;
+    try { list = JSON.parse(localStorage.getItem(key)) || []; } catch { list = []; }
+    list.forEach((r) => out.push({ email, hackathonId: r.hackathonId, registeredAt: r.registeredAt }));
+  }
+  return out;
+}
+function admGetSiteProfile(email) {
+  const profiles = lsGet('hk_profiles', {});
+  return profiles[email] || null;
+}
+
+// Site has no query-index (forbidden for this project), so the admin-only
+// legacy-hackathon-slugs config row is the only way to fold pre-existing
+// /hackathons/<slug> pages into this dashboard's Hackathons/Registrations views.
+async function admFetchLegacyHackathons() {
+  const slugs = p('legacy-hackathon-slugs', '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (!slugs.length) return [];
+  const results = await Promise.all(slugs.map(async (slug) => {
+    const path = slug.startsWith('/') ? slug : `/hackathons/${slug}`;
+    try {
+      const res = await fetch(`${path}.plain.html`);
+      if (!res.ok) return null;
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const detail = doc.querySelector('.hackathon-detail');
+      if (!detail) return null;
+      const data = {};
+      [...detail.querySelectorAll(':scope > div')].forEach((row) => {
+        const cols = [...row.querySelectorAll(':scope > div')];
+        if (cols.length < 2) return;
+        data[cols[0].textContent.trim().toLowerCase()] = cols[1].textContent.trim();
+      });
+      return {
+        id: path,
+        hackathonName: data.title || slug,
+        company: data.organiser || data.organizer || '—',
+        deadline: data.deadline || '',
+        prize: data.prize || '',
+        source: 'legacy',
+      };
+    } catch {
+      return null;
+    }
+  }));
+  return results.filter(Boolean);
+}
+
+function admGenId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
+
+function admShowToast(block, msg) {
+  let wrap = block.querySelector('#pp-adm-toast-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.className = 'pp-adm-toast-wrap';
+    wrap.id = 'pp-adm-toast-wrap';
+    block.appendChild(wrap);
+  }
+  const t = document.createElement('div');
+  t.className = 'pp-adm-toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => { t.classList.add('pp-adm-toast-out'); setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+function admDownloadCSV(filename, headerRow, rows) {
+  const escCell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = [headerRow, ...rows].map((r) => r.map(escCell).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function admOpenModal(block, title, bodyHtml) {
+  const root = block.querySelector('#pp-adm-modal-root');
+  if (!root) return;
+  root.innerHTML = `
+    <div class="pp-adm-modal-overlay" id="pp-adm-modal-overlay">
+      <div class="pp-adm-modal">
+        <div class="pp-adm-modal-head">
+          <h2>${esc(title)}</h2>
+          <button type="button" class="pp-adm-modal-close" id="pp-adm-modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="pp-adm-modal-body">${bodyHtml}</div>
+      </div>
+    </div>`;
+  const overlay = root.querySelector('#pp-adm-modal-overlay');
+  const close = () => { root.innerHTML = ''; };
+  root.querySelector('#pp-adm-modal-close').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+}
+
+function admGetAllLiveHackathons() {
+  return [...admGetApproved(), ..._admLegacyHackathons];
+}
+
+function admRegCountFor(hack) {
+  if (hack.source === 'legacy') return admGetSiteRegistrations().filter((r) => r.hackathonId === hack.id).length;
+  return admGetRegistrations().filter((r) => r.hackathonId === hack.id).length;
+}
+
+// Team stats — hk_user_teams is one flat array shared across every team a
+// user created in this browser, so site-wide team aggregates are just a
+// read-only pass over it; no new storage, no new write paths.
+function admGetTeamStats() {
+  const teams = lsGet('hk_user_teams', []);
+  let fullyStaffed = 0;
+  let totalApps = 0;
+  let pendingApps = 0;
+  teams.forEach((t) => {
+    const roles = Array.isArray(t.roles) ? t.roles : [];
+    if (roles.length && roles.every((r) => !r.o)) fullyStaffed += 1;
+    const apps = Array.isArray(t.applications) ? t.applications : [];
+    totalApps += apps.length;
+    pendingApps += apps.filter((a) => a.status === 'pending').length;
+  });
+  return {
+    teams,
+    total: teams.length,
+    fullyStaffed,
+    recruiting: teams.length - fullyStaffed,
+    totalApps,
+    pendingApps,
+  };
+}
+
+function admTpl(str, vars) {
+  return str.replace(/\{(\w+)\}/g, (_, k) => (vars?.[k] != null ? vars[k] : ''));
+}
+
+const ADM_CHECK_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const ADM_BIG_CHECK_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+const ADM_ICONS = {
+  overview: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+  requests: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="M9 12h6M9 16h6"/></svg>',
+  hackathons: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
+  teams: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  registrations: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  export: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  partners: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>',
+};
+
+const ADM_NAV = [
+  { tab: 'overview', icon: ADM_ICONS.overview, labelKey: 'tab-dashboard', fallback: 'Dashboard' },
+  { tab: 'requests', icon: ADM_ICONS.requests, labelKey: 'tab-requests', fallback: 'Organisation Requests' },
+  { tab: 'hackathons', icon: ADM_ICONS.hackathons, labelKey: 'tab-hackathons', fallback: 'Hackathons' },
+  { tab: 'teams', icon: ADM_ICONS.teams, labelKey: 'tab-teams', fallback: 'Teams' },
+  { tab: 'registrations', icon: ADM_ICONS.registrations, labelKey: 'tab-registrations', fallback: 'Registrations' },
+  { tab: 'export', icon: ADM_ICONS.export, labelKey: 'tab-export', fallback: 'Export' },
+];
+
+function admStatCard(icon, label, value, sub = '') {
+  return `
+    <div class="pp-adm-stat-card">
+      <div class="pp-adm-stat-icon">${icon}</div>
+      <div class="pp-adm-stat-body">
+        <div class="pp-adm-stat-label">${esc(label)}</div>
+        <div class="pp-adm-stat-value">${value}${sub ? ` <span class="pp-adm-stat-sub">${esc(sub)}</span>` : ''}</div>
+      </div>
+    </div>`;
+}
+
+function admTable(headers, rows, emptyLabel) {
+  if (!rows.length) return `<div class="pp-adm-empty">${esc(emptyLabel)}</div>`;
+  return `
+    <div class="pp-adm-table-wrap">
+      <table class="pp-adm-table">
+        <thead><tr>${headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+async function decorateAdmin(block) {
+  _cfg = parseRows(block);
+
+  if (localStorage.getItem('isLoggedIn') !== 'true') {
+    window.location.replace(`/auth-form?mode=login&redirect=${encodeURIComponent(window.location.href)}`);
+    return;
+  }
+
+  const email = getEmail();
+  document.body.classList.add('profile-page');
+
+  if (!admIsAdminEmail(email)) {
+    block.innerHTML = `
+      <div class="pp-adm-restricted">
+        <h2>${esc(p('restricted-title', 'Admins Only'))}</h2>
+        <p>${esc(p('restricted-desc', 'This dashboard is only available to HackHub admins.'))}</p>
+        <a class="pp-save-btn" href="/">${esc(p('restricted-cta', 'Back to Home'))}</a>
+      </div>`;
+    return;
+  }
+
+  block.innerHTML = `
+    <div class="pp-adm-shell">
+      <nav class="pp-adm-sidebar">
+        <div class="pp-adm-brand">${esc(p('admin-brand', 'HackHub Admin'))}</div>
+        <div class="pp-adm-nav">
+          ${ADM_NAV.map((n, i) => `
+            <button type="button" class="pp-adm-nav-link${i === 0 ? ' active' : ''}" data-tab="${n.tab}">
+              <span class="pp-adm-nav-icon">${n.icon}</span>${esc(p(n.labelKey, n.fallback))}
+            </button>`).join('')}
+        </div>
+        <button type="button" class="pp-adm-logout" id="pp-adm-logout">${esc(p('logout-label', 'Log Out'))}</button>
+      </nav>
+      <main class="pp-adm-content" id="pp-adm-content"></main>
+    </div>
+    <div class="pp-adm-modal-root" id="pp-adm-modal-root"></div>
+    <div class="pp-adm-toast-wrap" id="pp-adm-toast-wrap"></div>`;
+
+  block.querySelector('#pp-adm-logout').addEventListener('click', () => {
+    ['isLoggedIn', 'currentUserEmail', 'hk_profile', 'hk_notifications'].forEach((k) => localStorage.removeItem(k));
+    window.location.href = '/';
+  });
+
+  block.querySelectorAll('.pp-adm-nav-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      block.querySelectorAll('.pp-adm-nav-link').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      _admTab = btn.dataset.tab;
+      admRenderTab(block);
+    });
+  });
+
+  admRenderTab(block);
+
+  if (!_admLegacyLoaded) {
+    admFetchLegacyHackathons().then((list) => {
+      _admLegacyHackathons = list;
+      _admLegacyLoaded = true;
+      admRenderTab(block);
+    });
+  }
+}
+
+function admRenderTab(block) {
+  const content = block.querySelector('#pp-adm-content');
+  if (!content) return;
+  if (_admTab === 'overview') { admRenderOverview(content); return; }
+  if (_admTab === 'requests') { admRenderRequests(block, content); return; }
+  if (_admTab === 'hackathons') { admRenderHackathons(block, content); return; }
+  if (_admTab === 'teams') { admRenderTeams(content); return; }
+  if (_admTab === 'registrations') { admRenderRegistrations(block, content); return; }
+  if (_admTab === 'export') { admRenderExport(block, content); }
+}
+
+function admRenderOverview(content) {
+  const pending = admGetPending();
+  const live = admGetAllLiveHackathons();
+  const totalRegs = admGetRegistrations().length + admGetSiteRegistrations().length;
+  const { total: teamTotal, fullyStaffed } = admGetTeamStats();
+
+  content.innerHTML = `
+    <div class="pp-adm-content-header">
+      <h1>${esc(p('tab-dashboard', 'Dashboard'))}</h1>
+      <p>${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackHub right now.'))}</p>
+    </div>
+    <div class="pp-adm-stats-grid">
+      ${admStatCard(ADM_ICONS.requests, p('stat-pending-label', 'Pending Organisation Requests'), pending.length)}
+      ${admStatCard(ADM_ICONS.hackathons, p('stat-live-label', 'Live Hackathons'), live.length)}
+      ${admStatCard(ADM_ICONS.registrations, p('stat-regs-label', 'Total Student Registrations'), totalRegs)}
+      ${admStatCard(ADM_ICONS.teams, p('stat-teams-label', 'Teams Formed'), teamTotal, `${fullyStaffed} fully staffed`)}
+    </div>
+    ${!_admLegacyLoaded && p('legacy-hackathon-slugs', '') ? `<p class="pp-adm-sync-note">${esc(p('syncing-label', 'Syncing live site data…'))}</p>` : ''}`;
+}
+
+function admRenderRequests(block, content) {
+  const pending = admGetPending();
+  content.innerHTML = `
+    <div class="pp-adm-content-header"><h1>${esc(p('tab-requests', 'Organisation Requests'))}</h1></div>
+    <div id="pp-adm-requests-banner"></div>
+    <div id="pp-adm-requests-body" class="pp-adm-requests-list"></div>`;
+
+  const bannerWrap = content.querySelector('#pp-adm-requests-banner');
+  if (_admJustApproved) {
+    bannerWrap.innerHTML = `
+      <div class="pp-adm-next-steps-banner">
+        <button type="button" class="pp-adm-next-steps-close" id="pp-adm-next-steps-dismiss" aria-label="${esc(p('dismiss-label', 'Dismiss'))}">&times;</button>
+        <div class="pp-adm-next-steps-icon">${ADM_BIG_CHECK_ICON}</div>
+        <div class="pp-adm-next-steps-content">
+          <strong>${esc(admTpl(p('next-steps-title', '{company} Approved'), _admJustApproved))}</strong>
+          <p>${esc(admTpl(p('next-steps-subtitle', 'Here’s what happens next for {hackathon}:'), _admJustApproved))}</p>
+          <ul>
+            <li><span class="pp-adm-step-check">${ADM_CHECK_ICON}</span>${esc(admTpl(p('next-step-1', 'We will reach out to {company} within 24 hours.'), _admJustApproved))}</li>
+            <li><span class="pp-adm-step-check">${ADM_CHECK_ICON}</span>${esc(admTpl(p('next-step-2', 'We will manage {hackathon} and its registrations on their behalf.'), _admJustApproved))}</li>
+            <li><span class="pp-adm-step-check">${ADM_CHECK_ICON}</span>${esc(admTpl(p('next-step-3', 'We will promote {hackathon} across our social channels.'), _admJustApproved))}</li>
+          </ul>
+        </div>
+      </div>`;
+    bannerWrap.querySelector('#pp-adm-next-steps-dismiss').addEventListener('click', () => {
+      _admJustApproved = null;
+      admRenderRequests(block, content);
+    });
+  }
+
+  const body = content.querySelector('#pp-adm-requests-body');
+  if (!pending.length) {
+    body.innerHTML = `<div class="pp-adm-empty">${esc(p('empty-pending', 'No pending organisation requests.'))}</div>`;
+    return;
+  }
+
+  body.innerHTML = pending.map((h) => `
+    <div class="pp-adm-request-card" data-id="${esc(h.id)}">
+      <div class="pp-adm-request-head">
+        <div>
+          <div class="pp-adm-request-title">${esc(h.hackathonName)}</div>
+          <div class="pp-adm-request-company">${esc(h.company)}</div>
+        </div>
+        <span class="pp-adm-status pp-adm-status-pending">${esc(p('status-pending-label', 'Pending Approval'))}</span>
+      </div>
+      ${h.description ? `<p class="pp-adm-request-desc">${esc(h.description)}</p>` : ''}
+      <div class="pp-adm-info-grid">
+        <div class="pp-adm-info-item"><span>${esc(p('label-contact', 'Contact Person'))}</span><strong>${esc(h.contactPerson) || '—'}</strong></div>
+        <div class="pp-adm-info-item"><span>${esc(p('label-contact-email', 'Contact Email'))}</span><strong>${esc(h.contactEmail) || '—'}</strong></div>
+        <div class="pp-adm-info-item"><span>${esc(p('label-deadline', 'Registration Deadline'))}</span><strong>${esc(h.deadline) || '—'}</strong></div>
+        <div class="pp-adm-info-item"><span>${esc(p('label-team-size', 'Team Size'))}</span><strong>${esc(h.teamSize) || '—'}</strong></div>
+        <div class="pp-adm-info-item"><span>${esc(p('label-prize', 'Prize Pool'))}</span><strong>${esc(h.prize) || '—'}</strong></div>
+        <div class="pp-adm-info-item"><span>${esc(p('submitted-label', 'Submitted'))}</span><strong>${new Date(h.submittedAt).toLocaleDateString()}</strong></div>
+      </div>
+      <div class="pp-adm-request-actions">
+        <button type="button" class="pp-adm-btn-reject" data-id="${esc(h.id)}">${esc(p('reject-label', 'Reject'))}</button>
+        <button type="button" class="pp-adm-btn-approve" data-id="${esc(h.id)}">${esc(p('approve-label', 'Approve'))}</button>
+      </div>
+    </div>`).join('');
+
+  body.querySelectorAll('.pp-adm-btn-approve').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const list = admGetPending();
+      const idx = list.findIndex((h) => h.id === id);
+      if (idx === -1) return;
+      const [item] = list.splice(idx, 1);
+      item.status = 'Approved';
+      const app = admGetApproved();
+      app.push(item);
+      admSetApproved(app);
+      admSetPending(list);
+      _admJustApproved = { company: item.company, hackathon: item.hackathonName };
+      admShowToast(block, p('approved-message', 'Hackathon approved and is now live.'));
+      admRenderRequests(block, content);
+    });
+  });
+  body.querySelectorAll('.pp-adm-btn-reject').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      admSetPending(admGetPending().filter((h) => h.id !== id));
+      admShowToast(block, p('rejected-message', 'Hackathon rejected.'));
+      admRenderRequests(block, content);
+    });
+  });
+}
+
+function admRenderHackathons(block, content) {
+  const all = admGetAllLiveHackathons();
+  content.innerHTML = `
+    <div class="pp-adm-content-header pp-adm-content-header-row">
+      <div><h1>${esc(p('tab-hackathons', 'Hackathons'))}</h1></div>
+      <button type="button" class="pp-adm-btn-primary" id="pp-adm-post-hackathon-btn">${esc(p('post-hackathon-label', '+ Post New Hackathon'))}</button>
+    </div>
+    ${admTable(
+    [p('label-hackathon-name', 'Hackathon Name'), p('label-company', 'Organisation'), p('reg-count-label', 'Registration Count'), p('status-label', 'Status')],
+    all.map((h) => `<tr>
+        <td>${esc(h.hackathonName)}</td>
+        <td>${esc(h.company)}</td>
+        <td>${admRegCountFor(h)}</td>
+        <td><span class="pp-adm-status pp-adm-status-live">${esc(p('status-live-label', 'Live'))}</span></td>
+      </tr>`),
+    p('empty-approved', 'No approved hackathons yet.'),
+  )}`;
+
+  content.querySelector('#pp-adm-post-hackathon-btn').addEventListener('click', () => admOpenPostHackathonModal(block));
+}
+
+function admOpenPostHackathonModal(block) {
+  const bodyHtml = `
+    <div class="pp-adm-field-row">
+      <div class="pp-adm-field"><label>${esc(p('label-company', 'Company Name'))}</label><input type="text" id="pp-adm-ap-company" placeholder="Acme Inc."></div>
+      <div class="pp-adm-field"><label>${esc(p('label-contact', 'Contact Person'))}</label><input type="text" id="pp-adm-ap-contact" placeholder="Jane Doe"></div>
+    </div>
+    <div class="pp-adm-field-row">
+      <div class="pp-adm-field"><label>${esc(p('label-contact-email', 'Contact Email'))}</label><input type="email" id="pp-adm-ap-contact-email" placeholder="jane@company.com"></div>
+      <div class="pp-adm-field"><label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label><input type="text" id="pp-adm-ap-hack-name" placeholder="InnovateTech 2026"></div>
+    </div>
+    <div class="pp-adm-field"><label>${esc(p('label-description', 'Description'))}</label><textarea id="pp-adm-ap-description" rows="3" placeholder="Themes, goals, what makes it worth joining…"></textarea></div>
+    <div class="pp-adm-field-row">
+      <div class="pp-adm-field"><label>${esc(p('label-deadline', 'Registration Deadline'))}</label><input type="date" id="pp-adm-ap-deadline"></div>
+      <div class="pp-adm-field"><label>${esc(p('label-team-size', 'Team Size'))}</label><input type="text" id="pp-adm-ap-team-size" placeholder="2-4"></div>
+    </div>
+    <div class="pp-adm-field-row">
+      <div class="pp-adm-field"><label>${esc(p('label-prize', 'Prize Pool'))}</label><input type="text" id="pp-adm-ap-prize" placeholder="₹5,00,000"></div>
+      <div class="pp-adm-field"><label>${esc(p('label-banner', 'Banner Image'))}</label><input type="file" id="pp-adm-ap-banner" accept="image/*"></div>
+    </div>
+    <button type="button" class="pp-adm-btn-primary" id="pp-adm-ap-submit">${esc(p('post-hackathon-submit-label', 'Post Hackathon'))}</button>`;
+
+  admOpenModal(block, p('post-hackathon-title', 'Post a New Hackathon'), bodyHtml);
+  const root = block.querySelector('#pp-adm-modal-root');
+  if (!root) return;
+
+  let bannerDataUrl = '';
+  root.querySelector('#pp-adm-ap-banner').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { admShowToast(block, p('error-banner-size', 'Banner must be under 2MB.')); e.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => { bannerDataUrl = ev.target.result; };
+    reader.readAsDataURL(file);
+  });
+
+  root.querySelector('#pp-adm-ap-submit').addEventListener('click', () => {
+    const company = root.querySelector('#pp-adm-ap-company').value.trim();
+    const contactPerson = root.querySelector('#pp-adm-ap-contact').value.trim();
+    const contactEmail = root.querySelector('#pp-adm-ap-contact-email').value.trim();
+    const hackathonName = root.querySelector('#pp-adm-ap-hack-name').value.trim();
+    const description = root.querySelector('#pp-adm-ap-description').value.trim();
+    const deadline = root.querySelector('#pp-adm-ap-deadline').value;
+    const teamSize = root.querySelector('#pp-adm-ap-team-size').value.trim();
+    const prize = root.querySelector('#pp-adm-ap-prize').value.trim();
+
+    if (!company || !hackathonName || !deadline) {
+      admShowToast(block, p('error-required-admin-post', 'Please fill in Company Name, Hackathon Name, and Deadline.'));
+      return;
+    }
+
+    const pending = admGetPending();
+    pending.push({
+      id: admGenId('hack'), company, contactPerson, contactEmail, hackathonName, description, deadline, teamSize, prize, banner: bannerDataUrl, status: 'Pending Approval', submittedAt: new Date().toISOString(), postedByAdmin: true,
+    });
+    admSetPending(pending);
+
+    root.innerHTML = '';
+    admShowToast(block, p('posted-message', 'Hackathon posted — approve it below to make it live.'));
+    _admTab = 'requests';
+    block.querySelectorAll('.pp-adm-nav-link').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'requests'));
+    admRenderTab(block);
+  });
+}
+
+// ── Teams tab — site-wide team stats, new in this port ─────────────────────
+function admRenderTeams(content) {
+  const {
+    teams, total, fullyStaffed, recruiting, totalApps, pendingApps,
+  } = admGetTeamStats();
+
+  content.innerHTML = `
+    <div class="pp-adm-content-header"><h1>${esc(p('tab-teams', 'Teams'))}</h1></div>
+    <div class="pp-adm-stats-grid">
+      ${admStatCard(ADM_ICONS.teams, p('stat-teams-total-label', 'Total Teams'), total)}
+      ${admStatCard(ADM_ICONS.overview, p('stat-teams-staffed-label', 'Fully Staffed'), fullyStaffed)}
+      ${admStatCard(ADM_ICONS.hackathons, p('stat-teams-recruiting-label', 'Still Recruiting'), recruiting)}
+      ${admStatCard(ADM_ICONS.requests, p('stat-teams-apps-label', 'Total Applications'), totalApps, `${pendingApps} pending`)}
+    </div>
+    ${admTable(
+    [p('label-team-name', 'Team Name'), p('label-hackathon-name', 'Hackathon'), p('label-members', 'Members'), p('status-label', 'Status'), p('label-pending-applicants', 'Pending Applicants')],
+    teams.map((t) => {
+      const roles = Array.isArray(t.roles) ? t.roles : [];
+      const staffed = roles.length && roles.every((r) => !r.o);
+      const filled = (t.members || []).length;
+      const total2 = t.totalSpots || roles.length || '?';
+      const pending = (t.applications || []).filter((a) => a.status === 'pending').length;
+      return `<tr>
+          <td>${esc(t.team || 'Team')}</td>
+          <td>${esc(t.name || '')}</td>
+          <td>${filled}/${total2}</td>
+          <td><span class="pp-adm-status ${staffed ? 'pp-adm-status-live' : 'pp-adm-status-pending'}">${staffed ? esc(p('status-full-label', 'Full')) : esc(p('status-recruiting-label', 'Recruiting'))}</span></td>
+          <td>${pending}</td>
+        </tr>`;
+    }),
+    p('empty-teams', 'No teams created yet.'),
+  )}`;
+}
+
+function admRenderRegistrations(block, content) {
+  const all = admGetAllLiveHackathons();
+  content.innerHTML = `
+    <div class="pp-adm-content-header"><h1>${esc(p('tab-registrations', 'Registrations'))}</h1></div>
+    ${admTable(
+    [p('label-hackathon-name', 'Hackathon'), p('label-company', 'Organisation'), p('reg-count-label', 'Registrations'), ''],
+    all.map((h) => `<tr>
+        <td>${esc(h.hackathonName)}</td>
+        <td>${esc(h.company)}</td>
+        <td>${admRegCountFor(h)}</td>
+        <td><button type="button" class="pp-adm-btn-secondary pp-adm-view-regs-btn" data-id="${esc(h.id)}">${esc(p('view-label', 'View'))}</button></td>
+      </tr>`),
+    p('empty-registrations', 'No registrations yet.'),
+  )}`;
+
+  content.querySelectorAll('.pp-adm-view-regs-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const hack = all.find((h) => h.id === btn.dataset.id);
+      if (hack) admOpenRegistrationsModal(block, hack);
+    });
+  });
+}
+
+function admOpenRegistrationsModal(block, hack) {
+  let rows;
+  if (hack.source === 'legacy') {
+    rows = admGetSiteRegistrations().filter((r) => r.hackathonId === hack.id).map((r) => {
+      const prof = admGetSiteProfile(r.email);
+      return {
+        name: prof?.name || r.email, college: '—', skills: Array.isArray(prof?.skills) ? prof.skills.join(', ') : (prof?.skills || '—'), date: r.registeredAt,
+      };
+    });
+  } else {
+    rows = admGetRegistrations().filter((r) => r.hackathonId === hack.id)
+      .map((r) => ({
+        name: r.studentName, college: r.college, skills: r.skills, date: r.registrationDate,
+      }));
+  }
+
+  const bodyHtml = admTable(
+    [p('label-student-name', 'Student Name'), p('label-college', 'College'), p('label-skills', 'Skills'), p('registered-on-label', 'Registration Date')],
+    rows.map((r) => `<tr><td>${esc(r.name)}</td><td>${esc(r.college)}</td><td>${esc(r.skills)}</td><td>${new Date(r.date).toLocaleDateString()}</td></tr>`),
+    p('empty-registrations', 'No registrations yet.'),
+  );
+  admOpenModal(block, hack.hackathonName, bodyHtml);
+}
+
+function admRenderExport(block, content) {
+  const all = admGetAllLiveHackathons();
+  content.innerHTML = `
+    <div class="pp-adm-content-header"><h1>${esc(p('tab-export', 'Export'))}</h1></div>
+    <div class="pp-adm-card">
+      <div class="pp-adm-field">
+        <label>${esc(p('export-select-label', 'Select a Hackathon'))}</label>
+        <select id="pp-adm-export-select">
+          <option value="">${esc(p('export-select-placeholder', 'Choose a hackathon…'))}</option>
+          ${all.map((h) => `<option value="${esc(h.id)}" ${h.id === _admExportId ? 'selected' : ''}>${esc(h.hackathonName)}</option>`).join('')}
+        </select>
+      </div>
+      <button type="button" class="pp-adm-btn-primary" id="pp-adm-export-btn">${esc(p('download-csv-label', 'Download CSV'))}</button>
+    </div>`;
+
+  content.querySelector('#pp-adm-export-select').addEventListener('change', (e) => { _admExportId = e.target.value; });
+  content.querySelector('#pp-adm-export-btn').addEventListener('click', () => {
+    if (!_admExportId) { admShowToast(block, p('error-no-hackathon-selected', 'Please select a hackathon first.')); return; }
+    const hack = all.find((h) => h.id === _admExportId);
+    if (!hack) return;
+
+    let rows;
+    if (hack.source === 'legacy') {
+      rows = admGetSiteRegistrations().filter((r) => r.hackathonId === hack.id).map((r) => {
+        const prof = admGetSiteProfile(r.email);
+        return [prof?.name || '', '', r.email, prof?.github || '', prof?.linkedin || '', Array.isArray(prof?.skills) ? prof.skills.join(', ') : '', r.registeredAt];
+      });
+    } else {
+      rows = admGetRegistrations().filter((r) => r.hackathonId === hack.id)
+        .map((r) => [r.studentName, r.college, r.email, r.github, r.linkedin, r.skills, r.registrationDate]);
+    }
+
+    admDownloadCSV(
+      `${hack.hackathonName.replace(/\s+/g, '-')}.csv`,
+      ['Name', 'College', 'Email', 'GitHub', 'LinkedIn', 'Skills', 'Registered On'],
+      rows,
+    );
+  });
+}
+
 // ── Main decorate ─────────────────────────────────────────────────────────────
 export default async function decorate(block) {
+  if (block.classList.contains('admin')) {
+    await decorateAdmin(block);
+    return;
+  }
+
   if (block.classList.contains('upgrade')) {
     await decorateUpgrade(block);
     return;

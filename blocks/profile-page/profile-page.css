@@ -1810,3 +1810,662 @@ body.profile-page main>.section>div {
   opacity: 1;
   transform: translateX(0);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN VARIANT (.profile-page.admin) — sidebar + stat cards + tables
+   ═══════════════════════════════════════════════════════════════ */
+.profile-page.admin { background: #0b0b0d; }
+
+.profile-page .pp-adm-shell {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.profile-page .pp-adm-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #111113;
+  border-right: 1px solid #232326;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.profile-page .pp-adm-brand {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+  padding: 4px 12px 24px;
+  letter-spacing: 0.01em;
+}
+
+.profile-page .pp-adm-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.profile-page .pp-adm-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: #9a9aa2;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.profile-page .pp-adm-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.profile-page .pp-adm-nav-link:hover {
+  background: rgb(255 255 255 / 4%);
+  color: #e5e5e5;
+}
+
+.profile-page .pp-adm-nav-link.active {
+  background: rgb(201 162 39 / 14%);
+  color: #d9b13f;
+}
+
+.profile-page .pp-adm-nav-link.active .pp-adm-nav-icon { opacity: 1; }
+
+.profile-page .pp-adm-logout {
+  width: 100%;
+  padding: 11px 12px;
+  background: none;
+  border: 1px solid #242424;
+  border-radius: 10px;
+  color: #9a9aa2;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.profile-page .pp-adm-logout:hover {
+  border-color: rgb(255 90 90 / 40%);
+  color: #ff8080;
+}
+
+/* ── Content area ────────────────────────────────────────────── */
+.profile-page .pp-adm-content {
+  flex: 1;
+  min-width: 0;
+  padding: 40px 40px 80px;
+  max-width: 1280px;
+}
+
+.profile-page .pp-adm-content-header { margin-bottom: 28px; }
+
+.profile-page .pp-adm-content-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.profile-page .pp-adm-content-header h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.profile-page .pp-adm-content-header p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: #85858c;
+  margin: 0;
+}
+
+/* ── Stat cards ──────────────────────────────────────────────── */
+.profile-page .pp-adm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.profile-page .pp-adm-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.profile-page .pp-adm-stat-card:hover {
+  border-color: rgb(201 162 39 / 25%);
+}
+
+.profile-page .pp-adm-stat-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgb(201 162 39 / 12%);
+  color: #d9b13f;
+}
+
+.profile-page .pp-adm-stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #85858c;
+  margin-bottom: 6px;
+}
+
+.profile-page .pp-adm-stat-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.profile-page .pp-adm-stat-sub {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #85858c;
+}
+
+.profile-page .pp-adm-sync-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #85858c;
+  font-style: italic;
+}
+
+/* ── Card / empty state ──────────────────────────────────────── */
+.profile-page .pp-adm-card {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.profile-page .pp-adm-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: #85858c;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+}
+
+/* ── Table ───────────────────────────────────────────────────── */
+.profile-page .pp-adm-table-wrap {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.profile-page .pp-adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.profile-page .pp-adm-table thead th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #85858c;
+  background: #1a1a1c;
+  border-bottom: 1px solid #242424;
+  white-space: nowrap;
+}
+
+.profile-page .pp-adm-table tbody td {
+  padding: 14px 20px;
+  font-size: 0.86rem;
+  color: #d4d4d8;
+  border-bottom: 1px solid #1e1e20;
+  white-space: nowrap;
+}
+
+.profile-page .pp-adm-table tbody tr:last-child td { border-bottom: none; }
+.profile-page .pp-adm-table tbody tr:hover { background: rgb(255 255 255 / 2%); }
+
+/* ── Status pills ────────────────────────────────────────────── */
+.profile-page .pp-adm-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.profile-page .pp-adm-status-pending {
+  background: rgb(217 164 65 / 14%);
+  color: #e0ab3f;
+}
+
+.profile-page .pp-adm-status-live {
+  background: rgb(63 201 128 / 14%);
+  color: #3fc980;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.profile-page .pp-adm-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #c9a227;
+  color: #0b0b0d;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.profile-page .pp-adm-btn-primary:hover { background: #e0ba3a; transform: translateY(-1px); }
+
+.profile-page .pp-adm-btn-secondary {
+  padding: 7px 14px;
+  background: rgb(255 255 255 / 6%);
+  color: #d4d4d8;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-page .pp-adm-btn-secondary:hover { background: rgb(255 255 255 / 12%); }
+
+.profile-page .pp-adm-btn-approve,
+.profile-page .pp-adm-btn-reject {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  border: none;
+}
+
+.profile-page .pp-adm-btn-approve {
+  background: #3fc980;
+  color: #0b0b0d;
+}
+
+.profile-page .pp-adm-btn-approve:hover { background: #56d792; transform: translateY(-1px); }
+
+.profile-page .pp-adm-btn-reject {
+  background: rgb(255 90 90 / 12%);
+  color: #ff8080;
+  border: 1px solid rgb(255 90 90 / 30%);
+}
+
+.profile-page .pp-adm-btn-reject:hover { background: rgb(255 90 90 / 20%); }
+
+/* ── Organisation request cards ──────────────────────────────── */
+.profile-page .pp-adm-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-page .pp-adm-request-card {
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  padding: 22px 24px;
+}
+
+.profile-page .pp-adm-request-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.profile-page .pp-adm-request-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-page .pp-adm-request-company {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #85858c;
+  margin-top: 2px;
+}
+
+.profile-page .pp-adm-request-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  color: #b0b0b8;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.profile-page .pp-adm-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 16px;
+  background: #131313;
+  border-radius: 10px;
+}
+
+.profile-page .pp-adm-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-page .pp-adm-info-item span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c6c74;
+}
+
+.profile-page .pp-adm-info-item strong {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #e5e5e5;
+}
+
+.profile-page .pp-adm-request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ── Next steps banner ───────────────────────────────────────── */
+.profile-page .pp-adm-next-steps-banner {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  background: rgb(63 201 128 / 8%);
+  border: 1px solid rgb(63 201 128 / 30%);
+  border-radius: 14px;
+  padding: 22px 48px 22px 22px;
+  margin-bottom: 20px;
+}
+
+.profile-page .pp-adm-next-steps-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgb(63 201 128 / 16%);
+  color: #3fc980;
+}
+
+.profile-page .pp-adm-next-steps-content strong {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.profile-page .pp-adm-next-steps-content p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #b0b0b8;
+  margin: 0 0 10px;
+}
+
+.profile-page .pp-adm-next-steps-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-page .pp-adm-next-steps-content li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #d4d4d8;
+}
+
+.profile-page .pp-adm-step-check {
+  flex-shrink: 0;
+  color: #3fc980;
+  margin-top: 2px;
+}
+
+.profile-page .pp-adm-next-steps-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #85858c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.profile-page .pp-adm-next-steps-close:hover { color: #fff; }
+
+/* ── Restricted (non-admin) state ────────────────────────────── */
+.profile-page .pp-adm-restricted {
+  max-width: 420px;
+  margin: 100px auto;
+  text-align: center;
+  padding: 40px 32px;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 16px;
+}
+
+.profile-page .pp-adm-restricted h2 {
+  font-family: 'DM Sans', sans-serif;
+  color: #fff;
+  margin: 0 0 10px;
+}
+
+.profile-page .pp-adm-restricted p {
+  font-family: 'DM Sans', sans-serif;
+  color: #85858c;
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+
+/* ── Modal ───────────────────────────────────────────────────── */
+.profile-page .pp-adm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 65%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.profile-page .pp-adm-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 86vh;
+  overflow-y: auto;
+  background: #161616;
+  border: 1px solid #242424;
+  border-radius: 16px;
+}
+
+.profile-page .pp-adm-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #242424;
+  position: sticky;
+  top: 0;
+  background: #161616;
+}
+
+.profile-page .pp-adm-modal-head h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+  margin: 0;
+}
+
+.profile-page .pp-adm-modal-close {
+  background: none;
+  border: none;
+  color: #85858c;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.profile-page .pp-adm-modal-close:hover { color: #fff; }
+.profile-page .pp-adm-modal-body { padding: 24px; }
+
+/* ── Form fields (modal) ─────────────────────────────────────── */
+.profile-page .pp-adm-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.profile-page .pp-adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.profile-page .pp-adm-field label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #85858c;
+}
+
+.profile-page .pp-adm-field input,
+.profile-page .pp-adm-field textarea,
+.profile-page .pp-adm-field select {
+  padding: 10px 12px;
+  background: #0f0f10;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  color: #e5e5e5;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.profile-page .pp-adm-field input:focus,
+.profile-page .pp-adm-field textarea:focus,
+.profile-page .pp-adm-field select:focus {
+  border-color: rgb(201 162 39 / 60%);
+}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+.profile-page .pp-adm-toast-wrap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1100;
+}
+
+.profile-page .pp-adm-toast {
+  background: #1c1c1e;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #c9a227;
+  color: #e5e5e5;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 40%);
+  opacity: 1;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.profile-page .pp-adm-toast-out {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (width <= 900px) {
+  .profile-page .pp-adm-shell { flex-direction: column; }
+
+  .profile-page .pp-adm-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .profile-page .pp-adm-brand { padding: 4px 12px; margin-right: auto; }
+  .profile-page .pp-adm-nav { flex-direction: row; flex-wrap: wrap; }
+  .profile-page .pp-adm-content { padding: 28px 20px 60px; }
+  .profile-page .pp-adm-field-row { grid-template-columns: 1fr; }
+}
