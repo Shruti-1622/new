@@ -1700,7 +1700,7 @@ async function decorateAdmin(block) {
   }
 
   const email = getEmail();
-  document.body.classList.add('profile-page');
+  document.body.classList.add('profile-page', 'pp-admin-view');
 
   if (!admIsAdminEmail(email)) {
     block.innerHTML = `

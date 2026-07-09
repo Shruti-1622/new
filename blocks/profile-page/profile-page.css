@@ -1816,6 +1816,12 @@ body.profile-page main>.section>div {
    ═══════════════════════════════════════════════════════════════ */
 .profile-page.admin { background: #0b0b0d; overflow-x: hidden; }
 
+/* Admin view is a full-screen dashboard shell with its own top bar --
+   the site's regular fixed header/nav (position: fixed, z-index: 1000)
+   would otherwise overlap it since it's out of normal document flow. */
+body.pp-admin-view header { display: none !important; }
+body.pp-admin-view footer { display: none !important; }
+
 .profile-page .pp-adm-shell {
   display: flex;
   flex-direction: column;
