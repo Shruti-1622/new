@@ -1923,10 +1923,7 @@ function admRenderRequests(block, content) {
 function admRenderHackathons(block, content) {
   const all = admGetAllLiveHackathons();
   content.innerHTML = `
-    <div class="pp-adm-content-header pp-adm-content-header-row">
-      <div><h1>${esc(p('tab-hackathons', 'Hackathons'))}</h1></div>
-      <button type="button" class="pp-adm-btn-primary" id="pp-adm-post-hackathon-btn">${esc(p('post-hackathon-label', '+ Post New Hackathon'))}</button>
-    </div>
+    <div class="pp-adm-content-header"><h1>${esc(p('tab-hackathons', 'Hackathons'))}</h1></div>
     ${admTable(
     [p('label-hackathon-name', 'Hackathon Name'), p('label-company', 'Organisation'), p('reg-count-label', 'Registration Count'), p('status-label', 'Status')],
     all.map((h) => `<tr>
@@ -1937,72 +1934,6 @@ function admRenderHackathons(block, content) {
       </tr>`),
     p('empty-approved', 'No approved hackathons yet.'),
   )}`;
-
-  content.querySelector('#pp-adm-post-hackathon-btn').addEventListener('click', () => admOpenPostHackathonModal(block));
-}
-
-function admOpenPostHackathonModal(block) {
-  const bodyHtml = `
-    <div class="pp-adm-field-row">
-      <div class="pp-adm-field"><label>${esc(p('label-company', 'Company Name'))}</label><input type="text" id="pp-adm-ap-company" placeholder="Acme Inc."></div>
-      <div class="pp-adm-field"><label>${esc(p('label-contact', 'Contact Person'))}</label><input type="text" id="pp-adm-ap-contact" placeholder="Jane Doe"></div>
-    </div>
-    <div class="pp-adm-field-row">
-      <div class="pp-adm-field"><label>${esc(p('label-contact-email', 'Contact Email'))}</label><input type="email" id="pp-adm-ap-contact-email" placeholder="jane@company.com"></div>
-      <div class="pp-adm-field"><label>${esc(p('label-hackathon-name', 'Hackathon Name'))}</label><input type="text" id="pp-adm-ap-hack-name" placeholder="InnovateTech 2026"></div>
-    </div>
-    <div class="pp-adm-field"><label>${esc(p('label-description', 'Description'))}</label><textarea id="pp-adm-ap-description" rows="3" placeholder="Themes, goals, what makes it worth joining…"></textarea></div>
-    <div class="pp-adm-field-row">
-      <div class="pp-adm-field"><label>${esc(p('label-deadline', 'Registration Deadline'))}</label><input type="date" id="pp-adm-ap-deadline"></div>
-      <div class="pp-adm-field"><label>${esc(p('label-team-size', 'Team Size'))}</label><input type="text" id="pp-adm-ap-team-size" placeholder="2-4"></div>
-    </div>
-    <div class="pp-adm-field-row">
-      <div class="pp-adm-field"><label>${esc(p('label-prize', 'Prize Pool'))}</label><input type="text" id="pp-adm-ap-prize" placeholder="₹5,00,000"></div>
-      <div class="pp-adm-field"><label>${esc(p('label-banner', 'Banner Image'))}</label><input type="file" id="pp-adm-ap-banner" accept="image/*"></div>
-    </div>
-    <button type="button" class="pp-adm-btn-primary" id="pp-adm-ap-submit">${esc(p('post-hackathon-submit-label', 'Post Hackathon'))}</button>`;
-
-  admOpenModal(block, p('post-hackathon-title', 'Post a New Hackathon'), bodyHtml);
-  const root = block.querySelector('#pp-adm-modal-root');
-  if (!root) return;
-
-  let bannerDataUrl = '';
-  root.querySelector('#pp-adm-ap-banner').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { admShowToast(block, p('error-banner-size', 'Banner must be under 2MB.')); e.target.value = ''; return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => { bannerDataUrl = ev.target.result; };
-    reader.readAsDataURL(file);
-  });
-
-  root.querySelector('#pp-adm-ap-submit').addEventListener('click', () => {
-    const company = root.querySelector('#pp-adm-ap-company').value.trim();
-    const contactPerson = root.querySelector('#pp-adm-ap-contact').value.trim();
-    const contactEmail = root.querySelector('#pp-adm-ap-contact-email').value.trim();
-    const hackathonName = root.querySelector('#pp-adm-ap-hack-name').value.trim();
-    const description = root.querySelector('#pp-adm-ap-description').value.trim();
-    const deadline = root.querySelector('#pp-adm-ap-deadline').value;
-    const teamSize = root.querySelector('#pp-adm-ap-team-size').value.trim();
-    const prize = root.querySelector('#pp-adm-ap-prize').value.trim();
-
-    if (!company || !hackathonName || !deadline) {
-      admShowToast(block, p('error-required-admin-post', 'Please fill in Company Name, Hackathon Name, and Deadline.'));
-      return;
-    }
-
-    const pending = admGetPending();
-    pending.push({
-      id: admGenId('hack'), company, contactPerson, contactEmail, hackathonName, description, deadline, teamSize, prize, banner: bannerDataUrl, status: 'Pending Approval', submittedAt: new Date().toISOString(), postedByAdmin: true,
-    });
-    admSetPending(pending);
-
-    root.innerHTML = '';
-    admShowToast(block, p('posted-message', 'Hackathon posted — approve it below to make it live.'));
-    _admTab = 'requests';
-    block.querySelectorAll('.pp-adm-nav-link').forEach((b) => b.classList.toggle('active', b.dataset.tab === 'requests'));
-    admRenderTab(block);
-  });
 }
 
 // ── Teams tab — site-wide team stats, new in this port ─────────────────────
