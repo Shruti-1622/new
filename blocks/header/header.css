@@ -35,7 +35,7 @@ header nav a:active { text-decoration: none !important; outline: none; }
 header .nav-logo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
   font-family: 'DM Mono', monospace;
   font-size: 1.3rem;
   font-weight: 700;
@@ -48,7 +48,7 @@ header .nav-logo {
 header .nav-logo .logo-bracket { color: #c9a84c; }
 
 header .nav-logo-img {
-  height: 32px !important;
+  height: 48px !important;
   width: auto !important;
   max-width: none !important;
   object-fit: contain;
