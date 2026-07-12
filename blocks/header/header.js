@@ -35,6 +35,7 @@ function buildNav() {
   return `
     <nav class="nav" id="hh-nav">
       <a href="/" class="nav-logo" aria-label="HackVerse Home">
+        <img src="/assets/avatar/yes.webp" alt="" class="nav-logo-img">
         <span class="logo-bracket">{</span>HackVerse<span class="logo-bracket">}</span>
       </a>
       <ul class="nav-links">${links}</ul>

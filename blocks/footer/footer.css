@@ -45,12 +45,23 @@ footer .footer {
 }
 
 .footer .footer-brand .nav-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 16px;
   font-family: 'DM Mono', monospace;
   font-size: 1.4rem;
   font-weight: 700;
   color: #e5e5e5;
   letter-spacing: 0.02em;
+}
+
+.footer .footer-brand .nav-logo-img {
+  height: 32px !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain;
+  display: block;
 }
 
 .footer .logo-bracket {

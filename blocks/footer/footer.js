@@ -6,7 +6,9 @@ const SOCIAL_ICONS = {
 
 const HEART_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="#ff4444" stroke="#ff4444" stroke-width="2" style="vertical-align:middle;margin:0 2px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
 
-function render(block, { logo, taglineHTML, socials, navCols, copyright, builtHTML }) {
+function render(block, {
+  logo, logoImage, taglineHTML, socials, navCols, copyright, builtHTML,
+}) {
   const socialsHTML = socials.map(({ platform, href }) => {
     const icon = SOCIAL_ICONS[platform];
     if (!icon) return '';
@@ -23,6 +25,7 @@ function render(block, { logo, taglineHTML, socials, navCols, copyright, builtHT
     <div class="footer-main">
       <div class="footer-brand">
         <div class="nav-logo">
+          ${logoImage ? `<img src="${logoImage}" alt="" class="nav-logo-img">` : ''}
           <span class="logo-bracket">{</span>${logo}<span class="logo-bracket">}</span>
         </div>
         <p class="footer-tagline">${taglineHTML}</p>
@@ -39,6 +42,7 @@ function render(block, { logo, taglineHTML, socials, navCols, copyright, builtHT
 
 function parseTable(table) {
   let logo = '';
+  let logoImage = '';
   let taglineHTML = '';
   const socials = [];
   const navCols = [];
@@ -52,6 +56,11 @@ function parseTable(table) {
     const val = cells[1];
     if (key === 'footer') return;
     if (key === 'logo') { logo = val.textContent.trim(); return; }
+    if (key === 'logo image') {
+      const img = val.querySelector('img');
+      logoImage = img ? img.getAttribute('src') : val.textContent.trim();
+      return;
+    }
     if (key === 'tagline') { taglineHTML = val.innerHTML; return; }
     if (key === 'github' || key === 'twitter' || key === 'linkedin') {
       const a = val.querySelector('a');
@@ -68,7 +77,7 @@ function parseTable(table) {
   });
 
   return {
-    logo, taglineHTML, socials, navCols, copyright, builtHTML,
+    logo, logoImage, taglineHTML, socials, navCols, copyright, builtHTML,
   };
 }
 
@@ -79,6 +88,7 @@ function cellHTML(el) {
 
 function parseDiv(container) {
   let logo = '';
+  let logoImage = '';
   let taglineHTML = '';
   const socials = [];
   const navCols = [];
@@ -92,6 +102,11 @@ function parseDiv(container) {
     const val = cols[1];
     if (!key || key === 'footer') return;
     if (key === 'logo') { logo = val.textContent.trim(); return; }
+    if (key === 'logo image') {
+      const img = val.querySelector('img');
+      logoImage = img ? img.getAttribute('src') : val.textContent.trim();
+      return;
+    }
     if (key === 'tagline') { taglineHTML = cellHTML(val); return; }
     if (key === 'github' || key === 'twitter' || key === 'linkedin') {
       const a = val.querySelector('a');
@@ -108,7 +123,7 @@ function parseDiv(container) {
   });
 
   return {
-    logo, taglineHTML, socials, navCols, copyright, builtHTML,
+    logo, logoImage, taglineHTML, socials, navCols, copyright, builtHTML,
   };
 }
 
