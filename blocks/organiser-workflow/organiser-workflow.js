@@ -1,7 +1,7 @@
 // organiser-workflow.js — EDS block
-// Simulates the HackHub organisation → admin → student workflow.
+// Simulates the HackVerse organisation → admin → student workflow.
 // Model: organisations only ever fill a form (no account, no dashboard for
-// them) -- HackHub's admin team manages everything on their behalf from a
+// them) -- HackVerse's admin team manages everything on their behalf from a
 // single Admin Dashboard. Login/signup is NOT reinvented -- Admins use the
 // site's existing /auth-form page and isLoggedIn/currentUserEmail session
 // (same one every other block already uses); whether a logged-in email is
@@ -201,7 +201,7 @@ function decorateLanding(block) {
     <div class="ow-hero">
       <span class="ow-eyebrow">${esc(p('eyebrow', 'Partner With Us'))}</span>
       <h1 class="ow-title">${esc(p('title', 'Reach Thousands of Student Innovators'))}</h1>
-      <p class="ow-story">${esc(p('story', 'HackHub connects your hackathon with a growing community of students who are actively browsing, comparing, and applying to events every week. We bring the audience — you bring the challenge.'))}</p>
+      <p class="ow-story">${esc(p('story', 'HackVerse connects your hackathon with a growing community of students who are actively browsing, comparing, and applying to events every week. We bring the audience — you bring the challenge.'))}</p>
       <div class="ow-usp-grid">
         <div class="ow-usp-card">
           <h3>${esc(p('usp1-title', 'Built-In Reach'))}</h3>
@@ -345,7 +345,7 @@ function renderSubmissionSuccess(block) {
     <div class="ow-expect">
       <h3>${esc(p('expect-title', 'What Happens Next'))}</h3>
       <ul>
-        <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-1', 'A dedicated HackHub partner manager will call or email you within 24 hours to confirm the details and answer any questions.'))}</li>
+        <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-1', 'A dedicated HackVerse partner manager will call or email you within 24 hours to confirm the details and answer any questions.'))}</li>
         <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-2', "We'll build and publish your hackathon page, then open registrations to our community — no setup work needed on your end."))}</li>
         <li><span class="ow-step-check">${CHECK_ICON}</span>${esc(p('expect-3', "We'll actively promote your hackathon across our platform, social channels, and student network to drive quality sign-ups."))}</li>
       </ul>
@@ -430,7 +430,7 @@ function decorateDashboard(block) {
       <div class="ow-hero">
         <div class="ow-card ow-login-card">
           <h2>${esc(p('restricted-title', 'Admins Only'))}</h2>
-          <p class="ow-hint">${esc(p('restricted-desc', 'This dashboard is only available to HackHub admins.'))}</p>
+          <p class="ow-hint">${esc(p('restricted-desc', 'This dashboard is only available to HackVerse admins.'))}</p>
           <a class="ow-btn-primary" href="/">${esc(p('restricted-cta', 'Back to Home'))}</a>
         </div>
       </div>`;
@@ -440,7 +440,7 @@ function decorateDashboard(block) {
   block.innerHTML = `
     <div class="ow-admin-shell">
       <nav class="ow-sidebar">
-        <div class="ow-sidebar-brand">${esc(p('admin-brand', 'HackHub Admin'))}</div>
+        <div class="ow-sidebar-brand">${esc(p('admin-brand', 'HackVerse Admin'))}</div>
         <button type="button" class="ow-sidebar-link active" data-tab="overview">${esc(p('tab-dashboard', 'Dashboard'))}</button>
         <button type="button" class="ow-sidebar-link" data-tab="requests">${esc(p('tab-requests', 'Organisation Requests'))}</button>
         <button type="button" class="ow-sidebar-link" data-tab="hackathons">${esc(p('tab-hackathons', 'Hackathons'))}</button>
@@ -501,7 +501,7 @@ function renderTabOverview(content) {
   content.innerHTML = `
     <div class="ow-content-header">
       <h1 class="ow-content-title">${esc(p('tab-dashboard', 'Dashboard'))}</h1>
-      <p class="ow-content-sub">${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackHub right now.'))}</p>
+      <p class="ow-content-sub">${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackVerse right now.'))}</p>
     </div>
     <div class="ow-stats-grid">
       <div class="ow-stat-card">

@@ -115,7 +115,7 @@ export default function decorate(block) {
   const successMessage = cfg['success-message'] || "Our partnerships team will personally reach out to you within 24 hours to walk through the details and get your hackathon ready to go live. From there, we handle everything — hosting your event page, managing the full registration pipeline, and actively promoting it to our community — so your team can stay focused on running a great event, not chasing logistics.";
   const expectTitle = cfg['expect-title'] || 'What Happens Next';
   const expectSteps = (cfg['expect-steps'] || [
-    'A dedicated HackHub partner manager will call or email you within 24 hours to confirm the details and answer any questions.',
+    'A dedicated HackVerse partner manager will call or email you within 24 hours to confirm the details and answer any questions.',
     "We'll build and publish your hackathon page, then open registrations to our community — no setup work needed on your end.",
     "We'll actively promote your hackathon across our platform, social channels, and student network to drive quality sign-ups.",
   ].join('|')).split('|').map((s) => s.trim()).filter(Boolean);

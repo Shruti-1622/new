@@ -88,9 +88,9 @@ export default function decorate(block) {
       <!-- ── LEFT VISUAL PANEL ── -->
       <div class="af-visual">
         <div class="af-visual-bg"${cfg['hero-image'] ? ` style="background-image:url('${cfg['hero-image']}')"` : ''}></div>
-        <a href="/" class="af-logo-link" aria-label="HackHub Home">
+        <a href="/" class="af-logo-link" aria-label="HackVerse Home">
           ${cfg['logo-image'] ? `<img src="${cfg['logo-image']}" alt="logo" class="af-logo-img">` : ''}
-          <span class="af-logo-text">${cfg['logo-text'] || 'HackHub'}</span>
+          <span class="af-logo-text">${cfg['logo-text'] || 'HackVerse'}</span>
         </a>
         <div class="af-visual-overlay"></div>
         <div class="af-visual-content">

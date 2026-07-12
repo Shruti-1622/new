@@ -1365,7 +1365,7 @@ async function decorateUpgrade(block) {
     return;
   }
 
-  const eyebrow = p('eyebrow', 'HackHub Pro');
+  const eyebrow = p('eyebrow', 'HackVerse Pro');
   const price = p('price', '₹99');
   const period = p('period', '/ month');
   const priceNote = p('price-note', 'Minimal subscription. Cancel anytime from your profile settings.');
@@ -1458,7 +1458,7 @@ async function decorateUpgrade(block) {
           window.Auth.notify(
             email,
             'membership_upgrade',
-            p('notify-title', 'Welcome to HackHub Premium!'),
+            p('notify-title', 'Welcome to HackVerse Premium!'),
             p('notify-message', 'Your membership was upgraded to Premium. Enjoy unlimited creations and applications.'),
           );
         }
@@ -1706,7 +1706,7 @@ async function decorateAdmin(block) {
     block.innerHTML = `
       <div class="pp-adm-restricted">
         <h2>${esc(p('restricted-title', 'Admins Only'))}</h2>
-        <p>${esc(p('restricted-desc', 'This dashboard is only available to HackHub admins.'))}</p>
+        <p>${esc(p('restricted-desc', 'This dashboard is only available to HackVerse admins.'))}</p>
         <a class="pp-save-btn" href="/">${esc(p('restricted-cta', 'Back to Home'))}</a>
       </div>`;
     return;
@@ -1715,7 +1715,7 @@ async function decorateAdmin(block) {
   block.innerHTML = `
     <div class="pp-adm-shell">
       <nav class="pp-adm-sidebar">
-        <div class="pp-adm-brand">${esc(p('admin-brand', 'HackHub Admin'))}</div>
+        <div class="pp-adm-brand">${esc(p('admin-brand', 'HackVerse Admin'))}</div>
         <div class="pp-adm-nav">
           ${ADM_NAV.map((n, i) => `
             <button type="button" class="pp-adm-nav-link${i === 0 ? ' active' : ''}" data-tab="${n.tab}">
@@ -1813,7 +1813,7 @@ function admRenderOverview(content) {
   content.innerHTML = `
     <div class="pp-adm-content-header">
       <h1>${esc(p('tab-dashboard', 'Dashboard'))}</h1>
-      <p>${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackHub right now.'))}</p>
+      <p>${esc(p('dashboard-sub', 'Live snapshot of everything happening on HackVerse right now.'))}</p>
     </div>
     <div class="pp-adm-stats-grid">
       ${admStatCard(ADM_ICONS.requests, p('stat-pending-label', 'Pending Organisation Requests'), pending.length)}

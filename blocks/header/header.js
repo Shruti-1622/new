@@ -34,8 +34,8 @@ function buildNav() {
 
   return `
     <nav class="nav" id="hh-nav">
-      <a href="/" class="nav-logo" aria-label="HackHub Home">
-        <span class="logo-bracket">{</span>HackHub<span class="logo-bracket">}</span>
+      <a href="/" class="nav-logo" aria-label="HackVerse Home">
+        <span class="logo-bracket">{</span>HackVerse<span class="logo-bracket">}</span>
       </a>
       <ul class="nav-links">${links}</ul>
       <div class="nav-right">
