@@ -25,8 +25,8 @@ function render(block, {
     <div class="footer-main">
       <div class="footer-brand">
         <div class="nav-logo">
-          ${logoImage ? `<img src="${logoImage}" alt="" class="nav-logo-img">` : ''}
-          <span class="logo-bracket">{</span>${logo}<span class="logo-bracket">}</span>
+          <img src="${logoImage || '/assets/avatar/yes.webp'}" alt="" class="nav-logo-img">
+          ${logo}
         </div>
         <p class="footer-tagline">${taglineHTML}</p>
         <div class="footer-socials">${socialsHTML}</div>
